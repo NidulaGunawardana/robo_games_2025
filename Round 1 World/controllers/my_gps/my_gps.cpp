@@ -11,11 +11,9 @@ using namespace webots;
 using namespace std;
 
 // Define a custom robot class inheriting from the Webots Robot class
-class MyRobot : public Robot
-{
+class MyRobot : public Robot {
 public:
-    MyRobot()
-    {
+    MyRobot() {
         // Get the simulation time step
         timeStep = static_cast<int>(getBasicTimeStep());
 
@@ -51,8 +49,7 @@ public:
     }
 
     // Method to read distance sensors and determine the robot's surroundings
-    int getDistanceSensors()
-    {
+    int getDistanceSensors() {
         double distanceFront = getDistance(ds_front);
         double distanceLeft = getDistance(ds_left);
         double distanceRight = getDistance(ds_right);
@@ -79,8 +76,7 @@ public:
     }
 
     // Move the robot forward by a specified distance (in simulation steps)
-    void goForward(int steps)
-    {
+    void goForward(int steps) {
         cout << "Going forward for " << steps << " steps..." << endl;
 
         // PID controller parameters
@@ -90,16 +86,13 @@ public:
         double previousError = 0.0;
         double integral = 0.0;
 
-        for (int i = 0; i < steps; i++)
-        {
+        for (int i = 0; i < steps; i++) {
             double initialLeftPosition = getLeftWheelSensor();
 
             // Move forward until the left wheel rotates a specific distance
-            while ((getLeftWheelSensor() - initialLeftPosition) < 12)
-            {
+            while ((getLeftWheelSensor() - initialLeftPosition) < 12) {
                 // Update global distance sensor readings midway
-                if ((getLeftWheelSensor() - initialLeftPosition) >= 5.95 && (getLeftWheelSensor() - initialLeftPosition) < 6.1)
-                {
+                if ((getLeftWheelSensor() - initialLeftPosition) >= 5.95 && (getLeftWheelSensor() - initialLeftPosition) < 6.1) {
                     globalDistance = getDistanceSensors();
                 }
 
@@ -126,14 +119,12 @@ public:
     }
 
     // Turn the robot left by 90 degrees using wheel encoders
-    void turnLeft()
-    {
+    void turnLeft() {
         double initialLeftWheel = getLeftWheelSensor();
         double targetLeftWheel = initialLeftWheel - 2.241; // Approx. rotation for 90 degrees
 
         // Rotate until the left wheel reaches the target position
-        while (getLeftWheelSensor() > targetLeftWheel)
-        {
+        while (getLeftWheelSensor() > targetLeftWheel) {
             leftMotor->setVelocity(-0.8);
             rightMotor->setVelocity(0.8);
             step(timeStep);
@@ -142,14 +133,12 @@ public:
     }
 
     // Turn the robot right by 90 degrees using wheel encoders
-    void turnRight()
-    {
+    void turnRight() {
         double initialRightWheel = getRightWheelSensor();
         double targetRightWheel = initialRightWheel - 2.241; // Approx. rotation for 90 degrees
 
         // Rotate until the right wheel reaches the target position
-        while (getRightWheelSensor() > targetRightWheel)
-        {
+        while (getRightWheelSensor() > targetRightWheel) {
             leftMotor->setVelocity(0.8);
             rightMotor->setVelocity(-0.8);
             step(timeStep);
@@ -157,19 +146,15 @@ public:
         stopRobot();
     }
 
-    void align_wall()
-    {
+    // Align the robot with the wall using the front distance sensor
+    void align_wall() {
         double distanceFront = getDistance(ds_front);
 
-        while (distanceFront < 0.89 || distanceFront > 0.9)
-        {
-            if (distanceFront < 0.89)
-            {
+        while (distanceFront < 0.89 || distanceFront > 0.9) {
+            if (distanceFront < 0.89) {
                 leftMotor->setVelocity(0.5);
                 rightMotor->setVelocity(0.5);
-            }
-            else if (distanceFront > 0.9)
-            {
+            } else if (distanceFront > 0.9) {
                 leftMotor->setVelocity(-0.5);
                 rightMotor->setVelocity(-0.5);
             }
@@ -179,22 +164,19 @@ public:
         stopRobot();
     }
 
-    void parallel_wall(){
+    // Make the robot parallel to the wall using front-left and front-right distance sensors
+    void parallel_wall() {
         double distanceLeft = getDistance(ds_front_left);
         double distanceRight = getDistance(ds_front_right);
         double distanceDifference = distanceLeft - distanceRight;
 
-        while (fabs(distanceDifference) > 0.001) // Continue until the difference is close to zero
-        {
-            if (distanceDifference > 0.01)
-            {
-            leftMotor->setVelocity(-0.05);
-            rightMotor->setVelocity(0.05);
-            }
-            else if (distanceDifference < -0.01)
-            {
-            leftMotor->setVelocity(0.05);
-            rightMotor->setVelocity(-0.05);
+        while (fabs(distanceDifference) > 0.001) { // Continue until the difference is close to zero
+            if (distanceDifference > 0.01) {
+                leftMotor->setVelocity(-0.05);
+                rightMotor->setVelocity(0.05);
+            } else if (distanceDifference < -0.01) {
+                leftMotor->setVelocity(0.05);
+                rightMotor->setVelocity(-0.05);
             }
             step(timeStep);
             distanceLeft = getDistance(ds_front_left);
@@ -205,39 +187,34 @@ public:
     }
 
     // Stop the robot by setting motor velocities to zero
-    void stopRobot()
-    {
+    void stopRobot() {
         leftMotor->setVelocity(0);
         rightMotor->setVelocity(0);
     }
 
     // Get distance reading from a specific distance sensor
-    double getDistance(DistanceSensor *ds)
-    {
+    double getDistance(DistanceSensor *ds) {
         return ds->getValue();
     }
 
     // Get the current reading of the left wheel position sensor
-    double getLeftWheelSensor()
-    {
+    double getLeftWheelSensor() {
         return left_wheel_sensor->getValue();
     }
 
     // Get the current reading of the right wheel position sensor
-    double getRightWheelSensor()
-    {
+    double getRightWheelSensor() {
         return right_wheel_sensor->getValue();
     }
 
-    struct Cell
-    {
+    // Structure to represent a grid cell
+    struct Cell {
         int row;
         int column;
     };
 
     // Calculate the current grid cell based on GPS coordinates
-    Cell calculateCell(double x, double y)
-    {
+    Cell calculateCell(double x, double y) {
         const double leftX = 1.25;
         const double topY = -1.25;
         const double cellWidth = 0.25;
@@ -247,32 +224,27 @@ public:
         int column = static_cast<int>((leftX - x) / cellWidth) + 1;
         int row = static_cast<int>((y - topY) / cellHeight) + 1;
 
-        if (column < 1 || column > columns || row < 1 || row > columns)
-        {
+        if (column < 1 || column > columns || row < 1 || row > columns) {
             return {-1, -1}; // Out of bounds
         }
         return {row, column};
     }
 
     // Main simulation loop
-    void run()
-    {
+    void run() {
         cout << "Starting simulation loop..." << endl;
 
         // Initial delay (3 seconds)
-        for (int i = 0; i < 1000 / timeStep; ++i)
-        {
+        for (int i = 0; i < 1000 / timeStep; ++i) {
             step(timeStep);
         }
 
         // Get initial distance sensor readings
         globalDistance = getDistanceSensors();
 
-        while (step(timeStep) != -1)
-        {
+        while (step(timeStep) != -1) {
             // Perform actions based on sensor readings
-            switch (globalDistance)
-            {
+            switch (globalDistance) {
             case 1:
                 turnLeft();
                 goForward(1);
@@ -312,21 +284,21 @@ public:
             default:
                 break;
             }
-            // print front distance sensor value
+
+            // Print front distance sensor value
             double distanceFront = getDistance(ds_front);
             cout << "Distance sensor values: Front=" << distanceFront << endl;
+
             // Log robot's position and cell
             const double *gpsValues = gps->getValues();
             double x = gpsValues[0];
             double y = gpsValues[1];
-            // int cellNumber = calculateCell(x, y);
 
             Cell cell = calculateCell(x, y);
             int row = cell.row;
             int column = cell.column;
 
-            if (row != -1 && column != -1)
-            {
+            if (row != -1 && column != -1) {
                 cout << "GPS Coordinates: X=" << x << ", Y=" << y << " | Row =" << row << ", Column =" << column << endl;
             }
         }
@@ -349,8 +321,7 @@ private:
 };
 
 // Entry point of the program
-int main()
-{
+int main() {
     MyRobot robot; // Create an instance of the robot
     robot.run();   // Start the simulation loop
     return 0;
