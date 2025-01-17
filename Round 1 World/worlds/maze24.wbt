@@ -6,12 +6,13 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/project
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/apartment_structure/protos/Wall.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/appearances/protos/Roughcast.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/robots/gctronic/e-puck/protos/E-puck.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/devices/sharp/protos/SharpGP2D120.proto"
 
 WorldInfo {
 }
 Viewpoint {
-  orientation -0.5621164911507326 -0.5814902926177739 0.5881276136755393 4.181339701604398
-  position 0.06281344112575038 0.010120963231979828 5.996927028752965
+  orientation -0.681499797871789 -0.013705791327038683 0.7316899458000024 3.126284103354712
+  position 1.1196770107245357 1.040461444628103 1.6229738029195429
 }
 TexturedBackground {
 }
@@ -23,10 +24,24 @@ RectangleArena {
   floorSize 2.5 2.5
 }
 E-puck {
-  translation -0.619961 1.12519 -3.18689e-05
-  rotation -0.0002161539941424257 -8.646159765697028e-05 0.9999999729009211 -2.9489953071795862
+  translation 1.125 1.125 -0.000691129
+  rotation 0.0012402570201903002 -0.05323819556354888 -0.9985810714687422 -3.141592653179586
   controller "my_gps"
   groundSensorsSlot [
+    SharpGP2D120 {
+      translation -0.0565688 -6.51749e-08 0.03
+      rotation 0 0 1 0.7854
+      name "sharp_left"
+    }
+    SharpGP2D120 {
+      translation -0.0494976 -0.00707103 0.03
+      rotation 0 0 1 -0.785398
+      name "sharp_right"
+    }
+    SharpGP2D120 {
+      translation -0.05 0 0.03
+      name "sharp_front"
+    }
     GPS {
     }
   ]
