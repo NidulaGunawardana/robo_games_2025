@@ -5,7 +5,7 @@ sceneTreePerspectives: 000000ff00000001000000030000001e000000c0000000fa010000000
 maximizedDockId: -1
 centralWidgetVisible: 1
 orthographicViewHeight: 1
-textFiles: 0 "controllers/epuck_controller_robogames_2025/epuck_controller_robogames_2025.py"
+textFiles: 0 "../my_project/controllers/epuck_controller_robogames_2025/epuck_controller_robogames_2025.py"
 globalOptionalRendering: DistanceSensorRays::LightSensorRays
 consoles: Console:All:All
 renderingDevicePerspectives: e-puck:camera;1;4.61538;0;0
