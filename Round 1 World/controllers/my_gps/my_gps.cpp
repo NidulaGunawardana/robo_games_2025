@@ -22,6 +22,8 @@ public:
         leftMotor = getMotor("left wheel motor");
         rightMotor = getMotor("right wheel motor");
         ds_front = getDistanceSensor("sharp_front");
+        ds_front_left = getDistanceSensor("sharp_front_left");
+        ds_front_right = getDistanceSensor("sharp_front_right");
         ds_left = getDistanceSensor("sharp_left");
         ds_right = getDistanceSensor("sharp_right");
         left_wheel_sensor = getPositionSensor("left wheel sensor");
@@ -31,6 +33,8 @@ public:
         // Enable sensors
         gps->enable(timeStep);
         ds_front->enable(timeStep);
+        ds_front_left->enable(timeStep);
+        ds_front_right->enable(timeStep);
         ds_left->enable(timeStep);
         ds_right->enable(timeStep);
         left_wheel_sensor->enable(timeStep);
@@ -53,31 +57,60 @@ public:
         cout << "Distance sensor values: Front=" << distanceFront << ", Left=" << distanceLeft << ", Right=" << distanceRight << endl;
 
         // Evaluate sensor readings and return corresponding disjunction identifier
-        if (distanceFront > 0.39 && distanceLeft < 0.5 && distanceRight < 0.5) return 1;
-        else if (distanceFront < 0.39 && distanceLeft > 0.5 && distanceRight < 0.5) return 2;
-        else if (distanceFront < 0.39 && distanceLeft < 0.5 && distanceRight > 0.5) return 3;
-        else if (distanceFront > 0.39 && distanceLeft > 0.5 && distanceRight < 0.5) return 4;
-        else if (distanceFront > 0.39 && distanceLeft < 0.5 && distanceRight > 0.5) return 5;
-        else if (distanceFront < 0.39 && distanceLeft > 0.5 && distanceRight > 0.5) return 6;
-        else if (distanceFront > 0.39 && distanceLeft > 0.5 && distanceRight > 0.5) return 7;
-        else return 0; // No significant obstacles detected
+        if (distanceFront > 0.39 && distanceLeft < 0.5 && distanceRight < 0.5)
+            return 1;
+        else if (distanceFront < 0.39 && distanceLeft > 0.5 && distanceRight < 0.5)
+            return 2;
+        else if (distanceFront < 0.39 && distanceLeft < 0.5 && distanceRight > 0.5)
+            return 3;
+        else if (distanceFront > 0.39 && distanceLeft > 0.5 && distanceRight < 0.5)
+            return 4;
+        else if (distanceFront > 0.39 && distanceLeft < 0.5 && distanceRight > 0.5)
+            return 5;
+        else if (distanceFront < 0.39 && distanceLeft > 0.5 && distanceRight > 0.5)
+            return 6;
+        else if (distanceFront > 0.39 && distanceLeft > 0.5 && distanceRight > 0.5)
+            return 7;
+        else
+            return 0; // No significant obstacles detected
     }
 
     // Move the robot forward by a specified distance (in simulation steps)
     void goForward(int steps) {
         cout << "Going forward for " << steps << " steps..." << endl;
 
+        // PID controller parameters
+        double Kp = 0.03;
+        double Ki = 0.0;
+        double Kd = 0.01;
+        double previousError = 0.0;
+        double integral = 0.0;
+
         for (int i = 0; i < steps; i++) {
             double initialLeftPosition = getLeftWheelSensor();
 
             // Move forward until the left wheel rotates a specific distance
-            for (; (getLeftWheelSensor() - initialLeftPosition) < 11.9; ) {
+            while ((getLeftWheelSensor() - initialLeftPosition) < 12) {
                 // Update global distance sensor readings midway
                 if ((getLeftWheelSensor() - initialLeftPosition) >= 5.95 && (getLeftWheelSensor() - initialLeftPosition) < 6.1) {
                     globalDistance = getDistanceSensors();
                 }
-                leftMotor->setVelocity(4);
-                rightMotor->setVelocity(4);
+
+                // Wall following using PID control
+                double distanceLeft = getDistance(ds_left);
+                double distanceRight = getDistance(ds_right);
+                double error = distanceLeft - distanceRight;
+                integral += error;
+                double derivative = error - previousError;
+                double correction = Kp * error + Ki * integral + Kd * derivative;
+                previousError = error;
+
+                // Adjust motor velocities based on PID correction
+                double leftSpeed = 4 + correction;
+                double rightSpeed = 4 - correction;
+
+                leftMotor->setVelocity(leftSpeed);
+                rightMotor->setVelocity(rightSpeed);
                 step(timeStep); // Advance simulation
             }
 
@@ -113,6 +146,46 @@ public:
         stopRobot();
     }
 
+    // Align the robot with the wall using the front distance sensor
+    void align_wall() {
+        double distanceFront = getDistance(ds_front);
+
+        while (distanceFront < 0.89 || distanceFront > 0.9) {
+            if (distanceFront < 0.89) {
+                leftMotor->setVelocity(0.5);
+                rightMotor->setVelocity(0.5);
+            } else if (distanceFront > 0.9) {
+                leftMotor->setVelocity(-0.5);
+                rightMotor->setVelocity(-0.5);
+            }
+            step(timeStep);
+            distanceFront = getDistance(ds_front);
+        }
+        stopRobot();
+    }
+
+    // Make the robot parallel to the wall using front-left and front-right distance sensors
+    void parallel_wall() {
+        double distanceLeft = getDistance(ds_front_left);
+        double distanceRight = getDistance(ds_front_right);
+        double distanceDifference = distanceLeft - distanceRight;
+
+        while (fabs(distanceDifference) > 0.001) { // Continue until the difference is close to zero
+            if (distanceDifference > 0.01) {
+                leftMotor->setVelocity(-0.05);
+                rightMotor->setVelocity(0.05);
+            } else if (distanceDifference < -0.01) {
+                leftMotor->setVelocity(0.05);
+                rightMotor->setVelocity(-0.05);
+            }
+            step(timeStep);
+            distanceLeft = getDistance(ds_front_left);
+            distanceRight = getDistance(ds_front_right);
+            distanceDifference = distanceLeft - distanceRight;
+        }
+        stopRobot();
+    }
+
     // Stop the robot by setting motor velocities to zero
     void stopRobot() {
         leftMotor->setVelocity(0);
@@ -134,6 +207,7 @@ public:
         return right_wheel_sensor->getValue();
     }
 
+    // Structure to represent a grid cell
     struct Cell {
         int row;
         int column;
@@ -161,31 +235,64 @@ public:
         cout << "Starting simulation loop..." << endl;
 
         // Initial delay (3 seconds)
-        for (int i = 0; i < 3000 / timeStep; ++i) {
+        for (int i = 0; i < 1000 / timeStep; ++i) {
             step(timeStep);
         }
-        
-         // Get initial distance sensor readings
+
+        // Get initial distance sensor readings
         globalDistance = getDistanceSensors();
 
         while (step(timeStep) != -1) {
             // Perform actions based on sensor readings
             switch (globalDistance) {
-                case 1: turnLeft(); goForward(1); break;
-                case 2: goForward(1); break;
-                case 3: turnLeft(); goForward(1); break;
-                case 4: turnRight(); goForward(1); break;
-                case 5: turnLeft(); goForward(1); break;
-                case 6: goForward(1); break;
-                case 7: turnRight(); stopRobot(); turnRight(); goForward(1); break;
-                default: break;
+            case 1:
+                turnLeft();
+                goForward(1);
+                break;
+            case 2:
+                goForward(1);
+                break;
+            case 3:
+                turnLeft();
+                goForward(1);
+                break;
+            case 4:
+                align_wall();
+                parallel_wall();
+                turnRight();
+                goForward(1);
+                break;
+            case 5:
+                align_wall();
+                parallel_wall();
+                turnLeft();
+                goForward(1);
+                break;
+            case 6:
+                goForward(1);
+                break;
+            case 7:
+                align_wall();
+                parallel_wall();
+                turnRight();
+                stopRobot();
+                align_wall();
+                parallel_wall();
+                turnRight();
+                goForward(1);
+                break;
+            default:
+                break;
             }
+
+            // Print front distance sensor value
+            double distanceFront = getDistance(ds_front);
+            cout << "Distance sensor values: Front=" << distanceFront << endl;
 
             // Log robot's position and cell
             const double *gpsValues = gps->getValues();
             double x = gpsValues[0];
             double y = gpsValues[1];
-            // int cellNumber = calculateCell(x, y);
 
             Cell cell = calculateCell(x, y);
             int row = cell.row;
@@ -204,6 +311,8 @@ private:
     Motor *leftMotor;
     Motor *rightMotor;
     DistanceSensor *ds_front;
+    DistanceSensor *ds_front_left;
+    DistanceSensor *ds_front_right;
     DistanceSensor *ds_left;
     DistanceSensor *ds_right;
     PositionSensor *left_wheel_sensor;
