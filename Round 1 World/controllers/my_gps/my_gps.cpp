@@ -134,8 +134,13 @@ public:
         return right_wheel_sensor->getValue();
     }
 
+    struct Cell {
+        int row;
+        int column;
+    };
+
     // Calculate the current grid cell based on GPS coordinates
-    int calculateCell(double x, double y) {
+    Cell calculateCell(double x, double y) {
         const double leftX = 1.25;
         const double topY = -1.25;
         const double cellWidth = 0.25;
@@ -146,9 +151,9 @@ public:
         int row = static_cast<int>((y - topY) / cellHeight) + 1;
 
         if (column < 1 || column > columns || row < 1 || row > columns) {
-            return -1; // Out of bounds
+            return {-1, -1}; // Out of bounds
         }
-        return (row - 1) * columns + column; // Calculate cell number
+        return {row, column};
     }
 
     // Main simulation loop
@@ -180,10 +185,14 @@ public:
             const double *gpsValues = gps->getValues();
             double x = gpsValues[0];
             double y = gpsValues[1];
-            int cellNumber = calculateCell(x, y);
+            // int cellNumber = calculateCell(x, y);
 
-            if (cellNumber != -1) {
-                cout << "GPS Coordinates: X=" << x << ", Y=" << y << " | Cell Number=" << cellNumber << endl;
+            Cell cell = calculateCell(x, y);
+            int row = cell.row;
+            int column = cell.column;
+
+            if (row != -1 && column != -1) {
+                cout << "GPS Coordinates: X=" << x << ", Y=" << y << " | Row =" << row << ", Column =" << column << endl;
             }
         }
     }
