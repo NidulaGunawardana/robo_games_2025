@@ -41,6 +41,9 @@
 ### if your program uses several C++ source files:
 ### CXX_SOURCES = my_plugin.cc my_clever_algo.cpp my_graphics.c++
 ###
+### ---- C++ Sources ----
+### if your program uses several C++ source files:
+# CXX_SOURCES = controlling.cpp
 ### ---- Compilation options ----
 ### if special compilation flags are necessary:
 ### CFLAGS = -Wno-unused-result
@@ -52,7 +55,7 @@
 ###
 ### ---- Linking options ----
 ### if special linking flags are needed:
-### LFLAGS = -s
+# LFLAGS = -s
 ###
 ### ---- Webots included libraries ----
 ### if you want to use the Webots C API in your C++ controller program:
@@ -71,6 +74,3 @@ space := $(null) $(null)
 WEBOTS_HOME_PATH?=$(subst $(space),\ ,$(strip $(subst \,/,$(WEBOTS_HOME))))
 include $(WEBOTS_HOME_PATH)/resources/Makefile.include
 
-### ---- C++ Sources ----
-### if your program uses several C++ source files:
-# CXX_SOURCES = controlling.cpp
