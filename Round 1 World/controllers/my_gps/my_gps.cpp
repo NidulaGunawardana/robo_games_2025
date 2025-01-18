@@ -22,6 +22,8 @@ struct surroundCoor {
 	struct coordinate E;
 };
 
+int orient = 0; // 0: North, 1: East, 2: South, 3: West
+
 const int ROWS = 10;
 const int COLUMNS = 10;
 
@@ -81,7 +83,7 @@ public:
     }
 
     // Method to read distance sensors and determine the robot's surroundings
-    int getDistanceSensors() {
+    int getDistanceSensorsFirstCell() {
         double distanceFront = getDistance(ds_front);
         double distanceLeft = getDistance(ds_left);
         double distanceRight = getDistance(ds_right);
@@ -91,31 +93,57 @@ public:
             << ", Right=" << distanceRight << endl;
 
         // Evaluate sensor readings and return corresponding identifier
-        if (distanceFront > 0.39 && distanceLeft < 0.5 && distanceRight < 0.5) {
+        if (distanceFront > 0.39 && distanceLeft < 0.63 && distanceRight < 0.63) {
             cout << "Wall Ahead" << endl;
             return 1;
-        } else if (distanceFront < 0.39 && distanceLeft > 0.5 && distanceRight < 0.5) {
+        } else if (distanceFront < 0.39 && distanceLeft > 0.63 && distanceRight < 0.63) {
             cout << "Wall Left" << endl;
             return 2;
-        } else if (distanceFront < 0.39 && distanceLeft < 0.5 && distanceRight > 0.5) {
+        } else if (distanceFront < 0.39 && distanceLeft < 0.63 && distanceRight > 0.63) {
             cout << "Wall Right" << endl;
             return 3;
-        } else if (distanceFront > 0.39 && distanceLeft > 0.5 && distanceRight < 0.5) {
+        } else if (distanceFront > 0.39 && distanceLeft > 0.63 && distanceRight < 0.63) {
             cout << "Wall Ahead and Left" << endl;
             return 4;
-        } else if (distanceFront > 0.39 && distanceLeft < 0.5 && distanceRight > 0.5) {
+        } else if (distanceFront > 0.39 && distanceLeft < 0.63 && distanceRight > 0.63) {
             cout << "Wall Ahead and Right" << endl;
             return 5;
-        } else if (distanceFront < 0.39 && distanceLeft > 0.5 && distanceRight > 0.5) {
+        } else if (distanceFront < 0.39 && distanceLeft > 0.63 && distanceRight > 0.63) {
             cout << "Wall Left and Right" << endl;
             return 6;
-        } else if (distanceFront > 0.39 && distanceLeft > 0.5 && distanceRight > 0.5) {
+        } else if (distanceFront > 0.39 && distanceLeft > 0.63 && distanceRight > 0.63) {
             cout << "Wall Ahead, Left and Right" << endl;
             return 7;
         } else {
             cout << "No Walls Around" << endl;
             return 0; // No significant obstacles detected
         }
+    }
+
+    int getDistanceSensors() {
+        double distanceFront = getDistance(ds_front);
+        double distanceLeft = getDistance(ds_left);
+        double distanceRight = getDistance(ds_right);
+
+        cout << "Distance sensor values: Front=" << distanceFront << ", Left=" << distanceLeft << ", Right=" << distanceRight << endl;
+
+        // Evaluate sensor readings and return corresponding disjunction identifier
+        if (distanceFront > 0.39 && distanceLeft < 0.5 && distanceRight < 0.5)
+            return 1;
+        else if (distanceFront < 0.39 && distanceLeft > 0.5 && distanceRight < 0.5)
+            return 2;
+        else if (distanceFront < 0.39 && distanceLeft < 0.5 && distanceRight > 0.5)
+            return 3;
+        else if (distanceFront > 0.39 && distanceLeft > 0.5 && distanceRight < 0.5)
+            return 4;
+        else if (distanceFront > 0.39 && distanceLeft < 0.5 && distanceRight > 0.5)
+            return 5;
+        else if (distanceFront < 0.39 && distanceLeft > 0.5 && distanceRight > 0.5)
+            return 6;
+        else if (distanceFront > 0.39 && distanceLeft > 0.5 && distanceRight > 0.5)
+            return 7;
+        else
+            return 0; // No significant obstacles detected
     }
 
     // Move the robot forward by a specified distance (in simulation steps)
@@ -133,7 +161,7 @@ public:
             double initialLeftPosition = getLeftWheelSensor();
 
             // Move forward until the left wheel rotates a specific distance
-            while ((getLeftWheelSensor() - initialLeftPosition) < 12) {
+            while ((getLeftWheelSensor() - initialLeftPosition) < 12.6) {
                 // Update global distance sensor readings midway
                 if ((getLeftWheelSensor() - initialLeftPosition) >= 5.95 && (getLeftWheelSensor() - initialLeftPosition) < 6.1) {
                     wall_arrangement = getDistanceSensors();
@@ -173,6 +201,12 @@ public:
             step(timeStep);
         }
         stopRobot();
+
+        //update orientation
+        orient -= 1;
+		if (orient == -1) {
+			orient = 3;
+		}
     }
 
     // Turn the robot right by 90 degrees using wheel encoders
@@ -187,6 +221,11 @@ public:
             step(timeStep);
         }
         stopRobot();
+
+        orient += 1;
+		if (orient == 4) {
+			orient = 0;
+		}
     }
 
     // Align the robot with the wall using the front distance sensor
@@ -252,12 +291,13 @@ public:
 
   
     // Calculate the current grid cell based on GPS coordinates
-    coordinate calculateCell(double gps_x, double gps_y) {
+    struct coordinate calculateCell(double gps_x, double gps_y) {
         const double leftX = 1.25;
         const double topY = -1.25;
         const double cellWidth = 0.25;
         const double cellHeight = 0.25;
         const int columns = 9;
+        struct coordinate XY;
 
         int column = static_cast<int>((leftX - gps_x) / cellWidth);
         int row = static_cast<int>((gps_y - topY) / cellHeight);
@@ -267,15 +307,30 @@ public:
         }
 
         column = columns - column; // Reverse column order
-        return {row,column};
+        XY.x = column;
+        XY.y = row;
+        return XY;
     }
 
-    //////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    // Code By Mihiruth
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     int current_cell(struct coordinate p){ // Returns the flood cell number of the current cell
+        int cell_no = 0;        
+        if (p.x >= 0 && p.x < ROWS && p.y >= 0 && p.y < COLUMNS) {
+            cell_no = red_flood[p.y][p.x];
+        } else {
+            p.x = -1;
+            p.y = -1;            
+            // Handle out-of-bounds case
+            // throw an error or assign a default value
+            cout << "Flood Out of bounds" << endl;
 
-        int cell_no = red_flood[p.x][p.y];
-    
+        }
+            
         return cell_no;
     }
 
@@ -310,55 +365,224 @@ public:
     bool isAccessible(int wall_arrangement, struct coordinate current_coor, struct coordinate next_coor) {
         struct surroundCoor surCoor = getSurrounds(current_coor);
 
-        switch (wall_arrangement) {
-        case 1: // Wall on the front
-            if (compareCoordinates(next_coor, surCoor.N)) {
-                return false;
+        switch (orient)
+        {
+            case 0:
+                switch (wall_arrangement) {
+            case 1: // Wall on the front
+                if (compareCoordinates(next_coor, surCoor.N)) {
+                    return false;
+                }
+                break;
+
+            case 2: // Wall on the left
+                if (compareCoordinates(next_coor, surCoor.W)) {
+                    return false;
+                }
+                break;
+
+            case 3: // Wall on the right
+                if (compareCoordinates(next_coor, surCoor.E)) {
+                    return false;
+                }
+                break;
+
+            case 4: // Walls on the front and left
+                if (compareCoordinates(next_coor, surCoor.N) || 
+                    compareCoordinates(next_coor, surCoor.W)) {
+                    return false;
+                }
+                break;
+
+            case 5: // Walls on the front and right
+                if (compareCoordinates(next_coor, surCoor.N) || 
+                    compareCoordinates(next_coor, surCoor.E)) {
+                    return false;
+                }
+                break;
+
+            case 6: // Walls on the left and right
+                if (compareCoordinates(next_coor, surCoor.W) || 
+                    compareCoordinates(next_coor, surCoor.E)) {
+                    return false;
+                }
+                break;
+
+            case 7: // Walls on all sides except bottom
+                if (compareCoordinates(next_coor, surCoor.N) || compareCoordinates(next_coor, surCoor.W) || compareCoordinates(next_coor, surCoor.E)) {
+                    return false;
+                }
+                break;
+
+            default:
+                return true;
             }
             break;
 
-        case 2: // Wall on the left
-            if (compareCoordinates(next_coor, surCoor.W)) {
-                return false;
+        case 1:
+
+            switch (wall_arrangement) {
+            case 1: // Wall on the front
+                if (compareCoordinates(next_coor, surCoor.E)) {
+                    return false;
+                }
+                break;
+
+            case 2: // Wall on the left
+                if (compareCoordinates(next_coor, surCoor.N)) {
+                    return false;
+                }
+                break;
+
+            case 3: // Wall on the right
+                if (compareCoordinates(next_coor, surCoor.S)) {
+                    return false;
+                }
+                break;
+
+            case 4: // Walls on the front and left
+                if (compareCoordinates(next_coor, surCoor.E) || 
+                    compareCoordinates(next_coor, surCoor.N)) {
+                    return false;
+                }
+                break;
+
+            case 5: // Walls on the front and right
+                if (compareCoordinates(next_coor, surCoor.E) || 
+                    compareCoordinates(next_coor, surCoor.S)) {
+                    return false;
+                }
+                break;
+
+            case 6: // Walls on the left and right
+                if (compareCoordinates(next_coor, surCoor.N) || 
+                    compareCoordinates(next_coor, surCoor.S)) {
+                    return false;
+                }
+                break;
+
+            case 7: // Walls on all sides except bottom
+                if (compareCoordinates(next_coor, surCoor.E) || compareCoordinates(next_coor, surCoor.N) || compareCoordinates(next_coor, surCoor.S)) {
+                    return false;
+                }
+                break;
+
+            default:
+                return true;
             }
             break;
 
-        case 3: // Wall on the right
-            if (compareCoordinates(next_coor, surCoor.E)) {
-                return false;
+        case 2:
+
+            switch (wall_arrangement) {
+            case 1: // Wall on the front
+                if (compareCoordinates(next_coor, surCoor.S)) {
+                    return false;
+                }
+                break;
+
+            case 2: // Wall on the left
+                if (compareCoordinates(next_coor, surCoor.E)) {
+                    return false;
+                }
+                break;
+
+            case 3: // Wall on the right
+                if (compareCoordinates(next_coor, surCoor.W)) {
+                    return false;
+                }
+                break;
+
+            case 4: // Walls on the front and left
+                if (compareCoordinates(next_coor, surCoor.S) || 
+                    compareCoordinates(next_coor, surCoor.E)) {
+                    return false;
+                }
+                break;
+
+            case 5: // Walls on the front and right
+                if (compareCoordinates(next_coor, surCoor.S) || 
+                    compareCoordinates(next_coor, surCoor.W)) {
+                    return false;
+                }
+                break;
+
+            case 6: // Walls on the left and right
+                if (compareCoordinates(next_coor, surCoor.E) || 
+                    compareCoordinates(next_coor, surCoor.W)) {
+                    return false;
+                }
+                break;
+
+            case 7: // Walls on all sides except bottom
+                if (compareCoordinates(next_coor, surCoor.S) || compareCoordinates(next_coor, surCoor.E) || compareCoordinates(next_coor, surCoor.W)) {
+                    return false;
+                }
+                break;
+
+            default:
+                return true;
             }
             break;
 
-        case 4: // Walls on the front and left
-            if (compareCoordinates(next_coor, surCoor.N) || 
-                compareCoordinates(next_coor, surCoor.W)) {
-                return false;
+        case 3:
+
+            switch (wall_arrangement) {
+            case 1: // Wall on the front
+                if (compareCoordinates(next_coor, surCoor.W)) {
+                    return false;
+                }
+                break;
+
+            case 2: // Wall on the left
+                if (compareCoordinates(next_coor, surCoor.S)) {
+                    return false;
+                }
+                break;
+
+            case 3: // Wall on the right
+                if (compareCoordinates(next_coor, surCoor.N)) {
+                    return false;
+                }
+                break;
+
+            case 4: // Walls on the front and left
+                if (compareCoordinates(next_coor, surCoor.W) || 
+                    compareCoordinates(next_coor, surCoor.S)) {
+                    return false;
+                }
+                break;
+
+            case 5: // Walls on the front and right
+                if (compareCoordinates(next_coor, surCoor.W) || 
+                    compareCoordinates(next_coor, surCoor.N)) {
+                    return false;
+                }
+                break;
+
+            case 6: // Walls on the left and right
+                if (compareCoordinates(next_coor, surCoor.S) || 
+                    compareCoordinates(next_coor, surCoor.N)) {
+                    return false;
+                }
+                break;
+
+            case 7: // Walls on all sides except bottom
+                if (compareCoordinates(next_coor, surCoor.W) || compareCoordinates(next_coor, surCoor.S) || compareCoordinates(next_coor, surCoor.N)) {
+                    return false;
+                }
+                break;
+
+            default:
+                return true;
             }
             break;
-
-        case 5: // Walls on the front and right
-            if (compareCoordinates(next_coor, surCoor.N) || 
-                compareCoordinates(next_coor, surCoor.E)) {
-                return false;
-            }
-            break;
-
-        case 6: // Walls on the left and right
-            if (compareCoordinates(next_coor, surCoor.W) || 
-                compareCoordinates(next_coor, surCoor.E)) {
-                return false;
-            }
-            break;
-
-        case 7: // Walls on all sides except bottom
-            if (compareCoordinates(next_coor, surCoor.N) || compareCoordinates(next_coor, surCoor.W) || compareCoordinates(next_coor, surCoor.E)) {
-                return false;
-            }
-            break;
-
+                    
         default:
-            return true;
+            break;
         }
+
+        
 
         return true; // If no case matches
     }
@@ -366,51 +590,201 @@ public:
     char toMove(struct coordinate p, int wall_arrangement) {
         struct surroundCoor surCoor = getSurrounds(p);
         int min = current_cell(p);
+        cout << "Current cell no: " << min << endl;
         struct coordinate next_coor = p;
 
-        if (surCoor.N.x != -1) {
-            int cell_no = current_cell(surCoor.N);
-            if (cell_no < min && isAccessible(wall_arrangement, p, surCoor.N)) {
-                min = cell_no;
-                next_coor = surCoor.N;
+        int directionsLooked = 0;
+
+        while (true)
+        {
+            bool exitLoop = false; // Flag to exit the while loop
+
+            switch (directionsLooked)
+            {
+            case 0:
+                if ((surCoor.N.x < 10 && surCoor.N.y < 10) && (surCoor.N.x >= 0 && surCoor.N.y >= 0)) {
+                    int cell_no = current_cell(surCoor.N);
+                    cout << "Looking N: " << cell_no << endl;
+                    if (cell_no < min && isAccessible(wall_arrangement, p, surCoor.N)) {
+                        min = cell_no;
+                        next_coor = surCoor.N;
+                        exitLoop = true; // Set the flag to exit the while loop
+                        break;           // Break the switch
+                    }
+                }
+                directionsLooked++;
+                break;
+
+            case 1:
+                if ((surCoor.W.x < 10 && surCoor.W.y < 10) && (surCoor.W.x >= 0 && surCoor.W.y >= 0)) {
+                    int cell_no = current_cell(surCoor.W);
+                    cout << "Looking W: " << cell_no << endl;
+                    if (cell_no < min && isAccessible(wall_arrangement, p, surCoor.W)) {
+                        min = cell_no;
+                        next_coor = surCoor.W;
+                        exitLoop = true; // Set the flag to exit the while loop
+                        break;           // Break the switch
+                    }
+                }
+                directionsLooked++;
+                break;
+
+            case 2:
+                if ((surCoor.S.x < 10 && surCoor.S.y < 10) && (surCoor.S.x >= 0 && surCoor.S.y >= 0)) {
+                    int cell_no = current_cell(surCoor.S);
+                    cout << "Looking S: " << cell_no << endl;
+                    if (cell_no < min && isAccessible(wall_arrangement, p, surCoor.S)) {
+                        min = cell_no;
+                        next_coor = surCoor.S;
+                        exitLoop = true; // Set the flag to exit the while loop
+                        break;           // Break the switch
+                    }
+                }
+                directionsLooked++;
+                break;
+
+            case 3:
+                if ((surCoor.E.x < 10 && surCoor.E.y < 10) && (surCoor.E.x >= 0 && surCoor.E.y >= 0)) {
+                    int cell_no = current_cell(surCoor.E);
+                    cout << "Looking E: " << cell_no << endl;
+                    if (cell_no < min && isAccessible(wall_arrangement, p, surCoor.E)) {
+                        min = cell_no;
+                        next_coor = surCoor.E;
+                        exitLoop = true; // Set the flag to exit the while loop
+                        break;           // Break the switch
+                    }
+                }
+                directionsLooked++;
+                break;
+
+            default:
+                break;
+            }
+
+            if (exitLoop) { // Exit the while loop if the flag is set
+                break;
             }
         }
-
-        if (surCoor.W.x != -1) {
-            int cell_no = current_cell(surCoor.W);
-            if (cell_no < min && isAccessible(wall_arrangement, p, surCoor.W)) {
-                min = cell_no;
-                next_coor = surCoor.W;
+        
+        switch (orient)
+        {
+        case 0:
+            if (compareCoordinates(next_coor, surCoor.N)) {
+                return 'F'; // Forward
+            } else if (compareCoordinates(next_coor, surCoor.W)) {
+                return 'L'; // Left
+            } else if (compareCoordinates(next_coor, surCoor.S)) {
+                return 'B'; // Backward
+            } else if (compareCoordinates(next_coor, surCoor.E)) {
+                return 'R'; // Right
             }
-        }
-
-        if (surCoor.S.x != -1) {
-            int cell_no = current_cell(surCoor.S);
-            if (cell_no < min && isAccessible(wall_arrangement, p, surCoor.S)) {
-                min = cell_no;
-                next_coor = surCoor.S;
+            break;
+        
+        case 1:
+            if (compareCoordinates(next_coor, surCoor.E)) {
+                return 'F'; // Forward
+            } else if (compareCoordinates(next_coor, surCoor.N)) {
+                return 'L'; // Left
+            } else if (compareCoordinates(next_coor, surCoor.W)) {
+                return 'B'; // Backward
+            } else if (compareCoordinates(next_coor, surCoor.S)) {
+                return 'R'; // Right
             }
-        }
+            break;
 
-        if (surCoor.E.x != -1) {
-            int cell_no = current_cell(surCoor.E);
-            if (cell_no < min && isAccessible(wall_arrangement, p, surCoor.E)) {
-                min = cell_no;
-                next_coor = surCoor.E;
+        case 2:
+            if (compareCoordinates(next_coor, surCoor.S)) {
+                return 'F'; // Forward
+            } else if (compareCoordinates(next_coor, surCoor.E)) {
+                return 'L'; // Left
+            } else if (compareCoordinates(next_coor, surCoor.N)) {
+                return 'B'; // Backward
+            } else if (compareCoordinates(next_coor, surCoor.W)) {
+                return 'R'; // Right
             }
+            break;
+        
+        case 3:
+            if (compareCoordinates(next_coor, surCoor.W)) {
+                return 'F'; // Forward
+            } else if (compareCoordinates(next_coor, surCoor.S)) {
+                return 'L'; // Left
+            } else if (compareCoordinates(next_coor, surCoor.E)) {
+                return 'B'; // Backward
+            } else if (compareCoordinates(next_coor, surCoor.N)) {
+                return 'R'; // Right
+            }
+            break;
+        
+        default:
+            break;
         }
 
-        if (compareCoordinates(next_coor, surCoor.N)) {
-            return 'F'; // Forward
-        } else if (compareCoordinates(next_coor, surCoor.W)) {
-            return 'L'; // Left
-        } else if (compareCoordinates(next_coor, surCoor.S)) {
-            return 'B'; // Backward
-        } else if (compareCoordinates(next_coor, surCoor.E)) {
-            return 'R'; // Right
-        }
+
+        
 
         return 'X'; // No valid move
+    }
+
+    void moveFirstCell(){
+
+        cout << "Moving in the First Cell......" << endl;
+
+        // Initial delay (3 seconds)
+        for (int i = 0; i < 1000 / timeStep; ++i) {
+            step(timeStep);
+        }
+
+        char direction = 'X';
+        wall_arrangement = getDistanceSensorsFirstCell();
+
+        double distanceFront = getDistance(ds_front);
+        cout << "Distance sensor values: Front=" << distanceFront << endl;
+
+        // Log robot's position and cell
+        const double *gpsValues = gps->getValues();
+        double gps_x = gpsValues[0];
+        double gps_y = gpsValues[1];
+
+        XY = calculateCell(gps_x, gps_y);
+        int x = XY.x;
+        int y = XY.y;
+
+        if (x != -1 && y != -1) {
+            cout << "GPS Coordinates: X=" << gps_x << ", Y=" << gps_y << " | X =" << x << ", Y =" << y << endl;
+        }
+
+        direction = toMove(XY, wall_arrangement);
+        cout << "Direction: " << direction << endl;
+        
+
+        switch (direction)
+            {
+            case 'F':
+                //goForward(1);
+                break;
+
+            case 'L':
+                turnLeft();
+                //goForward(1);
+                break;
+            
+            case 'R':
+                turnRight();
+                //goForward(1);
+                break;
+
+            case 'B':
+                turnRight();
+                turnRight();
+                //goForward(1);
+                break;           
+            
+            default:
+                break;
+            }
+
+        cout << "First Cell Movement Completed......" << endl;
     }
         
 
@@ -431,52 +805,30 @@ public:
             step(timeStep);
         }
 
+        //Facing North
+        
+        // cout << "Turning into north " << orient << endl;
+
+        // if(orient == 0){
+        //     cout << "Robot is Good to go" << endl;
+        // } else if(orient == 1){
+        //     turnLeft();
+        // } else if(orient == 2){
+        //     turnLeft();
+        //     turnLeft();
+        // } else if(orient == 3){
+        //     turnRight();
+        // }        
+        
+        for (int i = 0; i < 1000 / timeStep; ++i) {
+            step(timeStep);
+        }
+
+
         // Get initial distance sensor readings
         wall_arrangement = getDistanceSensors();
 
         while (step(timeStep) != -1) {
-            // Perform actions based on sensor readings
-            switch (wall_arrangement) {
-                case 1:
-                    turnLeft();
-                    goForward(1);
-                    break;
-                case 2:
-                    goForward(1);
-                    break;
-                case 3:
-                    turnLeft();
-                    goForward(1);
-                    break;
-                case 4:
-                    align_wall();
-                    parallel_wall();
-                    turnRight();
-                    goForward(1);
-                    break;
-                case 5:
-                    align_wall();
-                    parallel_wall();
-                    turnLeft();
-                    goForward(1);
-                    break;
-                case 6:
-                    goForward(1);
-                    break;
-                case 7:
-                    align_wall();
-                    parallel_wall();
-                    turnRight();
-                    stopRobot();
-                    align_wall();
-                    parallel_wall();
-                    turnRight();
-                    goForward(1);
-                    break;
-                default:
-                    break;
-                }
-
             // Print front distance sensor value
             double distanceFront = getDistance(ds_front);
             cout << "Distance sensor values: Front=" << distanceFront << endl;
@@ -493,6 +845,85 @@ public:
             if (x != -1 && y != -1) {
                 cout << "GPS Coordinates: X=" << gps_x << ", Y=" << gps_y << " | X =" << x << ", Y =" << y << endl;
             }
+
+            direction = toMove(XY, wall_arrangement);
+            cout << "Direction: " << direction << endl;
+
+            cout << "Is north accessible: " << isAccessible(wall_arrangement, XY, getSurrounds(XY).N) << endl;
+            cout << "Is south accessible: " << isAccessible(wall_arrangement, XY, getSurrounds(XY).S) << endl;
+            cout << "Is west accessible: " << isAccessible(wall_arrangement, XY, getSurrounds(XY).W) << endl;
+            cout << "Is east accessible: " << isAccessible(wall_arrangement, XY, getSurrounds(XY).E) << endl;
+
+
+            switch (direction)
+            {
+            case 'F':
+                goForward(1);
+                break;
+
+            case 'L':
+                turnLeft();
+                goForward(1);
+                break;
+            
+            case 'R':
+                turnRight();
+                goForward(1);
+                break;
+
+            case 'B':
+                turnRight();
+                turnRight();
+                goForward(1);
+                break;           
+            
+            default:
+                break;
+            }
+
+            // //Perform actions based on sensor readings
+            // switch (wall_arrangement) {
+            //     case 1:
+            //         turnLeft();
+            //         goForward(1);
+            //         break;
+            //     case 2:
+            //         goForward(1);
+            //         break;
+            //     case 3:
+            //         turnLeft();
+            //         goForward(1);
+            //         break;
+            //     case 4:
+            //         align_wall();
+            //         parallel_wall();
+            //         turnRight();
+            //         goForward(1);
+            //         break;
+            //     case 5:
+            //         align_wall();
+            //         parallel_wall();
+            //         turnLeft();
+            //         goForward(1);
+            //         break;
+            //     case 6:
+            //         goForward(1);
+            //         break;
+            //     case 7:
+            //         align_wall();
+            //         parallel_wall();
+            //         turnRight();
+            //         stopRobot();
+            //         align_wall();
+            //         parallel_wall();
+            //         turnRight();
+            //         goForward(1);
+            //         break;
+            //     default:
+            //         break;
+            //     }
+
+            
         }
     };
 
@@ -515,6 +946,7 @@ private:
 // Entry point of the program
 int main() {
     MyRobot robot; // Create an instance of the robot
+    robot.moveFirstCell();
     robot.run();   // Start the simulation loop
     return 0;
 }
