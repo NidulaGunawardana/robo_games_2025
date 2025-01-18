@@ -68,6 +68,31 @@ int pink_flood[ROWS][COLUMNS] = {
     {100, 100, 100, 100, 19,  100, 100, 100, 100, 100}    
 };
 
+int brown_flood[ROWS][COLUMNS] = {
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100},
+    {100, 0,   1  , 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 2  , 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100}
+};
+
+int green_flood[ROWS][COLUMNS] = {
+    {19,  18,  17,  12,  11,  10,  9,   8,   7,   100},
+    {20,  21,  16,  13,  100, 100, 100, 100, 6,   5},
+    {100, 22,  15,  14,  100, 100, 100, 100, 100, 4},
+    {100, 23,  100, 100, 100, 100, 100, 100, 100, 3},
+    {100, 24,  100, 100, 100, 100, 100, 100, 100, 2},
+    {100, 25,  100, 100, 100, 100, 100, 100, 100, 1},
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 0},
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100}
+};
 
 
 static coordinate XY;
@@ -121,25 +146,25 @@ public:
             << ", Right=" << distanceRight << endl;
 
         // Evaluate sensor readings and return corresponding identifier
-        if (distanceFront > 0.39 && distanceLeft < 0.63 && distanceRight < 0.63) {
+        if (distanceFront > 0.39 && distanceLeft < 0.7 && distanceRight < 0.7) {
             cout << "Wall Ahead" << endl;
             return 1;
-        } else if (distanceFront < 0.39 && distanceLeft > 0.63 && distanceRight < 0.63) {
+        } else if (distanceFront < 0.39 && distanceLeft > 0.7 && distanceRight < 0.7) {
             cout << "Wall Left" << endl;
             return 2;
-        } else if (distanceFront < 0.39 && distanceLeft < 0.63 && distanceRight > 0.63) {
+        } else if (distanceFront < 0.39 && distanceLeft < 0.7 && distanceRight > 0.7) {
             cout << "Wall Right" << endl;
             return 3;
-        } else if (distanceFront > 0.39 && distanceLeft > 0.63 && distanceRight < 0.63) {
+        } else if (distanceFront > 0.39 && distanceLeft > 0.7 && distanceRight < 0.7) {
             cout << "Wall Ahead and Left" << endl;
             return 4;
-        } else if (distanceFront > 0.39 && distanceLeft < 0.63 && distanceRight > 0.63) {
+        } else if (distanceFront > 0.39 && distanceLeft < 0.7 && distanceRight > 0.7) {
             cout << "Wall Ahead and Right" << endl;
             return 5;
-        } else if (distanceFront < 0.39 && distanceLeft > 0.63 && distanceRight > 0.63) {
+        } else if (distanceFront < 0.39 && distanceLeft > 0.7 && distanceRight > 0.7) {
             cout << "Wall Left and Right" << endl;
             return 6;
-        } else if (distanceFront > 0.39 && distanceLeft > 0.63 && distanceRight > 0.63) {
+        } else if (distanceFront > 0.39 && distanceLeft > 0.7 && distanceRight > 0.7) {
             cout << "Wall Ahead, Left and Right" << endl;
             return 7;
         } else {
@@ -946,9 +971,9 @@ public:
 
                 // cout<<"Moving for yellow"<<endl;
 
-                for (int i = 0; i < 1000 / timeStep; ++i) {
-                    step(timeStep);
-                }
+                // for (int i = 0; i < 1000 / timeStep; ++i) {
+                //     step(timeStep);
+                // }
 
                 // cout << "Current Coordinates : " << XY.x << "," << XY.y << endl;
                 
@@ -964,7 +989,7 @@ public:
                         }
                     }
                     
-                    cout << "Arrays Copied Successfully. Current Number is " << yellow_flood[XY.y][XY.x] << endl;
+                    cout << "Arrays Copied Successfully. Current Number is " << flood[XY.y][XY.x] << endl;
                     break;
                 }
 
@@ -1007,9 +1032,9 @@ public:
 
             case 2: // Moving to Pink Color
 
-                for (int i = 0; i < 1000 / timeStep; ++i) {
-                    step(timeStep);
-                }
+                // for (int i = 0; i < 1000 / timeStep; ++i) {
+                //     step(timeStep);
+                // }
 
                 // cout << "Current Coordinates : " << XY.x << "," << XY.y << endl;
                 
@@ -1017,15 +1042,76 @@ public:
                     color_state = 3;
                     cout << "Pink color detected" << endl;
                     cout << "Current Cell is "<< current_cell(XY) << "  Cell Coordinates :" << XY.x << "," << XY.y << endl;
-                    // Copy yellow_flood to flood
-                    // for (int i = 0; i < ROWS; ++i) {
-                    //     for (int j = 0; j < COLUMNS; ++j) {
-                    //         flood[i][j] = pink_flood[i][j];
+                    //Copy yellow_flood to flood
+                    for (int i = 0; i < ROWS; ++i) {
+                        for (int j = 0; j < COLUMNS; ++j) {
+                            flood[i][j] = brown_flood[i][j];
                             
-                    //     }
-                    // }
+                        }
+                    }
                     
-                    cout << "Arrays Copied Successfully. Current Number is " << yellow_flood[XY.y][XY.x] << endl;
+                    cout << "Arrays Copied Successfully. Current Number is " << flood[XY.y][XY.x] << endl;
+                    break;
+                }
+
+                direction = toMove(XY, wall_arrangement);
+                cout << "Direction: " << direction << endl;
+
+                cout << "Is north accessible: " << isAccessible(wall_arrangement, XY, getSurrounds(XY).N) << endl;
+                cout << "Is south accessible: " << isAccessible(wall_arrangement, XY, getSurrounds(XY).S) << endl;
+                cout << "Is west accessible: " << isAccessible(wall_arrangement, XY, getSurrounds(XY).W) << endl;
+                cout << "Is east accessible: " << isAccessible(wall_arrangement, XY, getSurrounds(XY).E) << endl;
+
+                                
+                switch (direction)
+                {
+                case 'F':
+                    goForward(1);
+                    break;
+
+                case 'L':
+                    turnLeft();
+                    goForward(1);
+                    break;
+                
+                case 'R':
+                    turnRight();
+                    goForward(1);
+                    break;
+
+                case 'B':
+                    turnRight();
+                    turnRight();
+                    goForward(1);
+                    break;           
+                
+                default:
+                    break;
+                }
+                                
+                break;
+
+            case 3: // Moving to Brown Color
+
+                // for (int i = 0; i < 1000 / timeStep; ++i) {
+                //     step(timeStep);
+                // }
+
+                // cout << "Current Coordinates : " << XY.x << "," << XY.y << endl;
+                
+                if (current_cell(XY) == 0) {
+                    color_state = 4;
+                    cout << "Pink color detected" << endl;
+                    cout << "Current Cell is "<< current_cell(XY) << "  Cell Coordinates :" << XY.x << "," << XY.y << endl;
+                    //Copy yellow_flood to flood
+                    for (int i = 0; i < ROWS; ++i) {
+                        for (int j = 0; j < COLUMNS; ++j) {
+                            flood[i][j] = green_flood[i][j];
+                            
+                        }
+                    }
+                    
+                    cout << "Arrays Copied Successfully. Current Number is " << flood[XY.y][XY.x] << endl;
                     break;
                 }
 
@@ -1066,59 +1152,75 @@ public:
                 
                 break;
 
+            case 4: // Moving to Green Color
+
+                // for (int i = 0; i < 1000 / timeStep; ++i) {
+                //     step(timeStep);
+                // }
+
+                // cout << "Current Coordinates : " << XY.x << "," << XY.y << endl;
+                
+                if (current_cell(XY) == 0) {
+                    color_state = 5;
+                    cout << "Green color detected" << endl;
+                    cout << "Current Cell is "<< current_cell(XY) << "  Cell Coordinates :" << XY.x << "," << XY.y << endl;
+                    // //Copy yellow_flood to flood
+                    // for (int i = 0; i < ROWS; ++i) {
+                    //     for (int j = 0; j < COLUMNS; ++j) {
+                    //         flood[i][j] = brown_flood[i][j];
+                            
+                    //     }
+                    // }
+                    
+                    cout << "Arrays Copied Successfully. Current Number is " << flood[XY.y][XY.x] << endl;
+                    break;
+                }
+
+                direction = toMove(XY, wall_arrangement);
+                cout << "Direction: " << direction << endl;
+
+                cout << "Is north accessible: " << isAccessible(wall_arrangement, XY, getSurrounds(XY).N) << endl;
+                cout << "Is south accessible: " << isAccessible(wall_arrangement, XY, getSurrounds(XY).S) << endl;
+                cout << "Is west accessible: " << isAccessible(wall_arrangement, XY, getSurrounds(XY).W) << endl;
+                cout << "Is east accessible: " << isAccessible(wall_arrangement, XY, getSurrounds(XY).E) << endl;
+
+                                
+                switch (direction)
+                {
+                case 'F':
+                    goForward(1);
+                    break;
+
+                case 'L':
+                    turnLeft();
+                    goForward(1);
+                    break;
+                
+                case 'R':
+                    turnRight();
+                    goForward(1);
+                    break;
+
+                case 'B':
+                    turnRight();
+                    turnRight();
+                    goForward(1);
+                    break;           
+                
+                default:
+                    break;
+                }
+                
                 break;
 
-            case 3:
+            case 5:
+
+                cout << "All colors detected. Mission Completed" << endl;
                 break;
             
             default:
                 break;
             }
-
-
-            
-
-            // //Perform actions based on sensor readings
-            // switch (wall_arrangement) {
-            //     case 1:
-            //         turnLeft();
-            //         goForward(1);
-            //         break;
-            //     case 2:
-            //         goForward(1);
-            //         break;
-            //     case 3:
-            //         turnLeft();
-            //         goForward(1);
-            //         break;
-            //     case 4:
-            //         align_wall();
-            //         parallel_wall();
-            //         turnRight();
-            //         goForward(1);
-            //         break;
-            //     case 5:
-            //         align_wall();
-            //         parallel_wall();
-            //         turnLeft();
-            //         goForward(1);
-            //         break;
-            //     case 6:
-            //         goForward(1);
-            //         break;
-            //     case 7:
-            //         align_wall();
-            //         parallel_wall();
-            //         turnRight();
-            //         stopRobot();
-            //         align_wall();
-            //         parallel_wall();
-            //         turnRight();
-            //         goForward(1);
-            //         break;
-            //     default:
-            //         break;
-            //     }
 
             
         }
