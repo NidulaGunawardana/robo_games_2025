@@ -795,7 +795,7 @@ public:
     // Main simulation loop
     void run() {
 
-        // int color_state = 0; // 0: if red color haven't been detected, 1: if red color detected
+        int color_state = 0; // 0: if red color haven't been detected, 1: if red color detected
         char direction = 'X';
 
         cout << "Starting simulation loop..." << endl;
@@ -845,41 +845,64 @@ public:
             if (x != -1 && y != -1) {
                 cout << "GPS Coordinates: X=" << gps_x << ", Y=" << gps_y << " | X =" << x << ", Y =" << y << endl;
             }
-
-            direction = toMove(XY, wall_arrangement);
-            cout << "Direction: " << direction << endl;
-
-            cout << "Is north accessible: " << isAccessible(wall_arrangement, XY, getSurrounds(XY).N) << endl;
-            cout << "Is south accessible: " << isAccessible(wall_arrangement, XY, getSurrounds(XY).S) << endl;
-            cout << "Is west accessible: " << isAccessible(wall_arrangement, XY, getSurrounds(XY).W) << endl;
-            cout << "Is east accessible: " << isAccessible(wall_arrangement, XY, getSurrounds(XY).E) << endl;
-
-
-            switch (direction)
+                        
+            switch (color_state)
             {
-            case 'F':
-                goForward(1);
-                break;
-
-            case 'L':
-                turnLeft();
-                goForward(1);
-                break;
             
-            case 'R':
-                turnRight();
-                goForward(1);
+            case 0:
+
+                if (current_cell(XY) == 0) {
+                    color_state = 1;
+                    cout << "Red color detected" << endl;
+                    break;
+                }
+
+                direction = toMove(XY, wall_arrangement);
+                cout << "Direction: " << direction << endl;
+
+                cout << "Is north accessible: " << isAccessible(wall_arrangement, XY, getSurrounds(XY).N) << endl;
+                cout << "Is south accessible: " << isAccessible(wall_arrangement, XY, getSurrounds(XY).S) << endl;
+                cout << "Is west accessible: " << isAccessible(wall_arrangement, XY, getSurrounds(XY).W) << endl;
+                cout << "Is east accessible: " << isAccessible(wall_arrangement, XY, getSurrounds(XY).E) << endl;
+
+                                
+                switch (direction)
+                {
+                case 'F':
+                    goForward(1);
+                    break;
+
+                case 'L':
+                    turnLeft();
+                    goForward(1);
+                    break;
+                
+                case 'R':
+                    turnRight();
+                    goForward(1);
+                    break;
+
+                case 'B':
+                    turnRight();
+                    turnRight();
+                    goForward(1);
+                    break;           
+                
+                default:
+                    break;
+                }
+                
                 break;
 
-            case 'B':
-                turnRight();
-                turnRight();
-                goForward(1);
-                break;           
+            case 1:
+                break;
             
             default:
                 break;
             }
+
+
+            
 
             // //Perform actions based on sensor readings
             // switch (wall_arrangement) {
