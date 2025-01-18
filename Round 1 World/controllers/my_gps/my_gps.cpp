@@ -7,6 +7,7 @@
 #include <iostream>
 #include <cmath>
 
+
 using namespace webots;
 using namespace std;
 
@@ -27,7 +28,7 @@ int orient = 0; // 0: North, 1: East, 2: South, 3: West
 const int ROWS = 10;
 const int COLUMNS = 10;
 
-int red_flood[ROWS][COLUMNS]={
+int flood[ROWS][COLUMNS]={
     {9,10,11,16,17,18,19,20,21,24},
     {8,7,12,15,16,17,20,21,22,23},
     {7,6,13,14,15,18,19,22,25,24},
@@ -38,6 +39,33 @@ int red_flood[ROWS][COLUMNS]={
     {6,7,8,9,14,13,12,11,28,29},
     {11,8,11,12,15,38,35,34,31,30},
     {10,9,10,13,16,37,36,33,32,33}
+};
+
+int yellow_flood[ROWS][COLUMNS] = {
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 16,  15,  14,  11,  10,  100, 100, 100},
+    {100, 100, 100, 100, 13,  12,  9,   100, 100, 100},
+    {100, 100, 100, 100, 100, 100, 8,   100, 100, 100},
+    {100, 100, 100, 100, 100, 100, 7,   6,   100, 100},
+    {100, 100, 100, 100, 2,   3,   4,   5,   100, 100},
+    {100, 100, 100, 100, 1,   100, 100, 100, 100, 100},
+    {100, 100, 100, 100, 0,   100, 100, 100, 100, 100}    
+    
+};
+
+int pink_flood[ROWS][COLUMNS] = {
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 3,   4,   5,   8,   9,   100, 100, 100},
+    {100, 100, 2,   100, 6,   7,   10,  100, 100, 100},
+    {100, 100, 1,   100, 100, 100, 11,  100, 100, 100},
+    {100, 100, 0,   100, 100, 100, 12,  13,  100, 100},
+    {100, 100, 100, 100, 17,  16,  15,  14,  100, 100},
+    {100, 100, 100, 100, 18,  100, 100, 100, 100, 100},
+    {100, 100, 100, 100, 19,  100, 100, 100, 100, 100}    
 };
 
 
@@ -127,23 +155,32 @@ public:
 
         cout << "Distance sensor values: Front=" << distanceFront << ", Left=" << distanceLeft << ", Right=" << distanceRight << endl;
 
-        // Evaluate sensor readings and return corresponding disjunction identifier
-        if (distanceFront > 0.39 && distanceLeft < 0.5 && distanceRight < 0.5)
+        // Evaluate sensor readings and return corresponding identifier
+        if (distanceFront > 0.39 && distanceLeft < 0.5 && distanceRight < 0.5) {
+            cout << "Wall Ahead" << endl;
             return 1;
-        else if (distanceFront < 0.39 && distanceLeft > 0.5 && distanceRight < 0.5)
+        } else if (distanceFront < 0.39 && distanceLeft > 0.5 && distanceRight < 0.5) {
+            cout << "Wall Left" << endl;
             return 2;
-        else if (distanceFront < 0.39 && distanceLeft < 0.5 && distanceRight > 0.5)
+        } else if (distanceFront < 0.39 && distanceLeft < 0.5 && distanceRight > 0.5) {
+            cout << "Wall Right" << endl;
             return 3;
-        else if (distanceFront > 0.39 && distanceLeft > 0.5 && distanceRight < 0.5)
+        } else if (distanceFront > 0.39 && distanceLeft > 0.5 && distanceRight < 0.5) {
+            cout << "Wall Ahead and Left" << endl;
             return 4;
-        else if (distanceFront > 0.39 && distanceLeft < 0.5 && distanceRight > 0.5)
+        } else if (distanceFront > 0.39 && distanceLeft < 0.5 && distanceRight > 0.5) {
+            cout << "Wall Ahead and Right" << endl;
             return 5;
-        else if (distanceFront < 0.39 && distanceLeft > 0.5 && distanceRight > 0.5)
+        } else if (distanceFront < 0.39 && distanceLeft > 0.5 && distanceRight > 0.5) {
+            cout << "Wall Left and Right" << endl;
             return 6;
-        else if (distanceFront > 0.39 && distanceLeft > 0.5 && distanceRight > 0.5)
+        } else if (distanceFront > 0.39 && distanceLeft > 0.5 && distanceRight > 0.5) {
+            cout << "Wall Ahead, Left and Right" << endl;
             return 7;
-        else
+        } else {
+            cout << "No Walls Around" << endl;
             return 0; // No significant obstacles detected
+        }
     }
 
     // Move the robot forward by a specified distance (in simulation steps)
@@ -161,7 +198,7 @@ public:
             double initialLeftPosition = getLeftWheelSensor();
 
             // Move forward until the left wheel rotates a specific distance
-            while ((getLeftWheelSensor() - initialLeftPosition) < 12.6) {
+            while ((getLeftWheelSensor() - initialLeftPosition) < 12.7) {
                 // Update global distance sensor readings midway
                 if ((getLeftWheelSensor() - initialLeftPosition) >= 5.95 && (getLeftWheelSensor() - initialLeftPosition) < 6.1) {
                     wall_arrangement = getDistanceSensors();
@@ -321,7 +358,7 @@ public:
     int current_cell(struct coordinate p){ // Returns the flood cell number of the current cell
         int cell_no = 0;        
         if (p.x >= 0 && p.x < ROWS && p.y >= 0 && p.y < COLUMNS) {
-            cell_no = red_flood[p.y][p.x];
+            cell_no = flood[p.y][p.x];
         } else {
             p.x = -1;
             p.y = -1;            
@@ -786,6 +823,7 @@ public:
 
         cout << "First Cell Movement Completed......" << endl;
     }
+    
         
 
 
@@ -854,6 +892,16 @@ public:
                 if (current_cell(XY) == 0) {
                     color_state = 1;
                     cout << "Red color detected" << endl;
+                    cout << "Current Cell is "<< current_cell(XY) << "  Cell Coordinates :" << XY.x << "," << XY.y << endl;
+                    // Copy yellow_flood to flood
+                    for (int i = 0; i < ROWS; ++i) {
+                        for (int j = 0; j < COLUMNS; ++j) {
+                            flood[i][j] = yellow_flood[i][j];
+                            
+                        }
+                    }
+                    
+                    cout << "Arrays Copied Successfully. Current Number is " << yellow_flood[XY.y][XY.x] << endl;
                     break;
                 }
 
@@ -894,7 +942,133 @@ public:
                 
                 break;
 
-            case 1:
+            case 1: // Moving to Yellow Color
+
+                // cout<<"Moving for yellow"<<endl;
+
+                for (int i = 0; i < 1000 / timeStep; ++i) {
+                    step(timeStep);
+                }
+
+                // cout << "Current Coordinates : " << XY.x << "," << XY.y << endl;
+                
+                if (current_cell(XY) == 0) {
+                    color_state = 2;
+                    cout << "Yellow color detected" << endl;
+                    cout << "Current Cell is "<< current_cell(XY) << "  Cell Coordinates :" << XY.x << "," << XY.y << endl;
+                    // Copy yellow_flood to flood
+                    for (int i = 0; i < ROWS; ++i) {
+                        for (int j = 0; j < COLUMNS; ++j) {
+                            flood[i][j] = pink_flood[i][j];
+                            
+                        }
+                    }
+                    
+                    cout << "Arrays Copied Successfully. Current Number is " << yellow_flood[XY.y][XY.x] << endl;
+                    break;
+                }
+
+                direction = toMove(XY, wall_arrangement);
+                cout << "Direction: " << direction << endl;
+
+                cout << "Is north accessible: " << isAccessible(wall_arrangement, XY, getSurrounds(XY).N) << endl;
+                cout << "Is south accessible: " << isAccessible(wall_arrangement, XY, getSurrounds(XY).S) << endl;
+                cout << "Is west accessible: " << isAccessible(wall_arrangement, XY, getSurrounds(XY).W) << endl;
+                cout << "Is east accessible: " << isAccessible(wall_arrangement, XY, getSurrounds(XY).E) << endl;
+
+                                
+                switch (direction)
+                {
+                case 'F':
+                    goForward(1);
+                    break;
+
+                case 'L':
+                    turnLeft();
+                    goForward(1);
+                    break;
+                
+                case 'R':
+                    turnRight();
+                    goForward(1);
+                    break;
+
+                case 'B':
+                    turnRight();
+                    turnRight();
+                    goForward(1);
+                    break;           
+                
+                default:
+                    break;
+                }
+                
+                break;
+
+            case 2: // Moving to Pink Color
+
+                for (int i = 0; i < 1000 / timeStep; ++i) {
+                    step(timeStep);
+                }
+
+                // cout << "Current Coordinates : " << XY.x << "," << XY.y << endl;
+                
+                if (current_cell(XY) == 0) {
+                    color_state = 3;
+                    cout << "Pink color detected" << endl;
+                    cout << "Current Cell is "<< current_cell(XY) << "  Cell Coordinates :" << XY.x << "," << XY.y << endl;
+                    // Copy yellow_flood to flood
+                    // for (int i = 0; i < ROWS; ++i) {
+                    //     for (int j = 0; j < COLUMNS; ++j) {
+                    //         flood[i][j] = pink_flood[i][j];
+                            
+                    //     }
+                    // }
+                    
+                    cout << "Arrays Copied Successfully. Current Number is " << yellow_flood[XY.y][XY.x] << endl;
+                    break;
+                }
+
+                direction = toMove(XY, wall_arrangement);
+                cout << "Direction: " << direction << endl;
+
+                cout << "Is north accessible: " << isAccessible(wall_arrangement, XY, getSurrounds(XY).N) << endl;
+                cout << "Is south accessible: " << isAccessible(wall_arrangement, XY, getSurrounds(XY).S) << endl;
+                cout << "Is west accessible: " << isAccessible(wall_arrangement, XY, getSurrounds(XY).W) << endl;
+                cout << "Is east accessible: " << isAccessible(wall_arrangement, XY, getSurrounds(XY).E) << endl;
+
+                                
+                switch (direction)
+                {
+                case 'F':
+                    goForward(1);
+                    break;
+
+                case 'L':
+                    turnLeft();
+                    goForward(1);
+                    break;
+                
+                case 'R':
+                    turnRight();
+                    goForward(1);
+                    break;
+
+                case 'B':
+                    turnRight();
+                    turnRight();
+                    goForward(1);
+                    break;           
+                
+                default:
+                    break;
+                }
+                
+                break;
+
+                break;
+
+            case 3:
                 break;
             
             default:
