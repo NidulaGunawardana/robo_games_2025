@@ -219,14 +219,16 @@ public:
         const double topY = -1.25;
         const double cellWidth = 0.25;
         const double cellHeight = 0.25;
-        const int columns = 10;
+        const int columns = 9;
 
-        int column = static_cast<int>((leftX - x) / cellWidth) + 1;
-        int row = static_cast<int>((y - topY) / cellHeight) + 1;
+        int column = static_cast<int>((leftX - x) / cellWidth);
+        int row = static_cast<int>((y - topY) / cellHeight);
 
-        if (column < 1 || column > columns || row < 1 || row > columns) {
+        if (column < 0 || column > columns || row < 0 || row > columns) {
             return {-1, -1}; // Out of bounds
         }
+
+        column = columns - column; // Reverse column order
         return {row, column};
     }
 
