@@ -315,7 +315,7 @@ public:
             double initialLeftPosition = getLeftWheelSensor();
 
             // Move forward until the left wheel rotates a specific distance
-            while ((getLeftWheelSensor() - initialLeftPosition) < 12.3)
+            while ((getLeftWheelSensor() - initialLeftPosition) < 12.5)
             {
                 // Update global distance sensor readings midway
                 if ((getLeftWheelSensor() - initialLeftPosition) >= 5.95 && (getLeftWheelSensor() - initialLeftPosition) < 6.1)
