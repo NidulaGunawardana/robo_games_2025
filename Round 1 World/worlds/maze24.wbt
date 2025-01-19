@@ -28,6 +28,9 @@ E-puck {
   rotation 0 0 -1 -1.5707953071795862
   controller "my_gps"
   groundSensorsSlot [
+    InertialUnit {
+      name "imu"
+    }
     SharpGP2D120 {
       translation -0.02 0.03 0.04
       rotation 1 0 0 1.5708
