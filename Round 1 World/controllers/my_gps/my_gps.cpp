@@ -868,6 +868,14 @@ public:
             step(timeStep);
         }
 
+        ////////////////////////////////////
+        // Add here code to get the direction//
+        // Example : 
+        // facing_irection = getDirection()
+        // Cout<< facing_direction << endl
+
+        /////////////////////////////////
+
         //Facing North
         
         // cout << "Turning into north " << orient << endl;
