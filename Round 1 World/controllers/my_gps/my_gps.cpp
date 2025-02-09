@@ -161,19 +161,19 @@ public:
             // Determine direction based on yaw
             if ((yaw >= 7 * M_PI / 4 || yaw < M_PI / 4))
             {
-                return "West"; // West
+                return "East"; // East
             }
             else if (yaw >= M_PI / 4 && yaw < 3 * M_PI / 4)
             {
-                return "South"; // South
+                return "North"; // North
             }
             else if (yaw >= 3 * M_PI / 4 && yaw < 5 * M_PI / 4)
             {
-                return "East"; // East
+                return "West"; // West
             }
             else if (yaw >= 5 * M_PI / 4 && yaw < 7 * M_PI / 4)
             {
-                return "North"; // North
+                return "South"; // South
             }
             else
             {
@@ -822,7 +822,7 @@ public:
                 {
                     int cell_no = current_cell(surCoor.N);
                     cout << "Looking N: " << cell_no << endl;
-                    if (cell_no < min && isAccessible(wall_arrangement, p, surCoor.N))
+                    if ((cell_no == min-1) && isAccessible(wall_arrangement, p, surCoor.N))
                     {
                         min = cell_no;
                         next_coor = surCoor.N;
@@ -838,7 +838,7 @@ public:
                 {
                     int cell_no = current_cell(surCoor.W);
                     cout << "Looking W: " << cell_no << endl;
-                    if (cell_no < min && isAccessible(wall_arrangement, p, surCoor.W))
+                    if ((cell_no == min-1) && isAccessible(wall_arrangement, p, surCoor.W))
                     {
                         min = cell_no;
                         next_coor = surCoor.W;
@@ -849,12 +849,12 @@ public:
                 directionsLooked++;
                 break;
 
-            case 2:
+            case 3:
                 if ((surCoor.S.x < 10 && surCoor.S.y < 10) && (surCoor.S.x >= 0 && surCoor.S.y >= 0))
                 {
                     int cell_no = current_cell(surCoor.S);
                     cout << "Looking S: " << cell_no << endl;
-                    if (cell_no < min && isAccessible(wall_arrangement, p, surCoor.S))
+                    if ((cell_no == min-1) && isAccessible(wall_arrangement, p, surCoor.S))
                     {
                         min = cell_no;
                         next_coor = surCoor.S;
@@ -865,12 +865,12 @@ public:
                 directionsLooked++;
                 break;
 
-            case 3:
+            case 2:
                 if ((surCoor.E.x < 10 && surCoor.E.y < 10) && (surCoor.E.x >= 0 && surCoor.E.y >= 0))
                 {
                     int cell_no = current_cell(surCoor.E);
                     cout << "Looking E: " << cell_no << endl;
-                    if (cell_no < min && isAccessible(wall_arrangement, p, surCoor.E))
+                    if ((cell_no == min-1) && isAccessible(wall_arrangement, p, surCoor.E))
                     {
                         min = cell_no;
                         next_coor = surCoor.E;
@@ -980,6 +980,44 @@ public:
     {
 
         cout << "Moving in the First Cell......" << endl;
+
+        // Initial delay (3 seconds)
+        for (int i = 0; i < 1000 / timeStep; ++i)
+        {
+            step(timeStep);
+        }
+
+        string facing_direction = getDirection();
+        cout << "Initial Direction : " << facing_direction << endl;
+
+        if (facing_direction == "North") {
+            orient = 0;
+        } else if (facing_direction == "East") {
+            orient = 1;
+        } else if (facing_direction == "South") {
+            orient = 2;
+        } else if (facing_direction == "West") {
+            orient = 3;
+        } else {
+            // Handle invalid input
+            orient = -1; // Example: -1 for invalid orientation
+        }
+
+        cout << "Turning into north " << orient << endl;
+
+        if(orient == 0){
+            cout << "Robot is Good to go" << endl;
+        } else if(orient == 1){
+            turnLeft();
+        } else if(orient == 2){
+            turnLeft();
+            turnLeft();
+        } else if(orient == 3){
+            turnRight();
+        }
+
+        
+
 
         // Initial delay (3 seconds)
         for (int i = 0; i < 1000 / timeStep; ++i)
