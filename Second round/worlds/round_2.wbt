@@ -3,12 +3,13 @@
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/devices/sharp/protos/SharpGP2D120.proto"
 
 WorldInfo {
 }
 Viewpoint {
-  orientation -0.32613856393428103 0.2138625444895755 0.9208129284384149 2.0551612955758216
-  position 0.548851350131925 -1.2111408399370225 1.1935583938901948
+  orientation -0.3117918751138318 -0.8801657238464217 0.3579023961625644 4.722677216242124
+  position -0.527821868941676 -0.0786423328388137 2.2065158363265693
 }
 TexturedBackground {
 }
@@ -17,16 +18,144 @@ TexturedBackgroundLight {
 RectangleArena {
 }
 Robot {
+  translation 0.135226 -0.134027 -3.49004e-05
+  rotation 0.0008264156102118516 -0.0005102537593331181 -0.9999995283390588 0.0611502
   children [
-    Transform {
+    InertialUnit {
+      translation 0 -0.03 0.03
+      name "imu"
+    }
+    Gyro {
+      translation 0 0 0.03
+    }
+    GPS {
+      translation 0 0 0.03
+    }
+    SharpGP2D120 {
+      translation 0 -0.02 0.02
+      rotation 0.37796500919324305 0.6546520159231012 -0.6546550159231742 -2.418875307179586
+      name "sharp_left"
+    }
+    SharpGP2D120 {
+      translation 0 -0.02 0.02
+      rotation -0.7745965212991105 -0.44721372362178063 0.44721372362178063 1.82
+      name "sharp_right"
+    }
+    SharpGP2D120 {
+      translation 0 0.03 0.04
+      rotation 0.5773489358556708 0.5773509358554485 0.5773509358554485 2.0944
+      name "sharp_front"
+    }
+    SharpGP2D120 {
+      translation -0.04 0.03 0.02
+      rotation 0.5773522691882489 0.5773482691863839 -0.5773502691873165 -2.094395307179586
+      name "sharp_front_left"
+    }
+    SharpGP2D120 {
+      translation 0.04 0.03 0.02
+      rotation 0.5773509358554485 0.5773489358556708 -0.5773509358554485 -2.094395307179586
+      name "sharp_front_right"
+    }
+    DEF body Pose {
+      translation 0 0 0.03
       children [
         Shape {
+          appearance PBRAppearance {
+            baseColor 0 0.5 1
+            roughness 1
+            metalness 0
+          }
           geometry Cylinder {
-            height 0.1
-            radius 0.05
+            height 0.05
+            radius 0.04
+          }
+        }
+      ]
+    }
+    HingeJoint {
+      jointParameters HingeJointParameters {
+        position 76.88378931491049
+        anchor -0.045 -0.01 0.0125
+      }
+      device [
+        PositionSensor {
+          name "left wheel sensor"
+        }
+        RotationalMotor {
+          name "left wheel motor"
+        }
+      ]
+      endPoint Solid {
+        translation -0.045 -0.01 0.0125
+        rotation 0.3244262756287577 -0.8885359445881567 -0.324424824661254 1.6886998612867012
+        children [
+          DEF wheel Shape {
+            appearance PBRAppearance {
+              roughness 1
+              metalness 0
+            }
+            geometry Cylinder {
+              height 0.01
+              radius 0.0125
+            }
+          }
+        ]
+        boundingObject USE wheel
+        physics DEF wheel_physics Physics {
+        }
+      }
+    }
+    HingeJoint {
+      jointParameters HingeJointParameters {
+        position -15.78312117427572
+        anchor 0.045 -0.01 0.0125
+      }
+      device [
+        PositionSensor {
+          name "right wheel sensor"
+        }
+        RotationalMotor {
+          name "right wheel motor"
+        }
+      ]
+      endPoint Solid {
+        translation 0.045 -0.01 0.0125
+        rotation -0.7068557391040176 -0.0265755072338905 -0.7068583355319329 3.1947309654919995
+        children [
+          USE wheel
+        ]
+        name "solid(1)"
+        boundingObject USE wheel
+        physics USE wheel_physics
+      }
+    }
+    Pose {
+      rotation 0 1 0 0
+      children [
+        Solid {
+          translation 0 0.04 0.005
+          rotation 0 1 0 -1.5707953071795862
+          children [
+            DEF caster_wheel Shape {
+              appearance PBRAppearance {
+              }
+              geometry Sphere {
+                radius 0.005
+              }
+            }
+          ]
+          name "solid(2)"
+          boundingObject USE caster_wheel
+          physics Physics {
+            density 100
           }
         }
       ]
     }
   ]
+  boundingObject USE body
+  physics Physics {
+    density 500
+  }
+  controller "my_gps"
 }
