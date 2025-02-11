@@ -1,0 +1,99 @@
+#VRML_SIM R2023b utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/apartment_structure/protos/Wall.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/appearances/protos/Roughcast.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/robots/gctronic/e-puck/protos/E-puck.proto"
+
+WorldInfo {
+}
+Viewpoint {
+  orientation -0.7070909240237521 -0.0002236043903715221 0.7071226026399619 3.1419840163629007
+  position -0.03770802409877197 -0.025975283670761296 3.5177190651412458
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  rotation 0 1 0 4.07987e-06
+  name "arena"
+  floorSize 2.5 2.5
+}
+E-puck {
+  hidden position_0_0 9.287911939189607e-08
+  hidden position_0_1 -3.0969280807015326e-08
+  hidden rotation_1 0 0.9999999999999999 0 9.424321830774485e-08
+  hidden rotation_2 0 -1 0 2.9802322387695313e-08
+  translation -0.5281607619986693 0.6543125662946055 -6.179746258358834e-05
+  rotation 1.5827130976577817e-06 2.6855914634001746e-06 0.9999999999951412 1.501429996021256
+  groundSensorsSlot [
+    InertialUnit {
+      name "imu"
+    }
+    GPS {
+    }
+  ]
+}
+Wall {
+  translation 1.125 1 0
+  rotation 0 0 1 1.5708
+  name "wall(20)"
+  size 0.01 0.25 0.1
+}
+Wall {
+  translation 1.125 0.5 0
+  rotation 0 0 1 1.5708
+  name "wall(21)"
+  size 0.01 0.25 0.1
+}
+Wall {
+  translation 1.125 0.495 0
+  rotation 0 0 1 1.5708
+  name "wall(57)"
+  size 0.01 0.1 0.1
+  appearance Roughcast {
+    colorOverride 0 1 0
+    textureTransform TextureTransform {
+      scale 2.4 1
+    }
+  }
+}
+Wall {
+  translation -0.375 -0.250001 0
+  rotation 0 0 1 1.5708
+  name "wall(56)"
+  size 0.01 0.25 0.1
+}
+Wall {
+  translation -0.625 -0.5 0
+  rotation 0 0 1 1.5708
+  name "wall(32)"
+  size 0.01 0.25 0.1
+}
+Wall {
+  translation -0.625 -0.495 0
+  rotation 0 0 1 1.5708
+  name "wall(61)"
+  size 0.01 0.1 0.1
+  appearance Roughcast {
+    colorOverride 1 0 0
+    textureTransform TextureTransform {
+      scale 2.4 1
+    }
+  }
+}
+Wall {
+  translation 0.625 0.25 0
+  rotation 0 0 1 1.5708
+  name "wall(35)"
+  size 0.01 0.25 0.1
+}
+Wall {
+  translation -0.125 0.5 0
+  rotation 0 0 1 1.5708
+  name "wall(41)"
+  size 0.01 0.25 0.1
+}
