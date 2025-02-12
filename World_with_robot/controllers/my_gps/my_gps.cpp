@@ -4,10 +4,15 @@
 #include <webots/PositionSensor.hpp>
 #include <webots/DistanceSensor.hpp>
 #include <webots/Gyro.hpp>
-// #include <webots/InertialUnit.hpp>
+#include <webots/InertialUnit.hpp>
+#include <webots/Camera.hpp>
+#include <webots/Display.hpp>
 #include <iostream>
 #include <cmath>
 #include <iomanip>
+
+#define GREEN_THRESHOLD 70        // Minimum green intensity for detection
+#define GREEN_AREA_THRESHOLD 0.08 // 8% of the image must be green to trigger detection
 
 using namespace webots;
 using namespace std;
@@ -43,6 +48,55 @@ int flood[ROWS][COLUMNS] = {
     {11, 8, 11, 12, 15, 38, 35, 34, 31, 30},
     {10, 9, 10, 13, 16, 37, 36, 33, 32, 33}};
 
+int yellow_flood[ROWS][COLUMNS] = {
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 16, 15, 14, 11, 10, 100, 100, 100},
+    {100, 100, 100, 100, 13, 12, 9, 100, 100, 100},
+    {100, 100, 100, 100, 100, 100, 8, 100, 100, 100},
+    {100, 100, 100, 100, 100, 100, 7, 6, 100, 100},
+    {100, 100, 100, 100, 2, 3, 4, 5, 100, 100},
+    {100, 100, 100, 100, 1, 100, 100, 100, 100, 100},
+    {100, 100, 100, 100, 0, 100, 100, 100, 100, 100}
+
+};
+
+int pink_flood[ROWS][COLUMNS] = {
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 3, 4, 5, 8, 9, 100, 100, 100},
+    {100, 100, 2, 100, 6, 7, 10, 100, 100, 100},
+    {100, 100, 1, 100, 100, 100, 11, 100, 100, 100},
+    {100, 100, 0, 100, 100, 100, 12, 13, 100, 100},
+    {100, 100, 100, 100, 17, 16, 15, 14, 100, 100},
+    {100, 100, 100, 100, 18, 100, 100, 100, 100, 100},
+    {100, 100, 100, 100, 19, 100, 100, 100, 100, 100}};
+
+int brown_flood[ROWS][COLUMNS] = {
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100},
+    {100, 0, 1, 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 2, 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100}};
+
+int green_flood[ROWS][COLUMNS] = {
+    {19, 18, 17, 12, 11, 10, 9, 8, 7, 100},
+    {20, 21, 16, 13, 100, 100, 100, 100, 6, 5},
+    {100, 22, 15, 14, 100, 100, 100, 100, 100, 4},
+    {100, 23, 100, 100, 100, 100, 100, 100, 100, 3},
+    {100, 24, 100, 100, 100, 100, 100, 100, 100, 2},
+    {100, 25, 100, 100, 100, 100, 100, 100, 100, 1},
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 0},
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100},
+    {100, 100, 100, 100, 100, 100, 100, 100, 100, 100}};
 
 static coordinate XY;
 
@@ -68,6 +122,9 @@ public:
         right_wheel_sensor = getPositionSensor("right wheel sensor");
         gyro = getGyro("gyro");
         imu = getInertialUnit("imu");
+        camera = getCamera("camera");         // Main camera
+        floor_camera = getCamera("camera_2"); // Floor camera
+        display = getDisplay("display");
 
         // Enable sensors
         gps->enable(timeStep);
@@ -80,14 +137,220 @@ public:
         right_wheel_sensor->enable(timeStep);
         gyro->enable(timeStep);
         imu->enable(timeStep);
+        camera->enable(timeStep);
+        floor_camera->enable(timeStep);
 
         // Set motors to velocity control mode with initial velocity set to 0
         leftMotor->setPosition(INFINITY);
         rightMotor->setPosition(INFINITY);
         leftMotor->setVelocity(0);
         rightMotor->setVelocity(0);
-    }    
-    
+    }
+
+    /**
+     * Function to process the camera image, detect green areas, and display the binary mask.
+     * @param camera - Pointer to the Webots camera.
+     * @param display - Pointer to the Webots display.
+     * @return true if a large green area is detected, false otherwise.
+     */
+    bool processVision(Camera *camera, Display *display)
+    {
+        if (!camera || !display)
+        {
+            cerr << "ERROR: Camera or Display not initialized!" << endl;
+            return false;
+        }
+
+        int width = camera->getWidth();
+        int height = camera->getHeight();
+
+        // Create an empty image buffer
+        unsigned char *imageBuffer = new unsigned char[3 * width * height];
+
+        // Get the camera image
+        const unsigned char *image = camera->getImage();
+        if (!image)
+        {
+            cerr << "ERROR: Failed to get camera image!" << endl;
+            delete[] imageBuffer;
+            return false;
+        }
+
+        int green_count = 0;
+        int total_pixels = width * height;
+
+        // Process Image: Detect Green & Create Binary Mask
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                int index = (y * width + x) * 4; // BGRA format (4 bytes per pixel)
+
+                int r = image[index + 2]; // Red
+                int g = image[index + 1]; // Green
+                int b = image[index];     // Blue
+
+                // Check if green is dominant
+                bool isGreen = (g > GREEN_THRESHOLD && g > r && g > b);
+                if (isGreen)
+                    green_count++;
+
+                // Create binary mask (Green -> Green, Others -> Black)
+                imageBuffer[3 * (y * width + x)] = isGreen ? 0 : 0;       // Red
+                imageBuffer[3 * (y * width + x) + 1] = isGreen ? 255 : 0; // Green
+                imageBuffer[3 * (y * width + x) + 2] = isGreen ? 0 : 0;   // Blue
+            }
+        }
+
+        // Display the Binary Green Mask
+        ImageRef *image_ref = display->imageNew(width, height, imageBuffer, Display::RGB);
+        display->imagePaste(image_ref, 0, 0, false);
+        display->imageDelete(image_ref);
+
+        delete[] imageBuffer; // Free memory
+
+        // Check if green area is significant
+        return (static_cast<double>(green_count) / total_pixels > GREEN_AREA_THRESHOLD);
+    }
+
+    /**
+     * Function to detect the dominant floor color (Yellow, Orange, or Red).
+     * @param camera - Pointer to the Webots floor camera.
+     * @return string representing the detected floor color.
+     */
+    std::string getFloorRGB(Camera *camera)
+    {
+        if (!camera)
+            return "ERROR: Floor Camera Not Found";
+
+        const unsigned char *image = camera->getImage();
+        if (!image)
+            return "ERROR: Failed to get floor image";
+
+        int width = camera->getWidth();
+        int height = camera->getHeight();
+
+        // Take the center pixel as the reference
+        int x = width / 2;
+        int y = height / 2;
+        int index = (y * width + x) * 4; // BGRA format
+
+        int r = image[index + 2]; // Red
+        int g = image[index + 1]; // Green
+        int b = image[index];     // Blue
+
+        // Format the RGB values into a string
+        return "RGB: (" + std::to_string(r) + ", " + std::to_string(g) + ", " + std::to_string(b) + ")";
+    }
+
+    string getDirection()
+    {
+        const float MPI = 3.14;
+
+        // Get the IMU device
+        if (!imu)
+        {
+            cerr << "IMU device not found!" << endl;
+            return "Error: IMU not found";
+        }
+
+        // Get roll, pitch, yaw from the IMU
+        const double *rpy = imu->getRollPitchYaw();
+        double yaw = rpy[2];
+
+        // Normalize yaw to [0, 2*PI] for easier handling
+        if (yaw < 0)
+        {
+            yaw += 2 * MPI;
+        }
+
+        // Determine direction based on yaw
+        if ((yaw >= 7 * M_PI / 4 || yaw < M_PI / 4))
+        {
+            return "East"; // East
+        }
+        else if (yaw >= M_PI / 4 && yaw < 3 * M_PI / 4)
+        {
+            return "North"; // North
+        }
+        else if (yaw >= 3 * M_PI / 4 && yaw < 5 * M_PI / 4)
+        {
+            return "West"; // West
+        }
+        else if (yaw >= 5 * M_PI / 4 && yaw < 7 * M_PI / 4)
+        {
+            return "South"; // South
+        }
+        else
+        {
+            return "Error: Unable to determine direction";
+        }
+    }
+
+    // Method to read distance sensors and determine the robot's surroundings
+    int getDistanceSensorsFirstCell()
+    {
+
+        string direction_init = getDirection();
+        if (direction_init.find("Error") == string::npos)
+        {
+            cout << "Direction: " << direction_init << endl;
+        }
+        else
+        {
+            cerr << direction_init << endl;
+        }
+
+        double distanceFront = getDistance(ds_front);
+        double distanceLeft = getDistance(ds_left);
+        double distanceRight = getDistance(ds_right);
+
+        cout << "Distance sensor values: Front=" << distanceFront
+             << ", Left=" << distanceLeft
+             << ", Right=" << distanceRight << endl;
+
+        // Evaluate sensor readings and return corresponding identifier
+        if (distanceFront > 0.39 && distanceLeft < 0.7 && distanceRight < 0.7)
+        {
+            cout << "Wall Ahead" << endl;
+            return 1;
+        }
+        else if (distanceFront < 0.39 && distanceLeft > 0.7 && distanceRight < 0.7)
+        {
+            cout << "Wall Left" << endl;
+            return 2;
+        }
+        else if (distanceFront < 0.39 && distanceLeft < 0.7 && distanceRight > 0.7)
+        {
+            cout << "Wall Right" << endl;
+            return 3;
+        }
+        else if (distanceFront > 0.39 && distanceLeft > 0.7 && distanceRight < 0.7)
+        {
+            cout << "Wall Ahead and Left" << endl;
+            return 4;
+        }
+        else if (distanceFront > 0.39 && distanceLeft < 0.7 && distanceRight > 0.7)
+        {
+            cout << "Wall Ahead and Right" << endl;
+            return 5;
+        }
+        else if (distanceFront < 0.39 && distanceLeft > 0.7 && distanceRight > 0.7)
+        {
+            cout << "Wall Left and Right" << endl;
+            return 6;
+        }
+        else if (distanceFront > 0.39 && distanceLeft > 0.7 && distanceRight > 0.7)
+        {
+            cout << "Wall Ahead, Left and Right" << endl;
+            return 7;
+        }
+        else
+        {
+            cout << "No Walls Around" << endl;
+            return 0; // No significant obstacles detected
+        }
+    }
 
     int getDistanceSensors()
     {
@@ -95,7 +358,7 @@ public:
         double distanceLeft = getDistance(ds_left);
         double distanceRight = getDistance(ds_right);
 
-        //out << "Distance sensor values: Front=" << distanceFront << ", Left=" << distanceLeft << ", Right=" << distanceRight << endl;
+        // out << "Distance sensor values: Front=" << distanceFront << ", Left=" << distanceLeft << ", Right=" << distanceRight << endl;
 
         // Evaluate sensor readings and return corresponding identifier
         if (distanceFront > 0.39 && distanceLeft < 0.5 && distanceRight < 0.5)
@@ -156,11 +419,14 @@ public:
         {
             double initialLeftPosition = getLeftWheelSensor();
 
+            cout << "Initial Left Wheel Position: " << initialLeftPosition << endl;
+
             // Move forward until the left wheel rotates a specific distance
-            while ((initialLeftPosition - getLeftWheelSensor()) < 12.5)
+            while ((initialLeftPosition - getLeftWheelSensor()) < 20)
             {
+                cout << "Left Wheel Position difference: " << (initialLeftPosition - getLeftWheelSensor()) << endl;
                 // Update global distance sensor readings midway
-                if ((initialLeftPosition - getLeftWheelSensor()) >= 5.95 && (getLeftWheelSensor() - initialLeftPosition) < 6.1)
+                if ((initialLeftPosition - getLeftWheelSensor()) >= 10.5 && (initialLeftPosition - getLeftWheelSensor()) < 11)
                 {
                     wall_arrangement = getDistanceSensors();
                 }
@@ -191,7 +457,7 @@ public:
     void turnLeft()
     {
         double initialLeftWheel = getLeftWheelSensor();
-        double targetLeftWheel = initialLeftWheel + 2.241; // Approx. rotation for 90 degrees
+        double targetLeftWheel = initialLeftWheel + 2.1 * 3; // Approx. rotation for 90 degrees
 
         // Rotate until the left wheel reaches the target position
         while (getLeftWheelSensor() < targetLeftWheel)
@@ -214,7 +480,7 @@ public:
     void turnRight()
     {
         double initialRightWheel = getRightWheelSensor();
-        double targetRightWheel = initialRightWheel + 2.241; // Approx. rotation for 90 degrees
+        double targetRightWheel = initialRightWheel + 2.1 * 3; // Approx. rotation for 90 degrees
 
         // Rotate until the right wheel reaches the target position
         while (getRightWheelSensor() < targetRightWheel)
@@ -237,8 +503,9 @@ public:
     {
         double distanceFront = getDistance(ds_front);
 
-        while (distanceFront < 0.89 || distanceFront > 0.9)
+        while (distanceFront < 1.2 || distanceFront > 1.35)
         {
+            cout << "Distance Front: " << distanceFront << endl;
             if (distanceFront < 0.89)
             {
                 leftMotor->setVelocity(-1);
@@ -262,7 +529,7 @@ public:
         double distanceRight = getDistance(ds_front_right);
         double distanceDifference = distanceLeft - distanceRight;
 
-        while (fabs(distanceDifference) > 0.001)
+        while (fabs(distanceDifference) > 0.0005)
         { // Continue until the difference is close to zero
             if (distanceDifference > 0.01)
             {
@@ -664,7 +931,7 @@ public:
                 {
                     int cell_no = current_cell(surCoor.N);
                     cout << "Looking N: " << cell_no << endl;
-                    if ((cell_no == min-1) && isAccessible(wall_arrangement, p, surCoor.N))
+                    if ((cell_no == min - 1) && isAccessible(wall_arrangement, p, surCoor.N))
                     {
                         min = cell_no;
                         next_coor = surCoor.N;
@@ -680,7 +947,7 @@ public:
                 {
                     int cell_no = current_cell(surCoor.W);
                     cout << "Looking W: " << cell_no << endl;
-                    if ((cell_no == min-1) && isAccessible(wall_arrangement, p, surCoor.W))
+                    if ((cell_no == min - 1) && isAccessible(wall_arrangement, p, surCoor.W))
                     {
                         min = cell_no;
                         next_coor = surCoor.W;
@@ -696,7 +963,7 @@ public:
                 {
                     int cell_no = current_cell(surCoor.S);
                     cout << "Looking S: " << cell_no << endl;
-                    if ((cell_no == min-1) && isAccessible(wall_arrangement, p, surCoor.S))
+                    if ((cell_no == min - 1) && isAccessible(wall_arrangement, p, surCoor.S))
                     {
                         min = cell_no;
                         next_coor = surCoor.S;
@@ -712,7 +979,7 @@ public:
                 {
                     int cell_no = current_cell(surCoor.E);
                     cout << "Looking E: " << cell_no << endl;
-                    if ((cell_no == min-1) && isAccessible(wall_arrangement, p, surCoor.E))
+                    if ((cell_no == min - 1) && isAccessible(wall_arrangement, p, surCoor.E))
                     {
                         min = cell_no;
                         next_coor = surCoor.E;
@@ -818,14 +1085,208 @@ public:
         return 'X'; // No valid move
     }
 
-    
+    void moveFirstCell()
+    {
+
+        cout << "Moving in the First Cell......" << endl;
+
+        // Initial delay (3 seconds)
+        for (int i = 0; i < 1000 / timeStep; ++i)
+        {
+            step(timeStep);
+        }
+
+        string facing_direction = getDirection();
+        cout << "Initial Direction : " << facing_direction << endl;
+
+        if (facing_direction == "North")
+        {
+            orient = 0;
+        }
+        else if (facing_direction == "East")
+        {
+            orient = 1;
+        }
+        else if (facing_direction == "South")
+        {
+            orient = 2;
+        }
+        else if (facing_direction == "West")
+        {
+            orient = 3;
+        }
+        else
+        {
+            // Handle invalid input
+            orient = -1; // Example: -1 for invalid orientation
+        }
+
+        cout << "Turning into north " << orient << endl;
+
+        if (orient == 0)
+        {
+            cout << "Robot is Good to go" << endl;
+        }
+        else if (orient == 1)
+        {
+            turnLeft();
+        }
+        else if (orient == 2)
+        {
+            turnLeft();
+            turnLeft();
+        }
+        else if (orient == 3)
+        {
+            turnRight();
+        }
+
+        // Initial delay (3 seconds)
+        for (int i = 0; i < 1000 / timeStep; ++i)
+        {
+            step(timeStep);
+        }
+
+        char direction = 'X';
+        wall_arrangement = getDistanceSensorsFirstCell();
+
+        double distanceFront = getDistance(ds_front);
+        cout << "Distance sensor values: Front=" << distanceFront << endl;
+
+        // Log robot's position and cell
+        const double *gpsValues = gps->getValues();
+        double gps_x = gpsValues[0];
+        double gps_y = gpsValues[1];
+
+        XY = calculateCell(gps_x, gps_y);
+        int x = XY.x;
+        int y = XY.y;
+
+        if (x != -1 && y != -1)
+        {
+            cout << "GPS Coordinates: X=" << gps_x << ", Y=" << gps_y << " | X =" << x << ", Y =" << y << endl;
+        }
+
+        direction = toMove(XY, wall_arrangement);
+        cout << "Direction: " << direction << endl;
+
+        switch (direction)
+        {
+        case 'F':
+            // goForward(1);
+            break;
+
+        case 'L':
+            turnLeft();
+            // goForward(1);
+            break;
+
+        case 'R':
+            turnRight();
+            // goForward(1);
+            break;
+
+        case 'B':
+            turnRight();
+            turnRight();
+            // goForward(1);
+            break;
+
+        default:
+            break;
+        }
+
+        cout << "First Cell Movement Completed......" << endl;
+    }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     // Main simulation loop
     void run()
     {
-        
+
+        int color_state = 0; // 0: if red color haven't been detected, 1: if red color detected
+        char direction = 'X';
+
+        cout << "Starting simulation loop..." << endl;
+
+        // Initial delay (3 seconds)
+        for (int i = 0; i < 1000 / timeStep; ++i)
+        {
+            step(timeStep);
+        }
+
+        ////////////////////////////////////
+        // Add here code to get the direction//
+        // Example :
+        // facing_irection = getDirection()
+        // Cout<< facing_direction << endl
+
+        /////////////////////////////////
+
+        // Facing North
+
+        // cout << "Turning into north " << orient << endl;
+
+        // if(orient == 0){
+        //     cout << "Robot is Good to go" << endl;
+        // } else if(orient == 1){
+        //     turnLeft();
+        // } else if(orient == 2){
+        //     turnLeft();
+        //     turnLeft();
+        // } else if(orient == 3){
+        //     turnRight();
+        // }
+
+        for (int i = 0; i < 1000 / timeStep; ++i)
+        {
+            step(timeStep);
+        }
+
+        // Get initial distance sensor readings
+        wall_arrangement = getDistanceSensors();
+
+        while (step(timeStep) != -1)
+        {
+            // Print front distance sensor value
+            double distanceFront = getDistance(ds_front);
+            cout << "Distance sensor values: Front=" << distanceFront << endl;
+
+            // Log robot's position and cell
+            const double *gpsValues = gps->getValues();
+            double gps_x = gpsValues[0];
+            double gps_y = gpsValues[1];
+
+            XY = calculateCell(gps_x, gps_y);
+            int x = XY.x;
+            int y = XY.y;
+
+            if (x != -1 && y != -1)
+            {
+                cout << "GPS Coordinates: X=" << gps_x << ", Y=" << gps_y << " | X =" << x << ", Y =" << y << endl;
+            }
+
+            goForward(1);
+            // Process vision from main camera
+            bool greenDetected = processVision(camera, display);
+            if (greenDetected)
+            {
+                cout << "Green Area Detected!" << endl;
+            }
+            else
+            {
+                cout << "No Green Detected." << endl;
+            }
+
+            // Detect floor color using the second camera
+            string floorColor = getFloorRGB(floor_camera);
+            cout << "Floor Color Detected: " << floorColor << endl;
+            turnLeft();
+            align_wall();
+            parallel_wall();
+            break;
+        }
     };
 
 private:
@@ -843,12 +1304,16 @@ private:
     PositionSensor *right_wheel_sensor;
     Gyro *gyro;
     InertialUnit *imu;
+    Camera *camera;
+    Camera *floor_camera;
+    Display *display;
 };
 
 // Entry point of the program
 int main()
 {
     MyRobot robot; // Create an instance of the robot
+    // robot.moveFirstCell();
     robot.run(); // Start the simulation loop
     return 0;
 }

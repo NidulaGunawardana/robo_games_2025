@@ -5,12 +5,13 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/project
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/floors/protos/RectangleArena.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/apartment_structure/protos/Wall.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/appearances/protos/Roughcast.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/devices/sharp/protos/SharpGP2D120.proto"
 
 WorldInfo {
 }
 Viewpoint {
-  orientation 0.18480289382299916 -0.2544040643496499 -0.9492768102492678 4.976815775381508
-  position -0.2497430168781662 0.2048191233339319 0.24663028232705272
+  orientation -0.5566488115173565 -0.560714733618909 0.6129772329695374 4.247907725866015
+  position -1.9248766132227035 1.6296717577619928 1.4059599872082276
 }
 TexturedBackground {
 }
@@ -20,8 +21,8 @@ RectangleArena {
   floorSize 5 6
 }
 Robot {
-  translation -0.111156 0.858982 0.00114206
-  rotation 0.004982697909682627 -0.00010764395484172772 0.9999875804900378 3.09889
+  translation -1.86781 1.63392 -5.94857e-05
+  rotation -5.877494383594474e-07 3.692966515084839e-05 0.999999999317927 3.1400982395683323
   children [
     Display {
     }
@@ -66,7 +67,7 @@ Robot {
     }
     SharpGP2D120 {
       translation 0.04 0.03 0.02
-      rotation 0.5773509358554485 0.5773489358556708 -0.5773509358554485 -2.094395307179586
+      rotation 0.577351957236213 0.5773488930921109 -0.5773499572363613 -2.094395307179586
       name "sharp_front_right"
     }
     DEF body Pose {
@@ -87,7 +88,7 @@ Robot {
     }
     HingeJoint {
       jointParameters HingeJointParameters {
-        position 64.29584635963315
+        position 45.837881400301455
         anchor -0.045 -0.01 0.0125
       }
       device [
@@ -99,8 +100,8 @@ Robot {
         }
       ]
       endPoint Solid {
-        translation -0.04499986716130022 -0.010000454073541514 0.01250090129142828
-        rotation -0.3157943609663156 0.8947338974691397 0.31579292946733234 4.601390871615549
+        translation -0.04499986716130022 -0.01000076368791924 0.012500659764944362
+        rotation 0.4542713244678985 -0.7663397744561817 -0.454269648834951 1.8338370902021817
         children [
           DEF wheel Shape {
             appearance PBRAppearance {
@@ -120,7 +121,7 @@ Robot {
     }
     HingeJoint {
       jointParameters HingeJointParameters {
-        position -28.504657119552512
+        position -60.15435259375179
         anchor 0.045 -0.01 0.0125
       }
       device [
@@ -132,8 +133,8 @@ Robot {
         }
       ]
       endPoint Solid {
-        translation 0.044999878804191096 -0.00999954360990818 0.012500900122386811
-        rotation 0.7047520609579568 0.08152134900300499 0.7047544268979389 2.9789101867059062
+        translation 0.044999878804191096 -0.009999347514229137 0.012500769918532025
+        rotation -0.6974365550187711 -0.1648066523945879 -0.6974388998686825 3.4682684133243606
         children [
           USE wheel
         ]
@@ -170,7 +171,7 @@ Robot {
   physics Physics {
     density 500
   }
-  controller "all_controller"
+  controller "my_gps"
 }
 Wall {
   translation 1.21 1.789 0
