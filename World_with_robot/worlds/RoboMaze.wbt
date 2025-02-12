@@ -9,8 +9,8 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/project
 WorldInfo {
 }
 Viewpoint {
-  orientation 0.5207432384627035 -0.5229953841754414 -0.6747609263484056 4.332763123112473
-  position 0.1438598605901286 -0.7084917283876124 5.643564394818933
+  orientation 0.18480289382299916 -0.2544040643496499 -0.9492768102492678 4.976815775381508
+  position -0.2497430168781662 0.2048191233339319 0.24663028232705272
 }
 TexturedBackground {
 }
@@ -23,6 +23,17 @@ Robot {
   translation -0.111156 0.858982 0.00114206
   rotation 0.004982697909682627 -0.00010764395484172772 0.9999875804900378 3.09889
   children [
+    Display {
+    }
+    Camera {
+      translation -2e-07 0.04 0.02
+      rotation -0.25056313098704747 0.2505611309860019 0.9351134888498739 1.63784
+      name "camera_2"
+    }
+    Camera {
+      translation -1.10196e-07 0.0299999 0.04
+      rotation 0 0 1 1.5708
+    }
     InertialUnit {
       translation 0 -0.03 0.03
       name "imu"
@@ -88,8 +99,8 @@ Robot {
         }
       ]
       endPoint Solid {
-        translation -0.045 -0.01 0.0125
-        rotation 0.31579440415708454 -0.8947338668460602 -0.3157929730405172 1.6817941284915037
+        translation -0.04499986716130022 -0.010000454073541514 0.01250090129142828
+        rotation -0.3157943609663156 0.8947338974691397 0.31579292946733234 4.601390871615549
         children [
           DEF wheel Shape {
             appearance PBRAppearance {
@@ -121,8 +132,8 @@ Robot {
         }
       ]
       endPoint Solid {
-        translation 0.045 -0.01 0.0125
-        rotation -0.7047519479915031 -0.08152137642709877 -0.704754536691757 3.304275065258195
+        translation 0.044999878804191096 -0.00999954360990818 0.012500900122386811
+        rotation 0.7047520609579568 0.08152134900300499 0.7047544268979389 2.9789101867059062
         children [
           USE wheel
         ]
@@ -159,7 +170,7 @@ Robot {
   physics Physics {
     density 500
   }
-  controller "my_gps"
+  controller "all_controller"
 }
 Wall {
   translation 1.21 1.789 0
