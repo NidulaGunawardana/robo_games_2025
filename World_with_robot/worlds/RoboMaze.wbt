@@ -19,10 +19,6 @@ TexturedBackgroundLight {
 }
 RectangleArena {
   floorSize 5 6
-  floorAppearance PBRAppearance {
-    roughness 1
-    metalness 0
-  }
 }
 Robot {
   translation -0.637727 0.623014 -0.00277215
