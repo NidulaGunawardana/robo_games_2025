@@ -338,15 +338,15 @@ public:
     {
         double distanceFront = getDistance(ds_front);
 
-        while (distanceFront < 1.2 || distanceFront > 1.35)
+        while (distanceFront < 1.5 || distanceFront > 1.65)
         {
             cout << "Distance Front: " << distanceFront << endl;
-            if (distanceFront < 1.35)
+            if (distanceFront < 1.5)
             {
                 leftMotor->setVelocity(-1);
                 rightMotor->setVelocity(-1);
             }
-            else if (distanceFront > 1.2)
+            else if (distanceFront > 1.65)
             {
                 leftMotor->setVelocity(1);
                 rightMotor->setVelocity(1);
@@ -999,6 +999,7 @@ public:
                 }
                 break;
         }
+        return 'X'; // invalid move
     }
 
     void moveRobot(char move)
@@ -1009,10 +1010,16 @@ public:
             goForward(1);
             break;
         case 'L':
+            if (wall_arrangement==1 || wall_arrangement==4 || wall_arrangement==5){
+                align_wall();
+            }            
             turnLeft();
             goForward(1);
             break;
         case 'R':
+            if (wall_arrangement==1 || wall_arrangement==4 || wall_arrangement==5){
+                align_wall();
+            }       
             turnRight();
             goForward(1);
             break;
@@ -1024,6 +1031,123 @@ public:
         default:
             break;
         }
+    }
+
+    bool isBranchable(struct coordinate p, int wall_arrangement)
+    {
+        struct surroundCoor surCoor = getSurrounds(p);
+        int count = 0;
+
+        if (isAccessible(wall_arrangement, p, surCoor.N) && visited[surCoor.N.y][surCoor.N.x] == false)
+        {
+            count++;
+        }
+        if (isAccessible(wall_arrangement, p, surCoor.W) && visited[surCoor.W.y][surCoor.W.x] == false)
+        {
+            count++;
+        }
+        if (isAccessible(wall_arrangement, p, surCoor.E) && visited[surCoor.E.y][surCoor.E.x] == false)
+        {
+            count++;
+        }
+        if (isAccessible(wall_arrangement, p, surCoor.S) && visited[surCoor.S.y][surCoor.S.x] == false)
+        {
+            count++;
+        }
+
+        if (count > 1)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    char toMoveBackward(struct coordinate p, struct coordinate next_coor)
+    {
+        struct surroundCoor surCoor = getSurrounds(p);
+
+        switch (orient)
+        {
+        case 0: // North
+            if (compareCoordinates(next_coor, surCoor.N))
+            {
+                return 'F'; // Forward
+            }
+            else if (compareCoordinates(next_coor, surCoor.W))
+            {
+                return 'L'; // Left
+            }
+            else if (compareCoordinates(next_coor, surCoor.E))
+            {
+                return 'R'; // Right
+            }
+            else if (compareCoordinates(next_coor, surCoor.S))
+            {
+                return 'B'; // Backward
+            }
+            break;
+        case 1: // East
+            if (compareCoordinates(next_coor, surCoor.E))
+            {
+                return 'F'; // Forward
+            }
+            else if (compareCoordinates(next_coor, surCoor.N))
+            {
+                return 'L'; // Left
+            }
+            else if (compareCoordinates(next_coor, surCoor.S))
+            {
+                return 'R'; // Right
+            }
+            else if (compareCoordinates(next_coor, surCoor.W))
+            {
+                return 'B'; // Backward
+            }
+            break;
+        case 2: // South
+            if (compareCoordinates(next_coor, surCoor.S))
+            {
+                return 'F'; // Forward
+            }
+            else if (compareCoordinates(next_coor, surCoor.E))
+            {
+                return 'L'; // Left
+            }
+            else if (compareCoordinates(next_coor, surCoor.W))
+            {
+                return 'R'; // Right
+            }
+            else if (compareCoordinates(next_coor, surCoor.N))
+            {
+                return 'B'; // Backward
+            }
+            break;
+        case 3: // West
+            if (compareCoordinates(next_coor, surCoor.W))
+            {
+                return 'F'; // Forward
+            }
+            else if (compareCoordinates(next_coor, surCoor.S))
+            {
+                return 'L'; // Left
+            }
+            else if (compareCoordinates(next_coor, surCoor.N))
+            {
+                return 'R'; // Right
+            }
+            else if (compareCoordinates(next_coor, surCoor.E))
+            {
+                return 'B'; // Backward
+            }
+            break;
+                    
+        default:
+            break;
+        }
+        return 'X';
     }
 
     
@@ -1048,7 +1172,6 @@ public:
         int robot_case = 0;
 
         goForward(1);
-
 
         while (step(timeStep) != -1)
         {
@@ -1085,10 +1208,10 @@ public:
                 else
                 {
                     location_stack.push(XY);
-                    // if (isBranchable(XY,wall_arrangement))
-                    // {
-                    //     branch_stack.push(XY);
-                    // }
+                    if (isBranchable(XY,wall_arrangement))
+                    {
+                        branch_stack.push(XY);
+                    }
 
                     char move = toMoveForward(XY, wall_arrangement);
                     moveRobot(move);
@@ -1097,7 +1220,19 @@ public:
                 break;
 
             case 1: // Going backward until a branch is found
-                /* code */
+                if (compareCoordinates(XY, branch_stack.top()))
+                {
+                    robot_case = 0;
+                    branch_stack.pop();
+                }
+                else
+                {
+                    struct coordinate next_coor = location_stack.top();
+                    location_stack.pop();
+                    char move = toMoveBackward(XY, next_coor);
+                    moveRobot(move);
+                }
+
                 break;
             
             default:
