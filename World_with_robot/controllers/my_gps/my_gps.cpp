@@ -341,12 +341,12 @@ public:
         while (distanceFront < 1.2 || distanceFront > 1.35)
         {
             cout << "Distance Front: " << distanceFront << endl;
-            if (distanceFront < 0.89)
+            if (distanceFront < 1.35)
             {
                 leftMotor->setVelocity(-1);
                 rightMotor->setVelocity(-1);
             }
-            else if (distanceFront > 0.9)
+            else if (distanceFront > 1.2)
             {
                 leftMotor->setVelocity(1);
                 rightMotor->setVelocity(1);
