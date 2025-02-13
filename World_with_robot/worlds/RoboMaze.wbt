@@ -1,4 +1,4 @@
-#VRML_SIM R2023b utf8
+#VRML_SIM R2025a utf8
 
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackground.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
@@ -11,7 +11,7 @@ WorldInfo {
 }
 Viewpoint {
   orientation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0944
-  position -0.06029969580875323 0.43159338826699956 8.457237373090068
+  position 0.04230582133039473 -2.0507982266369456 0.906720712268142
 }
 TexturedBackground {
 }
@@ -34,6 +34,7 @@ Robot {
     Camera {
       translation -1.10196e-07 0.0299999 0.04
       rotation 0 0 1 1.5708
+      fieldOfView 1.5
     }
     InertialUnit {
       translation 0 -0.03 0.03
@@ -47,12 +48,12 @@ Robot {
     }
     SharpGP2D120 {
       translation 0 -0.02 0.02
-      rotation 0.37796500919324305 0.6546520159231012 -0.6546550159231742 -2.418875307179586
+      rotation 0.28108510281518717 0.6785962482166418 -0.6786002482181049 -2.5935853071795862
       name "sharp_left"
     }
     SharpGP2D120 {
       translation 0 -0.02 0.02
-      rotation -0.7745965212991105 -0.44721372362178063 0.44721372362178063 1.82
+      rotation -0.8629731098003907 -0.35707604543257354 0.35745504548079565 1.71434
       name "sharp_right"
     }
     SharpGP2D120 {
@@ -101,7 +102,7 @@ Robot {
       ]
       endPoint Solid {
         translation -0.04499986716130022 -0.010000070523414199 0.012501006744986505
-        rotation -0.13909240279960042 0.9804625961862703 0.13909134035989476 4.69266181972669
+        rotation -0.13909240279960058 0.9804625961862703 0.13909134035989482 4.69266181972669
         children [
           DEF wheel Shape {
             appearance PBRAppearance {
@@ -134,7 +135,7 @@ Robot {
       ]
       endPoint Solid {
         translation 0.044999878804191096 -0.009999282590234375 0.012499290186323514
-        rotation 0.4417380812763347 0.78085440278347 0.4417395943358179 1.8156813100120202
+        rotation 0.44173808127633446 0.78085440278347 0.4417395943358179 1.8156813100120202
         children [
           USE wheel
         ]
@@ -191,10 +192,11 @@ Wall {
   name "wall(238)"
   size 0.1 0.01 0.1
   appearance Roughcast {
-    colorOverride 0.333 1 0
+    colorOverride 0 1 0
     textureTransform TextureTransform {
       scale 2.4 1
     }
+    IBLStrength 11
   }
 }
 Wall {

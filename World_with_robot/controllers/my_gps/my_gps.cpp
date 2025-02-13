@@ -193,7 +193,7 @@ public:
         double distanceLeft = getDistance(ds_left);
         double distanceRight = getDistance(ds_right);
 
-        // out << "Distance sensor values: Front=" << distanceFront << ", Left=" << distanceLeft << ", Right=" << distanceRight << endl;
+        cout << "Distance sensor values: Front=" << distanceFront << ", Left=" << distanceLeft << ", Right=" << distanceRight << endl;
 
         // Evaluate sensor readings and return corresponding identifier
         if (distanceFront > 0.39 && distanceLeft < 0.5 && distanceRight < 0.5)
@@ -338,15 +338,15 @@ public:
     {
         double distanceFront = getDistance(ds_front);
 
-        while (distanceFront < 1.5 || distanceFront > 1.65)
+        while (distanceFront < 1.48 || distanceFront > 1.5)
         {
-            cout << "Distance Front: " << distanceFront << endl;
-            if (distanceFront < 1.5)
+            // cout << distanceFront << endl;
+            if (distanceFront < 1.48)
             {
                 leftMotor->setVelocity(-1);
                 rightMotor->setVelocity(-1);
             }
-            else if (distanceFront > 1.65)
+            else if (distanceFront > 1.5)
             {
                 leftMotor->setVelocity(1);
                 rightMotor->setVelocity(1);
@@ -423,7 +423,7 @@ public:
         int row = static_cast<int>((gps_y - topY) / cellHeight);
 
         if (column < 0 || column > columns || row < 0 || row > columns)
-        {   
+        {
             cout << "Out of bounds" << endl;
             return {-1, -1}; // Out of bounds
         }
@@ -921,83 +921,84 @@ public:
     //     return 'X'; // No valid move
     // }
 
-    char toMoveForward(struct coordinate p, int wall_arrangement){
+    char toMoveForward(struct coordinate p, int wall_arrangement)
+    {
         struct surroundCoor surCoor = getSurrounds(p);
 
         switch (orient)
         {
-            case 0: // North
-                if (isAccessible(wall_arrangement, p, surCoor.N) && visited[surCoor.N.y][surCoor.N.x] == false)
-                {
-                    return 'F'; // Forward
-                }
-                else if (isAccessible(wall_arrangement, p, surCoor.W) && visited[surCoor.W.y][surCoor.W.x] == false)
-                {
-                    return 'L'; // Left
-                }                
-                else if (isAccessible(wall_arrangement, p, surCoor.E) && visited[surCoor.E.y][surCoor.E.x] == false)
-                {
-                    return 'R'; // Right
-                }
-                else
-                {
-                    return 'X'; // invalid move
-                }
-                break;
-            case 1: // East
-                if (isAccessible(wall_arrangement, p, surCoor.E) && visited[surCoor.E.y][surCoor.E.x] == false)
-                {
-                    return 'F'; // Forward
-                }
-                else if (isAccessible(wall_arrangement, p, surCoor.N) && visited[surCoor.N.y][surCoor.N.x] == false)
-                {
-                    return 'L'; // Left
-                }                
-                else if (isAccessible(wall_arrangement, p, surCoor.S) && visited[surCoor.S.y][surCoor.S.x] == false)
-                {
-                    return 'R'; // Right
-                }
-                else
-                {
-                    return 'X'; // invalid move
-                }
-                break;
-            case 2: // South
-                if (isAccessible(wall_arrangement, p, surCoor.S) && visited[surCoor.S.y][surCoor.S.x] == false)
-                {
-                    return 'F'; // Forward
-                }
-                else if (isAccessible(wall_arrangement, p, surCoor.E) && visited[surCoor.E.y][surCoor.E.x] == false)
-                {
-                    return 'L'; // Left
-                }                
-                else if (isAccessible(wall_arrangement, p, surCoor.W) && visited[surCoor.W.y][surCoor.W.x] == false)
-                {
-                    return 'R'; // Right
-                }
-                else
-                {
-                    return 'X'; // invalid move
-                }
-                break;
-            case 3: // West
-                if (isAccessible(wall_arrangement, p, surCoor.W) && visited[surCoor.W.y][surCoor.W.x] == false)
-                {
-                    return 'F'; // Forward
-                }
-                else if (isAccessible(wall_arrangement, p, surCoor.S) && visited[surCoor.S.y][surCoor.S.x] == false)
-                {
-                    return 'L'; // Left
-                }                
-                else if (isAccessible(wall_arrangement, p, surCoor.N) && visited[surCoor.N.y][surCoor.N.x] == false)
-                {
-                    return 'R'; // Right
-                }
-                else
-                {
-                    return 'X'; // invalid move
-                }
-                break;
+        case 0: // North
+            if (isAccessible(wall_arrangement, p, surCoor.N) && visited[surCoor.N.y][surCoor.N.x] == false)
+            {
+                return 'F'; // Forward
+            }
+            else if (isAccessible(wall_arrangement, p, surCoor.W) && visited[surCoor.W.y][surCoor.W.x] == false)
+            {
+                return 'L'; // Left
+            }
+            else if (isAccessible(wall_arrangement, p, surCoor.E) && visited[surCoor.E.y][surCoor.E.x] == false)
+            {
+                return 'R'; // Right
+            }
+            else
+            {
+                return 'X'; // invalid move
+            }
+            break;
+        case 1: // East
+            if (isAccessible(wall_arrangement, p, surCoor.E) && visited[surCoor.E.y][surCoor.E.x] == false)
+            {
+                return 'F'; // Forward
+            }
+            else if (isAccessible(wall_arrangement, p, surCoor.N) && visited[surCoor.N.y][surCoor.N.x] == false)
+            {
+                return 'L'; // Left
+            }
+            else if (isAccessible(wall_arrangement, p, surCoor.S) && visited[surCoor.S.y][surCoor.S.x] == false)
+            {
+                return 'R'; // Right
+            }
+            else
+            {
+                return 'X'; // invalid move
+            }
+            break;
+        case 2: // South
+            if (isAccessible(wall_arrangement, p, surCoor.S) && visited[surCoor.S.y][surCoor.S.x] == false)
+            {
+                return 'F'; // Forward
+            }
+            else if (isAccessible(wall_arrangement, p, surCoor.E) && visited[surCoor.E.y][surCoor.E.x] == false)
+            {
+                return 'L'; // Left
+            }
+            else if (isAccessible(wall_arrangement, p, surCoor.W) && visited[surCoor.W.y][surCoor.W.x] == false)
+            {
+                return 'R'; // Right
+            }
+            else
+            {
+                return 'X'; // invalid move
+            }
+            break;
+        case 3: // West
+            if (isAccessible(wall_arrangement, p, surCoor.W) && visited[surCoor.W.y][surCoor.W.x] == false)
+            {
+                return 'F'; // Forward
+            }
+            else if (isAccessible(wall_arrangement, p, surCoor.S) && visited[surCoor.S.y][surCoor.S.x] == false)
+            {
+                return 'L'; // Left
+            }
+            else if (isAccessible(wall_arrangement, p, surCoor.N) && visited[surCoor.N.y][surCoor.N.x] == false)
+            {
+                return 'R'; // Right
+            }
+            else
+            {
+                return 'X'; // invalid move
+            }
+            break;
         }
         return 'X'; // invalid move
     }
@@ -1010,21 +1011,67 @@ public:
             goForward(1);
             break;
         case 'L':
-            if (wall_arrangement==1 || wall_arrangement==4 || wall_arrangement==5){
-                align_wall();
-            }            
+            if (wall_arrangement == 1 || wall_arrangement == 4 || wall_arrangement == 5)
+            {
+                if (!processVision(camera, display))
+                {
+                    // green_count++;
+                    align_wall();
+                    parallel_wall();
+                }
+                else
+                {
+                    cout << "Green Detected" << endl;
+                }
+            }
             turnLeft();
             goForward(1);
             break;
         case 'R':
-            if (wall_arrangement==1 || wall_arrangement==4 || wall_arrangement==5){
-                align_wall();
-            }       
+            if (wall_arrangement == 1 || wall_arrangement == 4 || wall_arrangement == 5)
+            {
+                if (!processVision(camera, display))
+                {
+                    // green_count++;
+                    align_wall();
+                    parallel_wall();
+                }
+                else
+                {
+                    cout << "Green Detected" << endl;
+                }
+            }
             turnRight();
             goForward(1);
             break;
         case 'B':
+            if (wall_arrangement == 1 || wall_arrangement == 4 || wall_arrangement == 5)
+            {
+                if (!processVision(camera, display))
+                {
+                    // green_count++;
+                    align_wall();
+                    parallel_wall();
+                }
+                else
+                {
+                    cout << "Green Detected" << endl;
+                }
+            }
             turnLeft();
+            if (wall_arrangement == 1 || wall_arrangement == 4 || wall_arrangement == 5)
+            {
+                if (!processVision(camera, display))
+                {
+                    // green_count++;
+                    align_wall();
+                    parallel_wall();
+                }
+                else
+                {
+                    cout << "Green Detected" << endl;
+                }
+            }
             turnLeft();
             goForward(1);
             break;
@@ -1143,14 +1190,12 @@ public:
                 return 'B'; // Backward
             }
             break;
-                    
+
         default:
             break;
         }
         return 'X';
     }
-
-    
 
     //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1158,14 +1203,13 @@ public:
     void run()
     {
 
-        
         cout << "Starting simulation loop..." << endl;
 
         // Initial delay (3 seconds)
         for (int i = 0; i < 1000 / timeStep; ++i)
         {
             step(timeStep);
-        }  
+        }
 
         // Get initial distance sensor readings
         // wall_arrangement = getDistanceSensors();
@@ -1194,8 +1238,8 @@ public:
             }
 
             visited[y][x] = true;
-            
-            //update wall arrangement in cells
+
+            // update wall arrangement in cells
 
             switch (robot_case)
             {
@@ -1208,14 +1252,13 @@ public:
                 else
                 {
                     location_stack.push(XY);
-                    if (isBranchable(XY,wall_arrangement))
+                    if (isBranchable(XY, wall_arrangement))
                     {
                         branch_stack.push(XY);
                     }
 
                     char move = toMoveForward(XY, wall_arrangement);
                     moveRobot(move);
-                    
                 }
                 break;
 
@@ -1234,15 +1277,10 @@ public:
                 }
 
                 break;
-            
+
             default:
                 break;
             }
-
-            
-
-
-            
         }
     };
 
