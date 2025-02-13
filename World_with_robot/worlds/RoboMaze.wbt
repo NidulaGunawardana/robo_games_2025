@@ -10,8 +10,8 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/project
 WorldInfo {
 }
 Viewpoint {
-  orientation -0.5566488115173565 -0.560714733618909 0.6129772329695374 4.247907725866015
-  position -1.9248766132227035 1.6296717577619928 1.4059599872082276
+  orientation -0.6012567438119593 0.5768829518328881 0.5528981713708355 2.166123470654024
+  position -0.5477943333840131 0.6097246434978683 2.2074151982073458
 }
 TexturedBackground {
 }
@@ -19,10 +19,14 @@ TexturedBackgroundLight {
 }
 RectangleArena {
   floorSize 5 6
+  floorAppearance PBRAppearance {
+    roughness 1
+    metalness 0
+  }
 }
 Robot {
-  translation -1.86781 1.63392 -5.94857e-05
-  rotation -5.877494383594474e-07 3.692966515084839e-05 0.999999999317927 3.1400982395683323
+  translation -0.637727 0.623014 -0.00277215
+  rotation 0 0 1 -1.5731853071795863
   children [
     Display {
     }
@@ -88,7 +92,7 @@ Robot {
     }
     HingeJoint {
       jointParameters HingeJointParameters {
-        position 45.837881400301455
+        position 26.199985621579458
         anchor -0.045 -0.01 0.0125
       }
       device [
@@ -100,8 +104,8 @@ Robot {
         }
       ]
       endPoint Solid {
-        translation -0.04499986716130022 -0.01000076368791924 0.012500659764944362
-        rotation 0.4542713244678985 -0.7663397744561817 -0.454269648834951 1.8338370902021817
+        translation -0.04499986716130022 -0.010000070523414199 0.012501006744986505
+        rotation -0.13909240279960058 0.9804625961862703 0.13909134035989482 4.69266181972669
         children [
           DEF wheel Shape {
             appearance PBRAppearance {
@@ -121,7 +125,7 @@ Robot {
     }
     HingeJoint {
       jointParameters HingeJointParameters {
-        position -60.15435259375179
+        position -80.65175513573459
         anchor 0.045 -0.01 0.0125
       }
       device [
@@ -133,8 +137,8 @@ Robot {
         }
       ]
       endPoint Solid {
-        translation 0.044999878804191096 -0.009999347514229137 0.012500769918532025
-        rotation -0.6974365550187711 -0.1648066523945879 -0.6974388998686825 3.4682684133243606
+        translation 0.044999878804191096 -0.009999282590234375 0.012499290186323514
+        rotation 0.4417380812763345 0.78085440278347 0.4417395943358177 1.8156813100120202
         children [
           USE wheel
         ]
@@ -300,7 +304,7 @@ Wall {
   }
 }
 Wall {
-  translation 0.125 0.875 0
+  translation 0.125 0.875 -0.00049
   name "wall(201)"
   size 0.75 0.25 0.0005
   appearance Roughcast {
@@ -347,7 +351,7 @@ Wall {
   size 0.25 0.01 0.1
 }
 Wall {
-  translation 1.875 2.375 0
+  translation 1.875 2.375 -0.00049
   name "wall(227)"
   size 0.25 0.25 0.0005
   appearance Roughcast {
@@ -358,7 +362,7 @@ Wall {
   }
 }
 Wall {
-  translation 1.875 2.125 0
+  translation 1.875 2.125 -0.00049
   name "wall(226)"
   size 0.25 0.25 0.0005
   appearance Roughcast {
@@ -369,7 +373,7 @@ Wall {
   }
 }
 Wall {
-  translation 1.625 2.25 0
+  translation 1.625 2.25 -0.00049
   rotation 0 0 1 1.57
   name "wall(225)"
   size 0.5 0.25 0.0005
@@ -381,7 +385,7 @@ Wall {
   }
 }
 Wall {
-  translation 2.125 2.25 0
+  translation 2.125 2.25 -0.00049
   rotation 0 0 1 1.57
   name "wall(224)"
   size 0.5 0.25 0.0005
@@ -393,7 +397,7 @@ Wall {
   }
 }
 Wall {
-  translation 1.875 2.625 0
+  translation 1.875 2.625 -0.00049
   name "wall(223)"
   size 0.75 0.25 0.0005
   appearance Roughcast {
@@ -404,7 +408,7 @@ Wall {
   }
 }
 Wall {
-  translation 1.375 2.375 0
+  translation 1.375 2.375 -0.00049
   rotation 0 0 1 1.57
   name "wall(222)"
   size 1.25 0.25 0.0005
@@ -416,7 +420,7 @@ Wall {
   }
 }
 Wall {
-  translation 1.875 2.875 0
+  translation 1.875 2.875 -0.00049
   name "wall(221)"
   size 0.75 0.25 0.0005
   appearance Roughcast {
@@ -427,7 +431,7 @@ Wall {
   }
 }
 Wall {
-  translation 1.875 1.875 0
+  translation 1.875 1.875 -0.00049
   name "wall(220)"
   size 0.75 0.25 0.0005
   appearance Roughcast {
@@ -438,7 +442,7 @@ Wall {
   }
 }
 Wall {
-  translation 2.375 2.375 0
+  translation 2.375 2.375 -0.00049
   rotation 0 0 1 1.57
   name "wall(219)"
   size 1.25 0.25 0.0005
@@ -484,7 +488,7 @@ Wall {
   }
 }
 Wall {
-  translation -1.875 -1.375 0
+  translation -1.875 -1.375 -0.00049
   name "wall(218)"
   size 0.25 0.25 0.0005
   appearance Roughcast {
@@ -495,7 +499,7 @@ Wall {
   }
 }
 Wall {
-  translation -1.875 -1.625 0
+  translation -1.875 -1.625 -0.00049
   name "wall(217)"
   size 0.25 0.25 0.0005
   appearance Roughcast {
@@ -506,7 +510,7 @@ Wall {
   }
 }
 Wall {
-  translation -1.625 -1.5 0
+  translation -1.625 -1.5 -0.00049
   rotation 0 0 1 1.57
   name "wall(216)"
   size 0.5 0.25 0.0005
@@ -518,7 +522,7 @@ Wall {
   }
 }
 Wall {
-  translation -2.125 -1.5 0
+  translation -2.125 -1.5 -0.00049
   rotation 0 0 1 1.57
   name "wall(215)"
   size 0.5 0.25 0.0005
@@ -530,7 +534,7 @@ Wall {
   }
 }
 Wall {
-  translation -1.875 -1.125 0
+  translation -1.875 -1.125 -0.00049
   name "wall(214)"
   size 0.75 0.25 0.0005
   appearance Roughcast {
@@ -541,7 +545,7 @@ Wall {
   }
 }
 Wall {
-  translation -1.375 -1.375 0
+  translation -1.375 -1.375 -0.00049
   rotation 0 0 1 1.57
   name "wall(213)"
   size 1.25 0.25 0.0005
@@ -553,7 +557,7 @@ Wall {
   }
 }
 Wall {
-  translation -1.875 -0.875 0
+  translation -1.875 -0.875 -0.00049
   name "wall(212)"
   size 0.75 0.25 0.0005
   appearance Roughcast {
@@ -564,7 +568,7 @@ Wall {
   }
 }
 Wall {
-  translation -1.875 -1.875 0
+  translation -1.875 -1.875 -0.00049
   name "wall(211)"
   size 0.75 0.25 0.0005
   appearance Roughcast {
@@ -575,7 +579,7 @@ Wall {
   }
 }
 Wall {
-  translation -2.375 -1.375 0
+  translation -2.375 -1.375 -0.00049
   rotation 0 0 1 1.57
   name "wall(210)"
   size 1.25 0.25 0.0005
@@ -587,7 +591,7 @@ Wall {
   }
 }
 Wall {
-  translation 0.625 0.625 0
+  translation 0.625 0.625 -0.00049
   rotation 0 0 1 1.57
   name "wall(209)"
   size 1.25 0.25 0.0005
@@ -599,7 +603,7 @@ Wall {
   }
 }
 Wall {
-  translation 0.125 0.125 0
+  translation 0.125 0.125 -0.00049
   name "wall(208)"
   size 0.75 0.25 0.0005
   appearance Roughcast {
@@ -610,7 +614,7 @@ Wall {
   }
 }
 Wall {
-  translation 0.125 1.125 0
+  translation 0.125 1.125 -0.00049
   name "wall(207)"
   size 0.75 0.25 0.0005
   appearance Roughcast {
@@ -621,7 +625,7 @@ Wall {
   }
 }
 Wall {
-  translation -0.375 0.625 0
+  translation -0.375 0.625 -0.00049
   rotation 0 0 1 1.57
   name "wall(206)"
   size 1.25 0.25 0.0005
@@ -633,19 +637,7 @@ Wall {
   }
 }
 Wall {
-  translation -0.375 0.625 0
-  rotation 0 0 1 1.57
-  name "wall(205)"
-  size 1.25 0.25 1e-05
-  appearance Roughcast {
-    colorOverride 1 1 0.498
-    textureTransform TextureTransform {
-      scale 2.4 1
-    }
-  }
-}
-Wall {
-  translation 0.125 0.375 0
+  translation 0.125 0.375 -0.00049
   name "wall(204)"
   size 0.25 0.25 0.0005
   appearance Roughcast {
@@ -656,7 +648,7 @@ Wall {
   }
 }
 Wall {
-  translation 0.375 0.5 0
+  translation 0.375 0.5 -0.00049
   rotation 0 0 1 1.57
   name "wall(203)"
   size 0.5 0.25 0.0005
@@ -668,7 +660,7 @@ Wall {
   }
 }
 Wall {
-  translation -0.125 0.5 0
+  translation -0.125 0.5 -0.00049
   rotation 0 0 1 1.57
   name "wall(202)"
   size 0.5 0.25 0.0005
@@ -692,7 +684,7 @@ Wall {
   }
 }
 Wall {
-  translation 0.125 0.625 0
+  translation 0.125 0.625 -0.00049
   name "wall(200)"
   size 0.25 0.25 0.0005
   appearance Roughcast {
