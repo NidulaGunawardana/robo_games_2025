@@ -324,8 +324,8 @@ public:
                 previousError = error;
 
                 // Adjust motor velocities based on PID correction
-                double leftSpeed = 4 + correction;
-                double rightSpeed = 4 - correction;
+                double leftSpeed = 8 + correction;
+                double rightSpeed = 8 - correction;
 
                 leftMotor->setVelocity(-leftSpeed);
                 rightMotor->setVelocity(-rightSpeed);
@@ -345,8 +345,8 @@ public:
         // Rotate until the left wheel reaches the target position
         while (getLeftWheelSensor() < targetLeftWheel)
         {
-            leftMotor->setVelocity(0.8);
-            rightMotor->setVelocity(-0.8);
+            leftMotor->setVelocity(1);
+            rightMotor->setVelocity(-1);
             step(timeStep);
         }
         stopRobot();
@@ -368,8 +368,8 @@ public:
         // Rotate until the right wheel reaches the target position
         while (getRightWheelSensor() < targetRightWheel)
         {
-            leftMotor->setVelocity(-0.8);
-            rightMotor->setVelocity(0.8);
+            leftMotor->setVelocity(-1);
+            rightMotor->setVelocity(1);
             step(timeStep);
         }
         stopRobot();
