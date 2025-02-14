@@ -13,18 +13,51 @@
 #include <memory>
 #include <stack>
 #include <vector>
+#include <string>
 
-#define GREEN_THRESHOLD 70        // Minimum green intensity for detection
+#define GREEN_THRESHOLD 80        // Minimum green intensity for detection
 #define GREEN_AREA_THRESHOLD 0.08 // 8% of the image must be green to trigger detection
 
 using namespace webots;
 using namespace std;
+
+/**
+ * Function to process the camera image, detect green areas, and display the binary mask.
+ * @param camera - Pointer to the Webots camera.
+ * @param display - Pointer to the Webots display.
+ * @return true if a large green area is detected, false otherwise.
+ */
 
 struct coordinate
 {
     int y;
     int x;
 };
+
+// Define known floor colors
+struct Color {
+    int r, g, b;
+    string name;
+};
+
+// Define RGB ranges for each color
+struct ColorRange {
+    int r_min, r_max;
+    int g_min, g_max;
+    int b_min, b_max;
+    string name;
+};
+
+// Predefined color ranges
+const ColorRange COLORS[] = {
+    {220, 245, 220, 245, 140, 170, "Yellow"},  // Yellow (234, 235, 156)
+    {220, 245, 90, 130, 20, 50, "Orange"},     // Orange (233, 109, 35)
+    {220, 245, 20, 50, 20, 50, "Red"}          // Red (233, 32, 34)
+};
+
+// Default Webots floor color (ignored)
+const ColorRange DEFAULT_FLOOR = {160, 190, 120, 150, 90, 120, "Default"};
+
 
 struct surroundCoor
 {
@@ -102,79 +135,71 @@ public:
      * @param display - Pointer to the Webots display.
      * @return true if a large green area is detected, false otherwise.
      */
-    bool processVision(Camera *camera, Display *display)
-    {
-        if (!camera || !display)
-        {
+    bool processVision(Camera *camera, Display *display) {
+        if (!camera || !display) {
             cerr << "ERROR: Camera or Display not initialized!" << endl;
             return false;
         }
-
+    
         int width = camera->getWidth();
         int height = camera->getHeight();
-
+    
         // Create an empty image buffer
         unsigned char *imageBuffer = new unsigned char[3 * width * height];
-
+    
         // Get the camera image
         const unsigned char *image = camera->getImage();
-        if (!image)
-        {
+        if (!image) {
             cerr << "ERROR: Failed to get camera image!" << endl;
             delete[] imageBuffer;
             return false;
         }
-
+    
         int green_count = 0;
         int total_pixels = width * height;
-
+    
         // Process Image: Detect Green & Create Binary Mask
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                int index = (y * width + x) * 4; // BGRA format (4 bytes per pixel)
-
-                int r = image[index + 2]; // Red
-                int g = image[index + 1]; // Green
-                int b = image[index];     // Blue
-
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                int index = (y * width + x) * 4;  // BGRA format (4 bytes per pixel)
+    
+                int r = image[index + 2];  // Red
+                int g = image[index + 1];  // Green
+                int b = image[index];      // Blue
+    
                 // Check if green is dominant
-                bool isGreen = (g > GREEN_THRESHOLD && g > r && g > b);
-                if (isGreen)
-                    green_count++;
-
+                bool isGreen = (g > GREEN_THRESHOLD && g/2 > r && g/2 > b);
+                if (isGreen) green_count++;
+    
                 // Create binary mask (Green -> Green, Others -> Black)
-                imageBuffer[3 * (y * width + x)] = isGreen ? 0 : 0;       // Red
-                imageBuffer[3 * (y * width + x) + 1] = isGreen ? 255 : 0; // Green
-                imageBuffer[3 * (y * width + x) + 2] = isGreen ? 0 : 0;   // Blue
+                imageBuffer[3 * (y * width + x)] = isGreen ? 0 : 0;        // Red
+                imageBuffer[3 * (y * width + x) + 1] = isGreen ? 255 : 0;  // Green
+                imageBuffer[3 * (y * width + x) + 2] = isGreen ? 0 : 0;    // Blue
             }
         }
-
+    
         // Display the Binary Green Mask
         ImageRef *image_ref = display->imageNew(width, height, imageBuffer, Display::RGB);
         display->imagePaste(image_ref, 0, 0, false);
         display->imageDelete(image_ref);
-
+    
         delete[] imageBuffer; // Free memory
-
+    
         // Check if green area is significant
         return (static_cast<double>(green_count) / total_pixels > GREEN_AREA_THRESHOLD);
     }
 
+   
     /**
-     * Function to detect the dominant floor color (Yellow, Orange, or Red).
-     * @param camera - Pointer to the Webots floor camera.
-     * @return string representing the detected floor color.
+     * Function to detect floor color based on predefined RGB ranges.
+     * @param camera - Pointer to the Webots camera.
+     * @return The detected color name (Yellow, Orange, Red) or an empty string if default.
      */
-    std::string getFloorRGB(Camera *camera)
-    {
-        if (!camera)
-            return "ERROR: Floor Camera Not Found";
+    std::string getFloorColor(Camera *camera) {
+        if (!camera) return "ERROR: Floor Camera Not Found";
 
         const unsigned char *image = camera->getImage();
-        if (!image)
-            return "ERROR: Failed to get floor image";
+        if (!image) return "ERROR: Failed to get floor image";
 
         int width = camera->getWidth();
         int height = camera->getHeight();
@@ -182,14 +207,29 @@ public:
         // Take the center pixel as the reference
         int x = width / 2;
         int y = height / 2;
-        int index = (y * width + x) * 4; // BGRA format
+        int index = (y * width + x) * 4;  // BGRA format
 
-        int r = image[index + 2]; // Red
-        int g = image[index + 1]; // Green
-        int b = image[index];     // Blue
+        int r = image[index + 2];  // Red
+        int g = image[index + 1];  // Green
+        int b = image[index];      // Blue
 
-        // Format the RGB values into a string
-        return "RGB: (" + std::to_string(r) + ", " + std::to_string(g) + ", " + std::to_string(b) + ")";
+        // Ignore default floor color
+        if (r >= DEFAULT_FLOOR.r_min && r <= DEFAULT_FLOOR.r_max &&
+            g >= DEFAULT_FLOOR.g_min && g <= DEFAULT_FLOOR.g_max &&
+            b >= DEFAULT_FLOOR.b_min && b <= DEFAULT_FLOOR.b_max) {
+            return "";  // Return nothing if it's the default floor
+        }
+
+        // Check for predefined colors
+        for (const auto& color : COLORS) {
+            if (r >= color.r_min && r <= color.r_max &&
+                g >= color.g_min && g <= color.g_max &&
+                b >= color.b_min && b <= color.b_max) {
+                return "Detected Color: " + color.name + " (RGB: " + to_string(r) + ", " + to_string(g) + ", " + to_string(b) + ")";
+            }
+        }
+
+        return "Unknown Color (RGB: " + to_string(r) + ", " + to_string(g) + ", " + to_string(b) + ")";
     }
 
     int getDistanceSensors()
@@ -198,7 +238,7 @@ public:
         double distanceLeft = getDistance(ds_left);
         double distanceRight = getDistance(ds_right);
 
-        cout << "Distance sensor values: Front=" << distanceFront << ", Left=" << distanceLeft << ", Right=" << distanceRight << endl;
+        // cout << "Distance sensor values: Front=" << distanceFront << ", Left=" << distanceLeft << ", Right=" << distanceRight << endl;
 
         // Evaluate sensor readings and return corresponding identifier
         if (distanceFront > 0.39 && distanceLeft < 0.5 && distanceRight < 0.5)
@@ -752,180 +792,6 @@ public:
         return true; // If no case matches
     }
 
-    // char toMove(struct coordinate p, int wall_arrangement)
-    // {
-    //     struct surroundCoor surCoor = getSurrounds(p);
-    //     // int min = current_cell(p);
-    //     // cout << "Current cell no: " << min << endl;
-    //     struct coordinate next_coor = p;
-
-    //     int directionsLooked = 0;
-
-    //     while (true)
-    //     {
-    //         bool exitLoop = false; // Flag to exit the while loop
-
-    //         switch (directionsLooked)
-    //         {
-    //         case 0:
-    //             if ((surCoor.N.x < 10 && surCoor.N.y < 10) && (surCoor.N.x >= 0 && surCoor.N.y >= 0))
-    //             {
-    //                 // int cell_no = current_cell(surCoor.N);
-    //                 cout << "Looking N: " << cell_no << endl;
-    //                 if ((cell_no == min - 1) && isAccessible(wall_arrangement, p, surCoor.N))
-    //                 {
-    //                     min = cell_no;
-    //                     next_coor = surCoor.N;
-    //                     exitLoop = true; // Set the flag to exit the while loop
-    //                     break;           // Break the switch
-    //                 }
-    //             }
-    //             directionsLooked++;
-    //             break;
-
-    //         case 1:
-    //             if ((surCoor.W.x < 10 && surCoor.W.y < 10) && (surCoor.W.x >= 0 && surCoor.W.y >= 0))
-    //             {
-    //                 // int cell_no = current_cell(surCoor.W);
-    //                 cout << "Looking W: " << cell_no << endl;
-    //                 if ((cell_no == min - 1) && isAccessible(wall_arrangement, p, surCoor.W))
-    //                 {
-    //                     min = cell_no;
-    //                     next_coor = surCoor.W;
-    //                     exitLoop = true; // Set the flag to exit the while loop
-    //                     break;           // Break the switch
-    //                 }
-    //             }
-    //             directionsLooked++;
-    //             break;
-
-    //         case 3:
-    //             if ((surCoor.S.x < 10 && surCoor.S.y < 10) && (surCoor.S.x >= 0 && surCoor.S.y >= 0))
-    //             {
-    //                 // int cell_no = current_cell(surCoor.S);
-    //                 cout << "Looking S: " << cell_no << endl;
-    //                 if ((cell_no == min - 1) && isAccessible(wall_arrangement, p, surCoor.S))
-    //                 {
-    //                     min = cell_no;
-    //                     next_coor = surCoor.S;
-    //                     exitLoop = true; // Set the flag to exit the while loop
-    //                     break;           // Break the switch
-    //                 }
-    //             }
-    //             directionsLooked++;
-    //             break;
-
-    //         case 2:
-    //             if ((surCoor.E.x < 10 && surCoor.E.y < 10) && (surCoor.E.x >= 0 && surCoor.E.y >= 0))
-    //             {
-    //                 // int cell_no = current_cell(surCoor.E);
-    //                 cout << "Looking E: " << cell_no << endl;
-    //                 if ((cell_no == min - 1) && isAccessible(wall_arrangement, p, surCoor.E))
-    //                 {
-    //                     min = cell_no;
-    //                     next_coor = surCoor.E;
-    //                     exitLoop = true; // Set the flag to exit the while loop
-    //                     break;           // Break the switch
-    //                 }
-    //             }
-    //             directionsLooked++;
-    //             break;
-
-    //         default:
-    //             break;
-    //         }
-
-    //         if (exitLoop)
-    //         { // Exit the while loop if the flag is set
-    //             break;
-    //         }
-    //     }
-
-    //     switch (orient)
-    //     {
-    //     case 0:
-    //         if (compareCoordinates(next_coor, surCoor.N))
-    //         {
-    //             return 'F'; // Forward
-    //         }
-    //         else if (compareCoordinates(next_coor, surCoor.W))
-    //         {
-    //             return 'L'; // Left
-    //         }
-    //         else if (compareCoordinates(next_coor, surCoor.S))
-    //         {
-    //             return 'B'; // Backward
-    //         }
-    //         else if (compareCoordinates(next_coor, surCoor.E))
-    //         {
-    //             return 'R'; // Right
-    //         }
-    //         break;
-
-    //     case 1:
-    //         if (compareCoordinates(next_coor, surCoor.E))
-    //         {
-    //             return 'F'; // Forward
-    //         }
-    //         else if (compareCoordinates(next_coor, surCoor.N))
-    //         {
-    //             return 'L'; // Left
-    //         }
-    //         else if (compareCoordinates(next_coor, surCoor.W))
-    //         {
-    //             return 'B'; // Backward
-    //         }
-    //         else if (compareCoordinates(next_coor, surCoor.S))
-    //         {
-    //             return 'R'; // Right
-    //         }
-    //         break;
-
-    //     case 2:
-    //         if (compareCoordinates(next_coor, surCoor.S))
-    //         {
-    //             return 'F'; // Forward
-    //         }
-    //         else if (compareCoordinates(next_coor, surCoor.E))
-    //         {
-    //             return 'L'; // Left
-    //         }
-    //         else if (compareCoordinates(next_coor, surCoor.N))
-    //         {
-    //             return 'B'; // Backward
-    //         }
-    //         else if (compareCoordinates(next_coor, surCoor.W))
-    //         {
-    //             return 'R'; // Right
-    //         }
-    //         break;
-
-    //     case 3:
-    //         if (compareCoordinates(next_coor, surCoor.W))
-    //         {
-    //             return 'F'; // Forward
-    //         }
-    //         else if (compareCoordinates(next_coor, surCoor.S))
-    //         {
-    //             return 'L'; // Left
-    //         }
-    //         else if (compareCoordinates(next_coor, surCoor.E))
-    //         {
-    //             return 'B'; // Backward
-    //         }
-    //         else if (compareCoordinates(next_coor, surCoor.N))
-    //         {
-    //             return 'R'; // Right
-    //         }
-    //         break;
-
-    //     default:
-    //         break;
-    //     }
-
-    //     return 'X'; // No valid move
-    // }
-
     char toMoveForward(struct coordinate p, int wall_arrangement)
     {
         struct surroundCoor surCoor = getSurrounds(p);
@@ -1069,7 +935,7 @@ public:
                 if (!processVision(camera, display))
                 {
                     // green_count++;
-                    align_wall();
+                    // align_wall();
                     parallel_wall();
                 }
                 else
@@ -1210,6 +1076,10 @@ public:
         switch (orient) {
             case 0: // North
                 switch (wall_arrangement) {
+                    case 0:
+                        if (visited[surCoor.N.y][surCoor.N.x] && visited[surCoor.E.y][surCoor.E.x] && visited[surCoor.W.y][surCoor.W.x])
+                            isTrue = true;
+                        break;
                     case 1:
                         if (visited[surCoor.E.y][surCoor.E.x] && visited[surCoor.W.y][surCoor.W.x])
                             isTrue = true;
@@ -1238,6 +1108,10 @@ public:
                 break;
             case 1: // East
                 switch (wall_arrangement) {
+                    case 0:
+                        if (visited[surCoor.E.y][surCoor.E.x] && visited[surCoor.N.y][surCoor.N.x] && visited[surCoor.S.y][surCoor.S.x])
+                            isTrue = true;
+                        break;
                     case 1:
                         if (visited[surCoor.S.y][surCoor.S.x] && visited[surCoor.N.y][surCoor.N.x])
                             isTrue = true;
@@ -1266,6 +1140,10 @@ public:
                 break;
             case 2: // South
                 switch (wall_arrangement) {
+                    case 0:
+                        if (visited[surCoor.S.y][surCoor.S.x] && visited[surCoor.E.y][surCoor.E.x] && visited[surCoor.W.y][surCoor.W.x])
+                            isTrue = true;
+                        break;
                     case 1:
                         if (visited[surCoor.W.y][surCoor.W.x] && visited[surCoor.E.y][surCoor.E.x])
                             isTrue = true;
@@ -1294,6 +1172,10 @@ public:
                 break;
             case 3: // West
                 switch (wall_arrangement) {
+                    case 0:
+                        if (visited[surCoor.N.y][surCoor.N.x] && visited[surCoor.S.y][surCoor.S.x] && visited[surCoor.W.y][surCoor.W.x])
+                            isTrue = true;
+                        break;
                     case 1:
                         if (visited[surCoor.N.y][surCoor.N.x] && visited[surCoor.S.y][surCoor.S.x])
                             isTrue = true;
@@ -1342,9 +1224,14 @@ public:
 
         // Get initial distance sensor readings
         // wall_arrangement = getDistanceSensors();
-        int robot_case = 0;
+        int dfs_case = 0;
+        int robot_case = 0; 
 
-        goForward(1);
+        goForward(1); // This is to enter the maze
+        //important ###########################################################################
+        // This is not for the correct starting position
+        // Have to create a function to enter the maze
+        //#####################################################################################
 
         while (step(timeStep) != -1)
         {
@@ -1366,52 +1253,92 @@ public:
                 cout << "GPS Coordinates: X=" << gps_x << ", Y=" << gps_y << " | X =" << x << ", Y =" << y << endl;
             }
 
-            visited[y][x] = true;
+            switch (robot_case) {
+                case 0: // To explore the maze
+                    visited[y][x] = true;
+            
+                    // Update wall arrangement in cells
+                    switch (dfs_case) {
+                        case 0: // Going until a dead end is found
+                            if (wall_arrangement == 7 || isAroundVisited(XY)) { // Dead end
+                                cout << "Dead End" << endl;
+                                dfs_case = 1;
+                            } else {
+                                location_stack->push(XY);
+                                if (isBranchable(XY, wall_arrangement)) {
+                                    branch_stack->push(XY);
+                                }
+            
+                                char move = toMoveForward(XY, wall_arrangement);
+                                moveRobot(move);
+                            }
+                            break;
+            
+                        case 1: // Going backward until a branch is found
+                            if (compareCoordinates(XY, branch_stack->top())) {
+                                dfs_case = 0;
+                                branch_stack->pop();
+                            } else {
+                                struct coordinate next_coor = location_stack->top();
+                                location_stack->pop();
+            
+                                char move = toMoveBackward(XY, next_coor);
+                                moveRobot(move);
 
-            // update wall arrangement in cells
+                                if (location_stack->empty()) {
+                                    cout << "Maze exploration finished" << endl;
+                                    robot_case = 1;
+                                }
+                            }
+                            break;
+            
+                        default:
+                            break;
+                    }
+                    break;
 
-            switch (robot_case)
-            {
-            case 0: // Going until a dead end is found
-                /* code */
-                if (wall_arrangement == 7 || isAroundVisited(XY)) // Dead end
-                {
-                    robot_case = 1;
-                }
-                else
-                {
-                    location_stack->push(XY);
-                    if (isBranchable(XY, wall_arrangement))
+                case 1: // go out of the maze and come to the starting position
+                //##################################
+                // Again this is not the currect starting position
+                    switch (orient)
                     {
-                        branch_stack->push(XY);
+                    case 0: // North
+                        moveRobot('B');
+                        turnLeft();
+                        turnLeft();
+                        break;
+                    case 1: // East
+                        moveRobot('R');
+                        turnLeft();
+                        turnLeft();
+                        break;
+                    case 2: // South
+                        moveRobot('F');
+                        turnLeft();
+                        turnLeft();
+                        break;
+                    case 3: // West
+                        moveRobot('L');
+                        turnLeft();
+                        turnLeft();
+                        break;                    
+                    default:
+                        break;
                     }
 
-                    char move = toMoveForward(XY, wall_arrangement);
-                    moveRobot(move);
-                }
-                break;
+                    robot_case = 2;
+                    break;
 
-            case 1: // Going backward until a branch is found
-                if (compareCoordinates(XY, branch_stack->top()))
-                {
-                    robot_case = 0;
-                    branch_stack->pop();
-                }
-                else
-                {
-                    struct coordinate next_coor = location_stack->top();
-                    location_stack->pop();
-                    char move = toMoveBackward(XY, next_coor);
-                    moveRobot(move);
-                }
-
-                break;
-
-            default:
-                break;
+                case 2: // Rescue the Survivors
+                    break;
+            
+                default:
+                    break;
             }
-        }
-    };
+        }   
+            
+    }
+            
 
 private:
     int timeStep;
