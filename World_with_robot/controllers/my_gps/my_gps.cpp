@@ -10,7 +10,9 @@
 #include <iostream>
 #include <cmath>
 #include <iomanip>
+#include <memory>
 #include <stack>
+#include <vector>
 
 #define GREEN_THRESHOLD 70        // Minimum green intensity for detection
 #define GREEN_AREA_THRESHOLD 0.08 // 8% of the image must be green to trigger detection
@@ -39,8 +41,11 @@ const int COLUMNS = 20;
 
 bool visited[ROWS][COLUMNS] = {false};
 
-std::stack<struct coordinate> location_stack;
-std::stack<struct coordinate> branch_stack;
+// std::stack<struct coordinate> location_stack;
+// std::stack<struct coordinate> branch_stack;
+
+auto location_stack = std::make_unique<std::stack<struct coordinate, std::vector<struct coordinate>>>();
+auto branch_stack = std::make_unique<std::stack<struct coordinate, std::vector<struct coordinate>>>();
 
 static coordinate XY;
 
@@ -1194,7 +1199,131 @@ public:
         default:
             break;
         }
+        cout << "Invalid Move" << endl;
         return 'X';
+    }
+
+    bool isAroundVisited(struct coordinate p) {
+        struct surroundCoor surCoor = getSurrounds(p);
+        bool isTrue = false;  // Declare isTrue
+    
+        switch (orient) {
+            case 0: // North
+                switch (wall_arrangement) {
+                    case 1:
+                        if (visited[surCoor.E.y][surCoor.E.x] && visited[surCoor.W.y][surCoor.W.x])
+                            isTrue = true;
+                        break;
+                    case 2:
+                        if (visited[surCoor.N.y][surCoor.N.x] && visited[surCoor.E.y][surCoor.E.x])
+                            isTrue = true;
+                        break;
+                    case 3:
+                        if (visited[surCoor.N.y][surCoor.N.x] && visited[surCoor.W.y][surCoor.W.x])
+                            isTrue = true;
+                        break;
+                    case 4:
+                        if (visited[surCoor.E.y][surCoor.E.x])
+                            isTrue = true;
+                        break;
+                    case 5:
+                        if (visited[surCoor.W.y][surCoor.W.x])
+                            isTrue = true;
+                        break;
+                    case 6:
+                        if (visited[surCoor.N.y][surCoor.N.x])
+                            isTrue = true;
+                        break;
+                }
+                break;
+            case 1: // East
+                switch (wall_arrangement) {
+                    case 1:
+                        if (visited[surCoor.S.y][surCoor.S.x] && visited[surCoor.N.y][surCoor.N.x])
+                            isTrue = true;
+                        break;
+                    case 2:
+                        if (visited[surCoor.E.y][surCoor.E.x] && visited[surCoor.S.y][surCoor.S.x])
+                            isTrue = true;
+                        break;
+                    case 3:
+                        if (visited[surCoor.E.y][surCoor.E.x] && visited[surCoor.N.y][surCoor.N.x])
+                            isTrue = true;
+                        break;
+                    case 4:
+                        if (visited[surCoor.S.y][surCoor.S.x])
+                            isTrue = true;
+                        break;
+                    case 5:
+                        if (visited[surCoor.N.y][surCoor.N.x])
+                            isTrue = true;
+                        break;
+                    case 6:
+                        if (visited[surCoor.E.y][surCoor.E.x])
+                            isTrue = true;
+                        break;
+                }
+                break;
+            case 2: // South
+                switch (wall_arrangement) {
+                    case 1:
+                        if (visited[surCoor.W.y][surCoor.W.x] && visited[surCoor.E.y][surCoor.E.x])
+                            isTrue = true;
+                        break;
+                    case 2:
+                        if (visited[surCoor.S.y][surCoor.S.x] && visited[surCoor.W.y][surCoor.W.x])
+                            isTrue = true;
+                        break;
+                    case 3:
+                        if (visited[surCoor.S.y][surCoor.S.x] && visited[surCoor.E.y][surCoor.E.x])
+                            isTrue = true;
+                        break;
+                    case 4:
+                        if (visited[surCoor.W.y][surCoor.W.x])
+                            isTrue = true;
+                        break;
+                    case 5:
+                        if (visited[surCoor.E.y][surCoor.E.x])
+                            isTrue = true;
+                        break;
+                    case 6:
+                        if (visited[surCoor.S.y][surCoor.S.x])
+                            isTrue = true;
+                        break;
+                }
+                break;
+            case 3: // West
+                switch (wall_arrangement) {
+                    case 1:
+                        if (visited[surCoor.N.y][surCoor.N.x] && visited[surCoor.S.y][surCoor.S.x])
+                            isTrue = true;
+                        break;
+                    case 2:
+                        if (visited[surCoor.W.y][surCoor.W.x] && visited[surCoor.N.y][surCoor.N.x])
+                            isTrue = true;
+                        break;
+                    case 3:
+                        if (visited[surCoor.W.y][surCoor.W.x] && visited[surCoor.S.y][surCoor.S.x])
+                            isTrue = true;
+                        break;
+                    case 4:
+                        if (visited[surCoor.N.y][surCoor.N.x])
+                            isTrue = true;
+                        break;
+                    case 5:
+                        if (visited[surCoor.S.y][surCoor.S.x])
+                            isTrue = true;
+                        break;
+                    case 6:
+                        if (visited[surCoor.W.y][surCoor.W.x])
+                            isTrue = true;
+                        break;
+                }
+                break;
+            default:
+                break;
+        }
+        return isTrue;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -1245,16 +1374,16 @@ public:
             {
             case 0: // Going until a dead end is found
                 /* code */
-                if (wall_arrangement == 7) // Dead end
+                if (wall_arrangement == 7 || isAroundVisited(XY)) // Dead end
                 {
                     robot_case = 1;
                 }
                 else
                 {
-                    location_stack.push(XY);
+                    location_stack->push(XY);
                     if (isBranchable(XY, wall_arrangement))
                     {
-                        branch_stack.push(XY);
+                        branch_stack->push(XY);
                     }
 
                     char move = toMoveForward(XY, wall_arrangement);
@@ -1263,15 +1392,15 @@ public:
                 break;
 
             case 1: // Going backward until a branch is found
-                if (compareCoordinates(XY, branch_stack.top()))
+                if (compareCoordinates(XY, branch_stack->top()))
                 {
                     robot_case = 0;
-                    branch_stack.pop();
+                    branch_stack->pop();
                 }
                 else
                 {
-                    struct coordinate next_coor = location_stack.top();
-                    location_stack.pop();
+                    struct coordinate next_coor = location_stack->top();
+                    location_stack->pop();
                     char move = toMoveBackward(XY, next_coor);
                     moveRobot(move);
                 }
