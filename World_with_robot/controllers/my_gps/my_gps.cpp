@@ -73,6 +73,9 @@ const int ROWS = 20;
 const int COLUMNS = 20;
 
 bool visited[ROWS][COLUMNS] = {false};
+struct coordinate greenCells[3];
+
+int greenptr = 0;
 
 // std::stack<struct coordinate> location_stack;
 // std::stack<struct coordinate> branch_stack;
@@ -893,6 +896,7 @@ public:
                 else
                 {
                     cout << "Green Detected" << endl;
+                    addToGreenCells(XY);
                 }
             }
             turnLeft();
@@ -910,6 +914,7 @@ public:
                 else
                 {
                     cout << "Green Detected" << endl;
+                    addToGreenCells(XY);
                 }
             }
             turnRight();
@@ -927,6 +932,7 @@ public:
                 else
                 {
                     cout << "Green Detected" << endl;
+                    addToGreenCells(XY);
                 }
             }
             turnLeft();
@@ -941,6 +947,7 @@ public:
                 else
                 {
                     cout << "Green Detected" << endl;
+                    addToGreenCells(XY);
                 }
             }
             turnLeft();
@@ -1208,6 +1215,27 @@ public:
         return isTrue;
     }
 
+    void addToGreenCells(struct coordinate p)
+    {   
+        if (compareCoordinates(p, greenCells[0]) || compareCoordinates(p, greenCells[1]) || compareCoordinates(p, greenCells[2]) )
+        {
+            return;
+        }else
+        {
+            if (greenptr < 3)
+            {
+                greenCells[greenptr] = p;
+                cout << "Green Cell Added" << endl;
+                greenptr++;
+            }
+            else
+            {
+                cout << "Green Cells are full" << endl;
+            }
+            
+        }
+    }
+
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     // Main simulation loop
@@ -1286,7 +1314,7 @@ public:
                                 moveRobot(move);
 
                                 if (location_stack->empty()) {
-                                    cout << "Maze exploration finished" << endl;
+                                    cout << "Maze exploration finished" << endl;                                    
                                     robot_case = 1;
                                 }
                             }
