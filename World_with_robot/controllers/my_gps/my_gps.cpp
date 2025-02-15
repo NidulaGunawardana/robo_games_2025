@@ -1866,8 +1866,8 @@ public:
         cout << "Exploring the maze and Finding Survivros..." << endl;
 
         goForward(0); // This is to enter the maze
-        align_wall();
-        parallel_wall();
+        // align_wall();
+        // parallel_wall();
         
         while (step(timeStep) != -1)
         {
