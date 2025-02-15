@@ -7,6 +7,7 @@
 #include <webots/InertialUnit.hpp>
 #include <webots/Camera.hpp>
 #include <webots/Display.hpp>
+
 #include <iostream>
 #include <cmath>
 #include <iomanip>
@@ -16,35 +17,39 @@
 #include <string>
 #include <queue>
 
-#define GREEN_THRESHOLD 80        // Minimum green intensity for detection
-#define GREEN_AREA_THRESHOLD 0.06 // 8% of the image must be green to trigger detection
-
 using namespace webots;
 using namespace std;
 
-/**
- * Function to process the camera image, detect green areas, and display the binary mask.
- * @param camera - Pointer to the Webots camera.
- * @param display - Pointer to the Webots display.
- * @return true if a large green area is detected, false otherwise.
- */
+// Constants
+#define GREEN_THRESHOLD 80        // Minimum green intensity for detection
+#define GREEN_AREA_THRESHOLD 0.06 // 6% of the image must be green to trigger detection
 
-struct coordinate
-{
+// Orientation mapping: 0: North, 1: East, 2: South, 3: West
+int orient = 0;
+
+// Grid dimensions
+const int ROWS = 20;
+const int COLUMNS = 20;
+
+// Structs for coordinates and color representation
+struct coordinate {
     int y;
     int x;
 };
 
-// Define known floor colors
-struct Color
-{
+struct surroundCoor {
+    struct coordinate N;
+    struct coordinate S;
+    struct coordinate W;
+    struct coordinate E;
+};
+
+struct Color {
     int r, g, b;
     string name;
 };
 
-// Define RGB ranges for each color
-struct ColorRange
-{
+struct ColorRange {
     int r_min, r_max;
     int g_min, g_max;
     int b_min, b_max;
@@ -61,74 +66,16 @@ const ColorRange COLORS[] = {
 // Default Webots floor color (ignored)
 const ColorRange DEFAULT_FLOOR = {160, 190, 120, 150, 90, 120, "Default"};
 
-struct surroundCoor
-{
-    struct coordinate N;
-    struct coordinate S;
-    struct coordinate W;
-    struct coordinate E;
-};
-
-int orient = 0; // 0: North, 1: East, 2: South, 3: West
-
-const int ROWS = 20;
-const int COLUMNS = 20;
-
+// Grid data structures
 bool visited[ROWS][COLUMNS] = {false};
 struct coordinate greenCells[3];
-
 int greenptr = 0;
 
-int cells[ROWS][COLUMNS] = {
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}};
+int cells[ROWS][COLUMNS] = { {-1} };
+int cell_colors[ROWS][COLUMNS] = { {-1} };
+int flood[ROWS][COLUMNS] = { {0} };
 
-// Cell colors => -1: Default, 1: Yellow, 2: Orange, 3: Red
-int cell_colors[ROWS][COLUMNS] = {
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}};
-
-int flood[ROWS][COLUMNS];
-
-// std::stack<struct coordinate> location_stack;
-// std::stack<struct coordinate> branch_stack;
-
+// Stacks for navigation
 auto location_stack = std::make_unique<std::stack<struct coordinate, std::vector<struct coordinate>>>();
 auto branch_stack = std::make_unique<std::stack<struct coordinate, std::vector<struct coordinate>>>();
 
@@ -305,7 +252,7 @@ public:
                 {
                     return 'X';
                 }
-                // return "Detected Color: " + color.name + " (RGB: " + to_string(r) + ", " + to_string(g) + ", " + to_string(b) + ")";
+                
             }
         }
 
@@ -359,7 +306,7 @@ public:
         else
         {
             // cout << "No Walls Around" << endl;
-            return 0; // No significant obstacles detected
+            return 0; 
         }
     }
 
@@ -602,12 +549,6 @@ public:
         XY.y = row;
         return XY;
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-    // Code By Mihiruth
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     struct surroundCoor getSurrounds(struct coordinate p)
     {
@@ -1498,9 +1439,6 @@ public:
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////// Functions for the floodfill ////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////////////////////////
 
     bool isAccessibleFlood(struct coordinate p, struct coordinate p1)
     {
@@ -1886,30 +1824,7 @@ public:
         XY = calculateCell(gps_x, gps_y);
     }
 
-    // void buildFirepitWalls() {
-    //     for (int i = 0; i < ROWS; i++) {
-    //         for (int j = 0; j < COLUMNS; j++) {
-    //             if (cell_colors[i][j] > 0) { // Fire pit cell
-    //                 // Check adjacent cells to determine wall placement
-    //                 bool left = (j == 0 || cell_colors[i][j - 1] == -1);
-    //                 bool right = (j == COLUMNS - 1 || cell_colors[i][j + 1] == -1);
-    //                 bool top = (i == 0 || cell_colors[i - 1][j] == -1);
-    //                 bool bottom = (i == ROWS - 1 || cell_colors[i + 1][j] == -1);
-
-    //                 // Assign appropriate wall number
-    //                 if (left && bottom) cells[i][j] = 5;
-    //                 else if (right && bottom) cells[i][j] = 6;
-    //                 else if (right && top) cells[i][j] = 7;
-    //                 else if (left && top) cells[i][j] = 8;
-    //                 else if (left) cells[i][j] = 1;
-    //                 else if (top) cells[i][j] = 2;
-    //                 else if (right) cells[i][j] = 3;
-    //                 else if (bottom) cells[i][j] = 4;
-    //             }
-    //         }
-    //     }
-    // }
-
+    
     void identifyFirepits(struct coordinate p)
     {
         switch (floor_color)
@@ -1953,11 +1868,7 @@ public:
         goForward(0); // This is to enter the maze
         align_wall();
         parallel_wall();
-        // important ###########################################################################
-        //  This is not for the correct starting position
-        //  Have to create a function to enter the maze
-        // #####################################################################################
-
+        
         while (step(timeStep) != -1)
         {
             // Print front distance sensor value
@@ -2031,8 +1942,7 @@ public:
                 break;
 
             case 1: // go out of the maze and come to the starting position
-                    // ##################################
-                //  Again this is not the currect starting position
+                    
                 switch (orient)
                 {
                 case 0: // North
@@ -2077,12 +1987,8 @@ public:
                 case 0:
 
                     cout << "Starting the Rescue Mission..." << endl;
-                    goForward(1); // This is to enter the maze
-                    // This has to be fixed to the correct starting position
+                    goForward(1); // This is to enter the maze                   
                     struct coordinate survCoor;
-                    // cout << "Building FirePit Walls" << endl;
-                    // buildFirepitWalls();
-                    // cout << "Firepit Walls Built" << endl;
                     greenptr = 0;
                     floodcase = 1;
                     break;
@@ -2141,15 +2047,11 @@ public:
                 case 3: // Set floodfill to the starting position
                     initializeFlood(10, 0);
 
-                    // cout << "Flood Fill Started" << endl;
-
                     struct coordinate startCoor;
                     startCoor.x = 10;
                     startCoor.y = 0;
 
                     floodFill(startCoor, startCoor);
-
-                    // cout << "Flood Fill Finished" << endl;
                     floodcase = 4;
                     break;
 
@@ -2204,7 +2106,6 @@ private:
 int main()
 {
     MyRobot robot; // Create an instance of the robot
-    // robot.moveFirstCell();
     robot.run(); // Start the simulation loop
     return 0;
 }
