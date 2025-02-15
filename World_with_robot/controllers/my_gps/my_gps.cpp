@@ -36,13 +36,15 @@ struct coordinate
 };
 
 // Define known floor colors
-struct Color {
+struct Color
+{
     int r, g, b;
     string name;
 };
 
 // Define RGB ranges for each color
-struct ColorRange {
+struct ColorRange
+{
     int r_min, r_max;
     int g_min, g_max;
     int b_min, b_max;
@@ -51,14 +53,13 @@ struct ColorRange {
 
 // Predefined color ranges
 const ColorRange COLORS[] = {
-    {220, 245, 220, 245, 140, 170, "Yellow"},  // Yellow (234, 235, 156)
-    {220, 245, 90, 130, 20, 50, "Orange"},     // Orange (233, 109, 35)
-    {220, 245, 20, 50, 20, 50, "Red"}          // Red (233, 32, 34)
+    {220, 245, 220, 245, 140, 170, "Yellow"}, // Yellow (234, 235, 156)
+    {220, 245, 90, 130, 20, 50, "Orange"},    // Orange (233, 109, 35)
+    {220, 245, 20, 50, 20, 50, "Red"}         // Red (233, 32, 34)
 };
 
 // Default Webots floor color (ignored)
 const ColorRange DEFAULT_FLOOR = {160, 190, 120, 150, 90, 120, "Default"};
-
 
 struct surroundCoor
 {
@@ -79,55 +80,51 @@ struct coordinate greenCells[3];
 int greenptr = 0;
 
 int cells[ROWS][COLUMNS] = {
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}
-};
-
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}};
 
 // Cell colors => -1: Default, 1: Yellow, 2: Orange, 3: Red
 int cell_colors[ROWS][COLUMNS] = {
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}
-};
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}};
 
 int flood[ROWS][COLUMNS];
-
 
 // std::stack<struct coordinate> location_stack;
 // std::stack<struct coordinate> branch_stack;
@@ -191,71 +188,79 @@ public:
      * @param display - Pointer to the Webots display.
      * @return true if a large green area is detected, false otherwise.
      */
-    bool processVision(Camera *camera, Display *display) {
-        if (!camera || !display) {
+    bool processVision(Camera *camera, Display *display)
+    {
+        if (!camera || !display)
+        {
             cerr << "ERROR: Camera or Display not initialized!" << endl;
             return false;
         }
-    
+
         int width = camera->getWidth();
         int height = camera->getHeight();
-    
+
         // Create an empty image buffer
         unsigned char *imageBuffer = new unsigned char[3 * width * height];
-    
+
         // Get the camera image
         const unsigned char *image = camera->getImage();
-        if (!image) {
+        if (!image)
+        {
             cerr << "ERROR: Failed to get camera image!" << endl;
             delete[] imageBuffer;
             return false;
         }
-    
+
         int green_count = 0;
         int total_pixels = width * height;
-    
+
         // Process Image: Detect Green & Create Binary Mask
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                int index = (y * width + x) * 4;  // BGRA format (4 bytes per pixel)
-    
-                int r = image[index + 2];  // Red
-                int g = image[index + 1];  // Green
-                int b = image[index];      // Blue
-    
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                int index = (y * width + x) * 4; // BGRA format (4 bytes per pixel)
+
+                int r = image[index + 2]; // Red
+                int g = image[index + 1]; // Green
+                int b = image[index];     // Blue
+
                 // Check if green is dominant
-                bool isGreen = (g > GREEN_THRESHOLD && g/2 > r && g/2 > b);
-                if (isGreen) green_count++;
-    
+                bool isGreen = (g > GREEN_THRESHOLD && g / 2 > r && g / 2 > b);
+                if (isGreen)
+                    green_count++;
+
                 // Create binary mask (Green -> Green, Others -> Black)
-                imageBuffer[3 * (y * width + x)] = isGreen ? 0 : 0;        // Red
-                imageBuffer[3 * (y * width + x) + 1] = isGreen ? 255 : 0;  // Green
-                imageBuffer[3 * (y * width + x) + 2] = isGreen ? 0 : 0;    // Blue
+                imageBuffer[3 * (y * width + x)] = isGreen ? 0 : 0;       // Red
+                imageBuffer[3 * (y * width + x) + 1] = isGreen ? 255 : 0; // Green
+                imageBuffer[3 * (y * width + x) + 2] = isGreen ? 0 : 0;   // Blue
             }
         }
-    
+
         // Display the Binary Green Mask
         ImageRef *image_ref = display->imageNew(width, height, imageBuffer, Display::RGB);
         display->imagePaste(image_ref, 0, 0, false);
         display->imageDelete(image_ref);
-    
+
         delete[] imageBuffer; // Free memory
-    
+
         // Check if green area is significant
         return (static_cast<double>(green_count) / total_pixels > GREEN_AREA_THRESHOLD);
     }
 
-   
     /**
      * Function to detect floor color based on predefined RGB ranges.
      * @param camera - Pointer to the Webots camera.
      * @return The detected color name (Yellow, Orange, Red) or an empty string if default.
      */
-    char getFloorColor(Camera *camera) {
-        if (!camera) return 'E';
+    char getFloorColor(Camera *camera)
+    {
+        if (!camera)
+            return 'E';
 
         const unsigned char *image = camera->getImage();
-        if (!image) return 'E';
+        if (!image)
+            return 'E';
 
         int width = camera->getWidth();
         int height = camera->getHeight();
@@ -263,38 +268,48 @@ public:
         // Take the center pixel as the reference
         int x = width / 2;
         int y = height / 2;
-        int index = (y * width + x) * 4;  // BGRA format
+        int index = (y * width + x) * 4; // BGRA format
 
-        int r = image[index + 2];  // Red
-        int g = image[index + 1];  // Green
-        int b = image[index];      // Blue
+        int r = image[index + 2]; // Red
+        int g = image[index + 1]; // Green
+        int b = image[index];     // Blue
 
         // Ignore default floor color
         if (r >= DEFAULT_FLOOR.r_min && r <= DEFAULT_FLOOR.r_max &&
             g >= DEFAULT_FLOOR.g_min && g <= DEFAULT_FLOOR.g_max &&
-            b >= DEFAULT_FLOOR.b_min && b <= DEFAULT_FLOOR.b_max) {
-            return 'X';  // unrecognized color
+            b >= DEFAULT_FLOOR.b_min && b <= DEFAULT_FLOOR.b_max)
+        {
+            return 'X'; // unrecognized color
         }
 
         // Check for predefined colors
-        for (const auto& color : COLORS) {
+        for (const auto &color : COLORS)
+        {
             if (r >= color.r_min && r <= color.r_max &&
                 g >= color.g_min && g <= color.g_max &&
-                b >= color.b_min && b <= color.b_max) {
-                    if (color.name == "Yellow") {
-                        return 'Y';
-                    }else if (color.name == "Orange") {
-                        return 'O';
-                    }else if (color.name == "Red"){
-                        return 'R';
-                    }else{
-                        return 'X';
-                    }                    
+                b >= color.b_min && b <= color.b_max)
+            {
+                if (color.name == "Yellow")
+                {
+                    return 'Y';
+                }
+                else if (color.name == "Orange")
+                {
+                    return 'O';
+                }
+                else if (color.name == "Red")
+                {
+                    return 'R';
+                }
+                else
+                {
+                    return 'X';
+                }
                 // return "Detected Color: " + color.name + " (RGB: " + to_string(r) + ", " + to_string(g) + ", " + to_string(b) + ")";
             }
         }
 
-        return 'X';  // Unrecognized color
+        return 'X'; // Unrecognized color
     }
 
     int getDistanceSensors()
@@ -318,32 +333,32 @@ public:
         }
         else if (distanceFront < 0.39 && distanceLeft < 0.5 && distanceRight > 0.5)
         {
-            //cout << "Wall Right" << endl;
+            // cout << "Wall Right" << endl;
             return 3;
         }
         else if (distanceFront > 0.39 && distanceLeft > 0.5 && distanceRight < 0.5)
         {
-            //cout << "Wall Ahead and Left" << endl;
+            // cout << "Wall Ahead and Left" << endl;
             return 4;
         }
         else if (distanceFront > 0.39 && distanceLeft < 0.5 && distanceRight > 0.5)
         {
-            //cout << "Wall Ahead and Right" << endl;
+            // cout << "Wall Ahead and Right" << endl;
             return 5;
         }
         else if (distanceFront < 0.39 && distanceLeft > 0.5 && distanceRight > 0.5)
         {
-            //cout << "Wall Left and Right" << endl;
+            // cout << "Wall Left and Right" << endl;
             return 6;
         }
         else if (distanceFront > 0.39 && distanceLeft > 0.5 && distanceRight > 0.5)
         {
-            //cout << "Wall Ahead, Left and Right" << endl;
+            // cout << "Wall Ahead, Left and Right" << endl;
             return 7;
         }
         else
         {
-            //cout << "No Walls Around" << endl;
+            // cout << "No Walls Around" << endl;
             return 0; // No significant obstacles detected
         }
     }
@@ -351,7 +366,7 @@ public:
     // Move the robot forward by a specified distance (in simulation steps)
     void goForward(int steps)
     {
-        //cout << "Going forward for " << steps << " steps..." << endl;
+        // cout << "Going forward for " << steps << " steps..." << endl;
 
         // PID controller parameters
         double Kp = 0.03;
@@ -359,19 +374,18 @@ public:
         double Kd = 0.01;
         double previousError = 0.0;
         double integral = 0.0;
-
-        for (int i = 0; i < steps; i++)
+        if (steps == 0)
         {
             double initialLeftPosition = getLeftWheelSensor();
 
             // cout << "Initial Left Wheel Position: " << initialLeftPosition << endl;
 
             // Move forward until the left wheel rotates a specific distance
-            while ((initialLeftPosition - getLeftWheelSensor()) < 20)
+            while ((initialLeftPosition - getLeftWheelSensor()) < 30)
             {
                 // cout << "Left Wheel Position difference: " << (initialLeftPosition - getLeftWheelSensor()) << endl;
                 // Update global distance sensor readings midway
-                if ((initialLeftPosition - getLeftWheelSensor()) >= 10.5 && (initialLeftPosition - getLeftWheelSensor()) < 11)
+                if ((initialLeftPosition - getLeftWheelSensor()) >= 20.5 && (initialLeftPosition - getLeftWheelSensor()) < 21)
                 {
                     wall_arrangement = getDistanceSensors();
                     // cout << "Wall Arrangement: " << wall_arrangement << endl;
@@ -398,6 +412,48 @@ public:
             }
 
             stopRobot(); // Stop robot after moving the required distance
+        }
+        else
+        {
+            for (int i = 0; i < steps; i++)
+            {
+                double initialLeftPosition = getLeftWheelSensor();
+
+                // cout << "Initial Left Wheel Position: " << initialLeftPosition << endl;
+
+                // Move forward until the left wheel rotates a specific distance
+                while ((initialLeftPosition - getLeftWheelSensor()) < 20)
+                {
+                    // cout << "Left Wheel Position difference: " << (initialLeftPosition - getLeftWheelSensor()) << endl;
+                    // Update global distance sensor readings midway
+                    if ((initialLeftPosition - getLeftWheelSensor()) >= 10.5 && (initialLeftPosition - getLeftWheelSensor()) < 11)
+                    {
+                        wall_arrangement = getDistanceSensors();
+                        // cout << "Wall Arrangement: " << wall_arrangement << endl;
+                        floor_color = getFloorColor(floor_camera);
+                        // cout << "Floor Color: " << floor_color << endl;
+                    }
+
+                    // Wall following using PID control
+                    double distanceLeft = getDistance(ds_left);
+                    double distanceRight = getDistance(ds_right);
+                    double error = distanceLeft - distanceRight;
+                    integral += error;
+                    double derivative = error - previousError;
+                    double correction = Kp * error + Ki * integral + Kd * derivative;
+                    previousError = error;
+
+                    // Adjust motor velocities based on PID correction
+                    double leftSpeed = 18 + correction;
+                    double rightSpeed = 18 - correction;
+
+                    leftMotor->setVelocity(-leftSpeed);
+                    rightMotor->setVelocity(-rightSpeed);
+                    step(timeStep); // Advance simulation
+                }
+
+                stopRobot(); // Stop robot after moving the required distance
+            }
         }
     }
 
@@ -552,7 +608,6 @@ public:
     // Code By Mihiruth
     ///////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////
-
 
     struct surroundCoor getSurrounds(struct coordinate p)
     {
@@ -947,7 +1002,6 @@ public:
                     {
                         addToGreenCells(XY);
                     }
-                    
                 }
             }
             turnLeft();
@@ -1136,152 +1190,159 @@ public:
         return 'X';
     }
 
-    bool isAroundVisited(struct coordinate p) {
+    bool isAroundVisited(struct coordinate p)
+    {
         struct surroundCoor surCoor = getSurrounds(p);
-        bool isTrue = false;  // Declare isTrue
-    
-        switch (orient) {
-            case 0: // North
-                switch (wall_arrangement) {
-                    case 0:
-                        if (visited[surCoor.N.y][surCoor.N.x] && visited[surCoor.E.y][surCoor.E.x] && visited[surCoor.W.y][surCoor.W.x])
-                            isTrue = true;
-                        break;
-                    case 1:
-                        if (visited[surCoor.E.y][surCoor.E.x] && visited[surCoor.W.y][surCoor.W.x])
-                            isTrue = true;
-                        break;
-                    case 2:
-                        if (visited[surCoor.N.y][surCoor.N.x] && visited[surCoor.E.y][surCoor.E.x])
-                            isTrue = true;
-                        break;
-                    case 3:
-                        if (visited[surCoor.N.y][surCoor.N.x] && visited[surCoor.W.y][surCoor.W.x])
-                            isTrue = true;
-                        break;
-                    case 4:
-                        if (visited[surCoor.E.y][surCoor.E.x])
-                            isTrue = true;
-                        break;
-                    case 5:
-                        if (visited[surCoor.W.y][surCoor.W.x])
-                            isTrue = true;
-                        break;
-                    case 6:
-                        if (visited[surCoor.N.y][surCoor.N.x])
-                            isTrue = true;
-                        break;
-                }
+        bool isTrue = false; // Declare isTrue
+
+        switch (orient)
+        {
+        case 0: // North
+            switch (wall_arrangement)
+            {
+            case 0:
+                if (visited[surCoor.N.y][surCoor.N.x] && visited[surCoor.E.y][surCoor.E.x] && visited[surCoor.W.y][surCoor.W.x])
+                    isTrue = true;
                 break;
-            case 1: // East
-                switch (wall_arrangement) {
-                    case 0:
-                        if (visited[surCoor.E.y][surCoor.E.x] && visited[surCoor.N.y][surCoor.N.x] && visited[surCoor.S.y][surCoor.S.x])
-                            isTrue = true;
-                        break;
-                    case 1:
-                        if (visited[surCoor.S.y][surCoor.S.x] && visited[surCoor.N.y][surCoor.N.x])
-                            isTrue = true;
-                        break;
-                    case 2:
-                        if (visited[surCoor.E.y][surCoor.E.x] && visited[surCoor.S.y][surCoor.S.x])
-                            isTrue = true;
-                        break;
-                    case 3:
-                        if (visited[surCoor.E.y][surCoor.E.x] && visited[surCoor.N.y][surCoor.N.x])
-                            isTrue = true;
-                        break;
-                    case 4:
-                        if (visited[surCoor.S.y][surCoor.S.x])
-                            isTrue = true;
-                        break;
-                    case 5:
-                        if (visited[surCoor.N.y][surCoor.N.x])
-                            isTrue = true;
-                        break;
-                    case 6:
-                        if (visited[surCoor.E.y][surCoor.E.x])
-                            isTrue = true;
-                        break;
-                }
+            case 1:
+                if (visited[surCoor.E.y][surCoor.E.x] && visited[surCoor.W.y][surCoor.W.x])
+                    isTrue = true;
                 break;
-            case 2: // South
-                switch (wall_arrangement) {
-                    case 0:
-                        if (visited[surCoor.S.y][surCoor.S.x] && visited[surCoor.E.y][surCoor.E.x] && visited[surCoor.W.y][surCoor.W.x])
-                            isTrue = true;
-                        break;
-                    case 1:
-                        if (visited[surCoor.W.y][surCoor.W.x] && visited[surCoor.E.y][surCoor.E.x])
-                            isTrue = true;
-                        break;
-                    case 2:
-                        if (visited[surCoor.S.y][surCoor.S.x] && visited[surCoor.W.y][surCoor.W.x])
-                            isTrue = true;
-                        break;
-                    case 3:
-                        if (visited[surCoor.S.y][surCoor.S.x] && visited[surCoor.E.y][surCoor.E.x])
-                            isTrue = true;
-                        break;
-                    case 4:
-                        if (visited[surCoor.W.y][surCoor.W.x])
-                            isTrue = true;
-                        break;
-                    case 5:
-                        if (visited[surCoor.E.y][surCoor.E.x])
-                            isTrue = true;
-                        break;
-                    case 6:
-                        if (visited[surCoor.S.y][surCoor.S.x])
-                            isTrue = true;
-                        break;
-                }
+            case 2:
+                if (visited[surCoor.N.y][surCoor.N.x] && visited[surCoor.E.y][surCoor.E.x])
+                    isTrue = true;
                 break;
-            case 3: // West
-                switch (wall_arrangement) {
-                    case 0:
-                        if (visited[surCoor.N.y][surCoor.N.x] && visited[surCoor.S.y][surCoor.S.x] && visited[surCoor.W.y][surCoor.W.x])
-                            isTrue = true;
-                        break;
-                    case 1:
-                        if (visited[surCoor.N.y][surCoor.N.x] && visited[surCoor.S.y][surCoor.S.x])
-                            isTrue = true;
-                        break;
-                    case 2:
-                        if (visited[surCoor.W.y][surCoor.W.x] && visited[surCoor.N.y][surCoor.N.x])
-                            isTrue = true;
-                        break;
-                    case 3:
-                        if (visited[surCoor.W.y][surCoor.W.x] && visited[surCoor.S.y][surCoor.S.x])
-                            isTrue = true;
-                        break;
-                    case 4:
-                        if (visited[surCoor.N.y][surCoor.N.x])
-                            isTrue = true;
-                        break;
-                    case 5:
-                        if (visited[surCoor.S.y][surCoor.S.x])
-                            isTrue = true;
-                        break;
-                    case 6:
-                        if (visited[surCoor.W.y][surCoor.W.x])
-                            isTrue = true;
-                        break;
-                }
+            case 3:
+                if (visited[surCoor.N.y][surCoor.N.x] && visited[surCoor.W.y][surCoor.W.x])
+                    isTrue = true;
                 break;
-            default:
+            case 4:
+                if (visited[surCoor.E.y][surCoor.E.x])
+                    isTrue = true;
                 break;
+            case 5:
+                if (visited[surCoor.W.y][surCoor.W.x])
+                    isTrue = true;
+                break;
+            case 6:
+                if (visited[surCoor.N.y][surCoor.N.x])
+                    isTrue = true;
+                break;
+            }
+            break;
+        case 1: // East
+            switch (wall_arrangement)
+            {
+            case 0:
+                if (visited[surCoor.E.y][surCoor.E.x] && visited[surCoor.N.y][surCoor.N.x] && visited[surCoor.S.y][surCoor.S.x])
+                    isTrue = true;
+                break;
+            case 1:
+                if (visited[surCoor.S.y][surCoor.S.x] && visited[surCoor.N.y][surCoor.N.x])
+                    isTrue = true;
+                break;
+            case 2:
+                if (visited[surCoor.E.y][surCoor.E.x] && visited[surCoor.S.y][surCoor.S.x])
+                    isTrue = true;
+                break;
+            case 3:
+                if (visited[surCoor.E.y][surCoor.E.x] && visited[surCoor.N.y][surCoor.N.x])
+                    isTrue = true;
+                break;
+            case 4:
+                if (visited[surCoor.S.y][surCoor.S.x])
+                    isTrue = true;
+                break;
+            case 5:
+                if (visited[surCoor.N.y][surCoor.N.x])
+                    isTrue = true;
+                break;
+            case 6:
+                if (visited[surCoor.E.y][surCoor.E.x])
+                    isTrue = true;
+                break;
+            }
+            break;
+        case 2: // South
+            switch (wall_arrangement)
+            {
+            case 0:
+                if (visited[surCoor.S.y][surCoor.S.x] && visited[surCoor.E.y][surCoor.E.x] && visited[surCoor.W.y][surCoor.W.x])
+                    isTrue = true;
+                break;
+            case 1:
+                if (visited[surCoor.W.y][surCoor.W.x] && visited[surCoor.E.y][surCoor.E.x])
+                    isTrue = true;
+                break;
+            case 2:
+                if (visited[surCoor.S.y][surCoor.S.x] && visited[surCoor.W.y][surCoor.W.x])
+                    isTrue = true;
+                break;
+            case 3:
+                if (visited[surCoor.S.y][surCoor.S.x] && visited[surCoor.E.y][surCoor.E.x])
+                    isTrue = true;
+                break;
+            case 4:
+                if (visited[surCoor.W.y][surCoor.W.x])
+                    isTrue = true;
+                break;
+            case 5:
+                if (visited[surCoor.E.y][surCoor.E.x])
+                    isTrue = true;
+                break;
+            case 6:
+                if (visited[surCoor.S.y][surCoor.S.x])
+                    isTrue = true;
+                break;
+            }
+            break;
+        case 3: // West
+            switch (wall_arrangement)
+            {
+            case 0:
+                if (visited[surCoor.N.y][surCoor.N.x] && visited[surCoor.S.y][surCoor.S.x] && visited[surCoor.W.y][surCoor.W.x])
+                    isTrue = true;
+                break;
+            case 1:
+                if (visited[surCoor.N.y][surCoor.N.x] && visited[surCoor.S.y][surCoor.S.x])
+                    isTrue = true;
+                break;
+            case 2:
+                if (visited[surCoor.W.y][surCoor.W.x] && visited[surCoor.N.y][surCoor.N.x])
+                    isTrue = true;
+                break;
+            case 3:
+                if (visited[surCoor.W.y][surCoor.W.x] && visited[surCoor.S.y][surCoor.S.x])
+                    isTrue = true;
+                break;
+            case 4:
+                if (visited[surCoor.N.y][surCoor.N.x])
+                    isTrue = true;
+                break;
+            case 5:
+                if (visited[surCoor.S.y][surCoor.S.x])
+                    isTrue = true;
+                break;
+            case 6:
+                if (visited[surCoor.W.y][surCoor.W.x])
+                    isTrue = true;
+                break;
+            }
+            break;
+        default:
+            break;
         }
         return isTrue;
     }
 
     void addToGreenCells(struct coordinate p)
-    {   
-        if (compareCoordinates(p, greenCells[0]) || compareCoordinates(p, greenCells[1]) || compareCoordinates(p, greenCells[2]) )
-        {   
+    {
+        if (compareCoordinates(p, greenCells[0]) || compareCoordinates(p, greenCells[1]) || compareCoordinates(p, greenCells[2]))
+        {
             cout << "Survivor Already Known" << endl;
             return;
-        }else
+        }
+        else
         {
             if (greenptr < 3)
             {
@@ -1293,104 +1354,147 @@ public:
             {
                 cout << "Survivor array is full" << endl;
             }
-            
         }
     }
 
-    void updateWalls(struct coordinate point) {
-        if (wall_arrangement == 7) {
-            if (orient == 0) {
+    void updateWalls(struct coordinate point)
+    {
+        if (wall_arrangement == 7)
+        {
+            if (orient == 0)
+            {
                 cells[point.y][point.x] = 13;
-            }            //|-|
-            else if (orient == 1) {
+            } //|-|
+            else if (orient == 1)
+            {
                 cells[point.y][point.x] = 12;
-            }            //_-|
-            else if (orient == 2) {
+            } //_-|
+            else if (orient == 2)
+            {
                 cells[point.y][point.x] = 11;
-            }            //|_|
-            else if (orient == 3) {
+            } //|_|
+            else if (orient == 3)
+            {
                 cells[point.y][point.x] = 14;
-            }            //|-_
-        } else if (wall_arrangement == 6) {
-            if (orient == 0) {
+            } //|-_
+        }
+        else if (wall_arrangement == 6)
+        {
+            if (orient == 0)
+            {
                 cells[point.y][point.x] = 9;
-            }            //| |
-            else if (orient == 1) {
+            } //| |
+            else if (orient == 1)
+            {
                 cells[point.y][point.x] = 10;
-            }            //_-
-            else if (orient == 2) {
+            } //_-
+            else if (orient == 2)
+            {
                 cells[point.y][point.x] = 9;
-            }            //| |
-            else if (orient == 3) {
+            } //| |
+            else if (orient == 3)
+            {
                 cells[point.y][point.x] = 10;
-            }            //_-
-        } else if (wall_arrangement == 4) {
-            if (orient == 0) {
+            } //_-
+        }
+        else if (wall_arrangement == 4)
+        {
+            if (orient == 0)
+            {
                 cells[point.y][point.x] = 8;
-            }            //|-
-            else if (orient == 1) {
+            } //|-
+            else if (orient == 1)
+            {
                 cells[point.y][point.x] = 7;
-            }            //-|
-            else if (orient == 2) {
+            } //-|
+            else if (orient == 2)
+            {
                 cells[point.y][point.x] = 6;
-            }            //_|
-            else if (orient == 3) {
+            } //_|
+            else if (orient == 3)
+            {
                 cells[point.y][point.x] = 5;
-            }            //|_
-        } else if (wall_arrangement == 5) {
-            if (orient == 0) {
+            } //|_
+        }
+        else if (wall_arrangement == 5)
+        {
+            if (orient == 0)
+            {
                 cells[point.y][point.x] = 7;
-            }            //-|
-            else if (orient == 1) {
+            } //-|
+            else if (orient == 1)
+            {
                 cells[point.y][point.x] = 6;
-            }            //_|
-            else if (orient == 2) {
+            } //_|
+            else if (orient == 2)
+            {
                 cells[point.y][point.x] = 5;
-            }            //|_
-            else if (orient == 3) {
+            } //|_
+            else if (orient == 3)
+            {
                 cells[point.y][point.x] = 8;
-            }            //|-
-        } else if (wall_arrangement == 1) {
-            if (orient == 0) {
+            } //|-
+        }
+        else if (wall_arrangement == 1)
+        {
+            if (orient == 0)
+            {
                 cells[point.y][point.x] = 2;
-            }            //-
-            else if (orient == 1) {
+            } //-
+            else if (orient == 1)
+            {
                 cells[point.y][point.x] = 3;
-            }            // |
-            else if (orient == 2) {
+            } // |
+            else if (orient == 2)
+            {
                 cells[point.y][point.x] = 4;
-            }            //_
-            else if (orient == 3) {
+            } //_
+            else if (orient == 3)
+            {
                 cells[point.y][point.x] = 1;
-            }            //|
-        } else if (wall_arrangement == 2) {
-            if (orient == 0) {
+            } //|
+        }
+        else if (wall_arrangement == 2)
+        {
+            if (orient == 0)
+            {
                 cells[point.y][point.x] = 1;
-            }            //|
-            else if (orient == 1) {
+            } //|
+            else if (orient == 1)
+            {
                 cells[point.y][point.x] = 2;
-            }            //-
-            else if (orient == 2) {
+            } //-
+            else if (orient == 2)
+            {
                 cells[point.y][point.x] = 3;
-            }            // |
-            else if (orient == 3) {
+            } // |
+            else if (orient == 3)
+            {
                 cells[point.y][point.x] = 4;
-            }            //_
-        } else if (wall_arrangement == 3) {
-            if (orient == 0) {
+            } //_
+        }
+        else if (wall_arrangement == 3)
+        {
+            if (orient == 0)
+            {
                 cells[point.y][point.x] = 3;
-            }            // |
-            else if (orient == 1) {
+            } // |
+            else if (orient == 1)
+            {
                 cells[point.y][point.x] = 4;
-            }            //_
-            else if (orient == 2) {
+            } //_
+            else if (orient == 2)
+            {
                 cells[point.y][point.x] = 1;
-            }            //|
-            else if (orient == 3) {
+            } //|
+            else if (orient == 3)
+            {
                 cells[point.y][point.x] = 2;
-            }            //-
-        } else {
-            cells[point.y][point.x] = 0;            //
+            } //-
+        }
+        else
+        {
+            cells[point.y][point.x] = 0; //
         }
     }
 
@@ -1398,297 +1502,381 @@ public:
     ////////////////////// Functions for the floodfill ////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////
 
-    bool isAccessibleFlood(struct coordinate p, struct coordinate p1) {
-        if (p1.x < 0 || p1.y < 0 || p1.x >=ROWS  || p1.y >= COLUMNS) {
+    bool isAccessibleFlood(struct coordinate p, struct coordinate p1)
+    {
+        if (p1.x < 0 || p1.y < 0 || p1.x >= ROWS || p1.y >= COLUMNS)
+        {
             return false;
         }
-    
-        if (p.x == p1.x) {
-            if (p.y > p1.y) {
-                if ((cells[p.y][p.x] == 4 || cells[p.y][p.x] == 5
-                        || cells[p.y][p.x] == 6 || cells[p.y][p.x] == 10
-                        || cells[p.y][p.x] == 11 || cells[p.y][p.x] == 12
-                        || cells[p.y][p.x] == 14) || (cell_colors[p1.y][p1.x] == 2 || cell_colors[p1.y][p1.x] == 3)) {
+
+        if (p.x == p1.x)
+        {
+            if (p.y > p1.y)
+            {
+                if ((cells[p.y][p.x] == 4 || cells[p.y][p.x] == 5 || cells[p.y][p.x] == 6 || cells[p.y][p.x] == 10 || cells[p.y][p.x] == 11 || cells[p.y][p.x] == 12 || cells[p.y][p.x] == 14) || (cell_colors[p1.y][p1.x] == 2 || cell_colors[p1.y][p1.x] == 3))
+                {
                     return false;
                 }
-    
-                else {
-                    return true;
-                }
-            } else {
-                if ((cells[p.y][p.x] == 2 || cells[p.y][p.x] == 7
-                        || cells[p.y][p.x] == 8 || cells[p.y][p.x] == 10
-                        || cells[p.y][p.x] == 12 || cells[p.y][p.x] == 13
-                        || cells[p.y][p.x] == 14) || (cell_colors[p1.y][p1.x] == 2 || cell_colors[p1.y][p1.x] == 3)) {
-                    return false;
-                }
-    
-                else {
-                    return true;
-                }
-    
-            }
-        } else if (p.y == p1.y) {
-            if (p.x > p1.x) {
-                if ((cells[p.y][p.x] == 1 || cells[p.y][p.x] == 5
-                        || cells[p.y][p.x] == 8 || cells[p.y][p.x] == 9
-                        || cells[p.y][p.x] == 11 || cells[p.y][p.x] == 13
-                        || cells[p.y][p.x] == 14) || (cell_colors[p1.y][p1.x] == 2 || cell_colors[p1.y][p1.x] == 3)) {
-                    return false;
-                } else {
-                    return true;
-                }
-            } else {
-                if ((cells[p.y][p.x] == 3 || cells[p.y][p.x] == 6
-                        || cells[p.y][p.x] == 7 || cells[p.y][p.x] == 9
-                        || cells[p.y][p.x] == 11 || cells[p.y][p.x] == 12
-                        || cells[p.y][p.x] == 13) || (cell_colors[p1.y][p1.x] == 2 || cell_colors[p1.y][p1.x] == 3)) {
-                    return false;
-                } else {
+
+                else
+                {
                     return true;
                 }
             }
-        } else {
+            else
+            {
+                if ((cells[p.y][p.x] == 2 || cells[p.y][p.x] == 7 || cells[p.y][p.x] == 8 || cells[p.y][p.x] == 10 || cells[p.y][p.x] == 12 || cells[p.y][p.x] == 13 || cells[p.y][p.x] == 14) || (cell_colors[p1.y][p1.x] == 2 || cell_colors[p1.y][p1.x] == 3))
+                {
+                    return false;
+                }
+
+                else
+                {
+                    return true;
+                }
+            }
+        }
+        else if (p.y == p1.y)
+        {
+            if (p.x > p1.x)
+            {
+                if ((cells[p.y][p.x] == 1 || cells[p.y][p.x] == 5 || cells[p.y][p.x] == 8 || cells[p.y][p.x] == 9 || cells[p.y][p.x] == 11 || cells[p.y][p.x] == 13 || cells[p.y][p.x] == 14) || (cell_colors[p1.y][p1.x] == 2 || cell_colors[p1.y][p1.x] == 3))
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                if ((cells[p.y][p.x] == 3 || cells[p.y][p.x] == 6 || cells[p.y][p.x] == 7 || cells[p.y][p.x] == 9 || cells[p.y][p.x] == 11 || cells[p.y][p.x] == 12 || cells[p.y][p.x] == 13) || (cell_colors[p1.y][p1.x] == 2 || cell_colors[p1.y][p1.x] == 3))
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+        }
+        else
+        {
             return false;
         }
     }
 
-    bool isConsistant(struct coordinate p) {
+    bool isConsistant(struct coordinate p)
+    {
         struct surroundCoor surr = getSurrounds(p);
-        int minVals[4]={-1,-1,-1,-1};
-        if (surr.N.x >= 0 && surr.N.y >= 0) {
-            if (isAccessibleFlood(p, surr.N)) {
+        int minVals[4] = {-1, -1, -1, -1};
+        if (surr.N.x >= 0 && surr.N.y >= 0)
+        {
+            if (isAccessibleFlood(p, surr.N))
+            {
                 minVals[0] = flood[surr.N.y][surr.N.x];
             }
         }
-        if (surr.E.x >= 0 && surr.E.y >= 0) {
-            if (isAccessibleFlood(p, surr.E)) {
+        if (surr.E.x >= 0 && surr.E.y >= 0)
+        {
+            if (isAccessibleFlood(p, surr.E))
+            {
                 minVals[1] = flood[surr.E.y][surr.E.x];
             }
         }
-        if (surr.S.x >= 0 && surr.S.y >= 0) {
-            if (isAccessibleFlood(p, surr.S)) {
+        if (surr.S.x >= 0 && surr.S.y >= 0)
+        {
+            if (isAccessibleFlood(p, surr.S))
+            {
                 minVals[2] = flood[surr.S.y][surr.S.x];
             }
         }
-        if (surr.W.x >= 0 && surr.W.y >= 0) {
-            if (isAccessibleFlood(p, surr.W)) {
+        if (surr.W.x >= 0 && surr.W.y >= 0)
+        {
+            if (isAccessibleFlood(p, surr.W))
+            {
                 minVals[3] = flood[surr.W.y][surr.W.x];
             }
         }
         int val = flood[p.y][p.x];
         int minCount = 0;
-        for (int i = 0; i < 4; i++) {
-            if (minVals[i] == val - 1 && minVals[i] != -1) {
+        for (int i = 0; i < 4; i++)
+        {
+            if (minVals[i] == val - 1 && minVals[i] != -1)
+            {
                 minCount++;
             }
         }
-    
-        if (minCount > 0 || val == 0) {
+
+        if (minCount > 0 || val == 0)
+        {
             return true;
-        } else {
+        }
+        else
+        {
             return false;
         }
-    
     }
-    
-    void makeConsistant(struct coordinate p) {
+
+    void makeConsistant(struct coordinate p)
+    {
         struct surroundCoor surr = getSurrounds(p);
-        int minVals[4]={-1,-1,-1,-1};
-        if (surr.N.y >= 0 && surr.N.x >= 0) {
-            if (isAccessibleFlood(p, surr.N)) {
+        int minVals[4] = {-1, -1, -1, -1};
+        if (surr.N.y >= 0 && surr.N.x >= 0)
+        {
+            if (isAccessibleFlood(p, surr.N))
+            {
                 minVals[0] = flood[surr.N.y][surr.N.x];
             }
         }
-        if (surr.E.y >= 0 && surr.E.x >= 0) {
-            if (isAccessibleFlood(p, surr.E)) {
+        if (surr.E.y >= 0 && surr.E.x >= 0)
+        {
+            if (isAccessibleFlood(p, surr.E))
+            {
                 minVals[1] = flood[surr.E.y][surr.E.x];
             }
         }
-        if (surr.S.y >= 0 && surr.S.x >= 0) {
-            if (isAccessibleFlood(p, surr.S)) {
+        if (surr.S.y >= 0 && surr.S.x >= 0)
+        {
+            if (isAccessibleFlood(p, surr.S))
+            {
                 minVals[2] = flood[surr.S.y][surr.S.x];
             }
         }
-        if (surr.W.y >= 0 && surr.W.x >= 0) {
-            if (isAccessibleFlood(p, surr.W)) {
+        if (surr.W.y >= 0 && surr.W.x >= 0)
+        {
+            if (isAccessibleFlood(p, surr.W))
+            {
                 minVals[3] = flood[surr.W.y][surr.W.x];
             }
         }
         int minimum = 1000;
-        for (int i = 0; i < 4; i++) {
-            if (minVals[i] == -1) {
+        for (int i = 0; i < 4; i++)
+        {
+            if (minVals[i] == -1)
+            {
                 minVals[i] = 1000;
             }
-            if (minVals[i] < minimum) {
+            if (minVals[i] < minimum)
+            {
                 minimum = minVals[i];
             }
         }
         flood[p.y][p.x] = minimum + 1;
     }
-    
-    void floodFill(struct coordinate p, struct coordinate prev) {
-        
-        if (!isConsistant(p)) {
+
+    void floodFill(struct coordinate p, struct coordinate prev)
+    {
+
+        if (!isConsistant(p))
+        {
             flood[p.y][p.x] = flood[prev.y][prev.x] + 1;
         }
-    
+
         std::queue<coordinate> q;
         q.push(p);
-    
+
         struct surroundCoor surr = getSurrounds(p);
-        if (surr.N.x >= 0 && surr.N.y >= 0) {
-            if (isAccessibleFlood(p, surr.N)) {
+        if (surr.N.x >= 0 && surr.N.y >= 0)
+        {
+            if (isAccessibleFlood(p, surr.N))
+            {
                 q.push(surr.N);
             }
         }
-        if (surr.E.x >= 0 && surr.E.y >= 0) {
-            if (isAccessibleFlood(p, surr.E)) {
+        if (surr.E.x >= 0 && surr.E.y >= 0)
+        {
+            if (isAccessibleFlood(p, surr.E))
+            {
                 q.push(surr.E);
             }
         }
-        if (surr.S.x >= 0 && surr.S.y >= 0) {
-            if (isAccessibleFlood(p, surr.S)) {
+        if (surr.S.x >= 0 && surr.S.y >= 0)
+        {
+            if (isAccessibleFlood(p, surr.S))
+            {
                 q.push(surr.S);
             }
         }
-        if (surr.W.x >= 0 && surr.W.y >= 0) {
-            if (isAccessibleFlood(p, surr.W)) {
+        if (surr.W.x >= 0 && surr.W.y >= 0)
+        {
+            if (isAccessibleFlood(p, surr.W))
+            {
                 q.push(surr.W);
             }
         }
-    
-        while (!q.empty()) {
+
+        while (!q.empty())
+        {
             struct coordinate crun = q.front();
             q.pop();
-            if (isConsistant(crun)) {
-    
-            } else {
+            if (isConsistant(crun))
+            {
+            }
+            else
+            {
                 makeConsistant(crun);
                 q.push(crun);
                 struct surroundCoor surr = getSurrounds(crun);
-                if (surr.N.y >= 0 && surr.N.x >= 0) {
-                    if (isAccessibleFlood(crun, surr.N)) {
+                if (surr.N.y >= 0 && surr.N.x >= 0)
+                {
+                    if (isAccessibleFlood(crun, surr.N))
+                    {
                         q.push(surr.N);
                     }
                 }
-                if (surr.E.y >= 0 && surr.E.x >= 0) {
-                    if (isAccessibleFlood(crun, surr.E)) {
+                if (surr.E.y >= 0 && surr.E.x >= 0)
+                {
+                    if (isAccessibleFlood(crun, surr.E))
+                    {
                         q.push(surr.E);
                     }
                 }
-                if (surr.S.y >= 0 && surr.S.x >= 0) {
-                    if (isAccessibleFlood(crun, surr.S)) {
+                if (surr.S.y >= 0 && surr.S.x >= 0)
+                {
+                    if (isAccessibleFlood(crun, surr.S))
+                    {
                         q.push(surr.S);
                     }
                 }
-                if (surr.W.y >= 0 && surr.W.x >= 0) {
-                    if (isAccessibleFlood(crun, surr.W)) {
+                if (surr.W.y >= 0 && surr.W.x >= 0)
+                {
+                    if (isAccessibleFlood(crun, surr.W))
+                    {
                         q.push(surr.W);
                     }
                 }
             }
         }
-    
     }
 
-    char toMove(struct coordinate p, struct coordinate prevPos, int orient) {
+    char toMove(struct coordinate p, struct coordinate prevPos, int orient)
+    {
         struct surroundCoor surr = getSurrounds(p);
-    
-    //	int val = flood[p.x][p.y];
-        int minVals[4] = { 1000, 1000, 1000, 1000 };
+
+        //	int val = flood[p.x][p.y];
+        int minVals[4] = {1000, 1000, 1000, 1000};
         int prevDir = 0;
-        if (surr.N.y >= 0 && surr.N.x >= 0) {
-            if (isAccessibleFlood(p, surr.N)) {
+        if (surr.N.y >= 0 && surr.N.x >= 0)
+        {
+            if (isAccessibleFlood(p, surr.N))
+            {
                 minVals[0] = flood[surr.N.y][surr.N.x];
-                if (surr.N.x == prevPos.x && surr.N.y == prevPos.y) {
+                if (surr.N.x == prevPos.x && surr.N.y == prevPos.y)
+                {
                     prevDir = 0;
                 }
             }
         }
-        if (surr.E.y >= 0 && surr.E.x >= 0) {
-            if (isAccessibleFlood(p, surr.E)) {
+        if (surr.E.y >= 0 && surr.E.x >= 0)
+        {
+            if (isAccessibleFlood(p, surr.E))
+            {
                 minVals[1] = flood[surr.E.y][surr.E.x];
-                if (surr.E.x == prevPos.x && surr.E.y == prevPos.y) {
+                if (surr.E.x == prevPos.x && surr.E.y == prevPos.y)
+                {
                     prevDir = 1;
                 }
             }
         }
-        if (surr.S.y >= 0 && surr.S.x >= 0) {
-            if (isAccessibleFlood(p, surr.S)) {
+        if (surr.S.y >= 0 && surr.S.x >= 0)
+        {
+            if (isAccessibleFlood(p, surr.S))
+            {
                 minVals[2] = flood[surr.S.y][surr.S.x];
-                if (surr.S.x == prevPos.x && surr.S.y == prevPos.y) {
+                if (surr.S.x == prevPos.x && surr.S.y == prevPos.y)
+                {
                     prevDir = 2;
                 }
             }
         }
-        if (surr.W.y >= 0 && surr.W.x >= 0) {
-            if (isAccessibleFlood(p, surr.W)) {
+        if (surr.W.y >= 0 && surr.W.x >= 0)
+        {
+            if (isAccessibleFlood(p, surr.W))
+            {
                 minVals[3] = flood[surr.W.y][surr.W.x];
-                if (surr.W.x == prevPos.x && surr.W.y == prevPos.y) {
+                if (surr.W.x == prevPos.x && surr.W.y == prevPos.y)
+                {
                     prevDir = 3;
                 }
             }
         }
-    
+
         int minimum = 1000;
         int noMovements = 0;
-        for (int i = 0; i < 4; i++) {
-            if (minVals[i] != 1000) {
+        for (int i = 0; i < 4; i++)
+        {
+            if (minVals[i] != 1000)
+            {
                 noMovements++;
             }
         }
-    
+
         int minCell = 0;
-        for (int i = 0; i < 4; i++) {
-            if (minVals[i] < minimum) {
-                if (noMovements == 1) {
+        for (int i = 0; i < 4; i++)
+        {
+            if (minVals[i] < minimum)
+            {
+                if (noMovements == 1)
+                {
                     minimum = minVals[i];
                     minCell = i;
-                } else {
-                    if (i == prevDir) {
-    
-                    } else {
+                }
+                else
+                {
+                    if (i == prevDir)
+                    {
+                    }
+                    else
+                    {
                         minimum = minVals[i];
                         minCell = i;
                     }
                 }
-    
             }
         }
-    
-    
+
         using namespace std;
-        string line ="";
-        for(int b = 0; b < 4; b++)
+        string line = "";
+        for (int b = 0; b < 4; b++)
         {
-            line = line +  to_string(minVals[b])+"\t";
+            line = line + to_string(minVals[b]) + "\t";
         }
         string minCellS = to_string(minCell);
-    
-    
-        if (minCell == orient) {
+
+        if (minCell == orient)
+        {
             return 'F';
-        } else if (minCell == orient - 1 || minCell == orient + 3) {
+        }
+        else if (minCell == orient - 1 || minCell == orient + 3)
+        {
             return 'L';
-        } else if (minCell == orient + 1 || minCell == orient - 3) {
+        }
+        else if (minCell == orient + 1 || minCell == orient - 3)
+        {
             return 'R';
-        } else {
+        }
+        else
+        {
             return 'B';
         }
-    
     }
 
-    void initializeFlood(int dest_x, int dest_y) {
-        for (int i = 0; i < ROWS; i++) {
-            for (int j = 0; j < COLUMNS; j++) {
-                flood[i][j] = 1000;  // Set a high value for all cells
+    void initializeFlood(int dest_x, int dest_y)
+    {
+        for (int i = 0; i < ROWS; i++)
+        {
+            for (int j = 0; j < COLUMNS; j++)
+            {
+                flood[i][j] = 1000; // Set a high value for all cells
             }
         }
-        flood[dest_y][dest_x] = 0;  // Set the new destination
+        flood[dest_y][dest_x] = 0; // Set the new destination
     }
 
-    void updateCoordinates(){
+    void updateCoordinates()
+    {
         // Log robot's position and cell
         const double *gpsValues = gps->getValues();
         double gps_x = gpsValues[0];
@@ -1707,7 +1895,7 @@ public:
     //                 bool right = (j == COLUMNS - 1 || cell_colors[i][j + 1] == -1);
     //                 bool top = (i == 0 || cell_colors[i - 1][j] == -1);
     //                 bool bottom = (i == ROWS - 1 || cell_colors[i + 1][j] == -1);
-                    
+
     //                 // Assign appropriate wall number
     //                 if (left && bottom) cells[i][j] = 5;
     //                 else if (right && bottom) cells[i][j] = 6;
@@ -1721,19 +1909,19 @@ public:
     //         }
     //     }
     // }
-    
 
-    void identifyFirepits(struct coordinate p){
+    void identifyFirepits(struct coordinate p)
+    {
         switch (floor_color)
         {
         case 'R':
-            cell_colors[p.y][p.x] = 3;  
+            cell_colors[p.y][p.x] = 3;
             break;
         case 'O':
-            cell_colors[p.y][p.x] = 2;  
+            cell_colors[p.y][p.x] = 2;
             break;
         case 'Y':
-            cell_colors[p.y][p.x] = 1;  
+            cell_colors[p.y][p.x] = 1;
             break;
         default:
             break;
@@ -1757,16 +1945,18 @@ public:
         // Get initial distance sensor readings
         // wall_arrangement = getDistanceSensors();
         int dfs_case = 0;
-        int robot_case = 0; 
+        int robot_case = 0;
         int floodcase = 0;
 
         cout << "Exploring the maze and Finding Survivros..." << endl;
 
-        goForward(1); // This is to enter the maze
-        //important ###########################################################################
-        // This is not for the correct starting position
-        // Have to create a function to enter the maze
-        //#####################################################################################
+        goForward(0); // This is to enter the maze
+        align_wall();
+        parallel_wall();
+        // important ###########################################################################
+        //  This is not for the correct starting position
+        //  Have to create a function to enter the maze
+        // #####################################################################################
 
         while (step(timeStep) != -1)
         {
@@ -1775,7 +1965,7 @@ public:
             // cout << "Distance sensor values: Front=" << distanceFront << endl;
 
             updateCoordinates();
-            
+
             int x = XY.x;
             int y = XY.y;
 
@@ -1784,199 +1974,210 @@ public:
             //     cout << "GPS Coordinates: X=" << gps_x << ", Y=" << gps_y << " | X =" << x << ", Y =" << y << endl;
             // }
 
-            switch (robot_case) {
-                case 0: // To explore the maze
-                    visited[y][x] = true;
-                    updateWalls(XY);
-                    identifyFirepits(XY);
-                              
-                    // Update wall arrangement in cells
-                    switch (dfs_case) {
-                        case 0: // Going until a dead end is found
-                            if (wall_arrangement == 7 || isAroundVisited(XY)) { // Dead end
-                                //cout << "Dead End" << endl;
-                                dfs_case = 1;
-                            } else {
-                                location_stack->push(XY);
-                                if (isBranchable(XY, wall_arrangement)) {
-                                    branch_stack->push(XY);
-                                }
-            
-                                char move = toMoveForward(XY, wall_arrangement);
-                                moveRobot(move, robot_case);
-                            }
-                            break;
-            
-                        case 1: // Going backward until a branch is found
-                            if (compareCoordinates(XY, branch_stack->top())) {
-                                dfs_case = 0;
-                                branch_stack->pop();
-                            } else {
-                                struct coordinate next_coor = location_stack->top();
-                                location_stack->pop();
-            
-                                char move = toMoveBackward(XY, next_coor);
-                                moveRobot(move, robot_case);
+            switch (robot_case)
+            {
+            case 0: // To explore the maze
+                visited[y][x] = true;
+                updateWalls(XY);
+                identifyFirepits(XY);
 
-                                if (location_stack->empty()) {
-                                    cout << "Maze exploration finished" << endl;                                    
-                                    robot_case = 1;
-                                }
-                            }
-                            break;
-            
-                        default:
-                            break;
+                // Update wall arrangement in cells
+                switch (dfs_case)
+                {
+                case 0: // Going until a dead end is found
+                    if (wall_arrangement == 7 || isAroundVisited(XY))
+                    { // Dead end
+                        // cout << "Dead End" << endl;
+                        dfs_case = 1;
                     }
-                    break;
-
-                case 1: // go out of the maze and come to the starting position
-                //##################################
-                // Again this is not the currect starting position
-                    switch (orient)
+                    else
                     {
-                    case 0: // North
-                        moveRobot('B', robot_case);
-                        turnLeft();
-                        turnLeft();
-                        break;
-                    case 1: // East
-                        moveRobot('R', robot_case);
-                        turnLeft();
-                        turnLeft();
-                        break;
-                    case 2: // South
-                        moveRobot('F', robot_case);
-                        turnLeft();
-                        turnLeft();
-                        break;
-                    case 3: // West
-                        moveRobot('L', robot_case);
-                        turnLeft();
-                        turnLeft();
-                        break;                    
-                    default:
-                        break;
-                    }
-
-                    cout << "Robot Came to the Starting Position" << endl;
-                    robot_case = 2;
-
-                    // wait for 3 seconds
-                    for (int i = 0; i < 3000 / timeStep; ++i)
-                    {
-                        step(timeStep);
-                    }
-                    
-                    break;
-
-                case 2: // Rescue the Survivors
-                    
-                    switch (floodcase)
-                    {
-                    case 0:
-                        
-                        cout << "Starting the Rescue Mission..." << endl;
-                        goForward(1); // This is to enter the maze
-                        // This has to be fixed to the correct starting position
-                        struct coordinate survCoor;
-                        // cout << "Building FirePit Walls" << endl;
-                        // buildFirepitWalls();
-                        // cout << "Firepit Walls Built" << endl;
-                        greenptr = 0;
-                        floodcase = 1;
-                        break;
-                    case 1: // Initialize the flood fill
-                        {   
-                            survCoor = greenCells[greenptr];
-                            
-                            int survivor_x = survCoor.x;
-                            int survivor_y = survCoor.y;
-                            cout << "Next Survivor Coordinates: X=" << survivor_x << ", Y=" << survivor_y << endl;
-
-                            initializeFlood(survivor_x, survivor_y);
-
-                            // cout << "Flood Fill Started" << endl;
-
-                            floodFill(survCoor,survCoor);
-
-                            // cout << "Flood Fill Finished" << endl;
-                            
-                            floodcase = 2;
-                            break;
-                        }
-                        
-
-                    case 2: // Move to the survivor
-                        {      
-                            if (flood[XY.y][XY.x] == 0) {
-                                cout << "Survivor " << (greenptr + 1) << " Found : Starting Rescue Process" << endl;
-                                greenptr++;
-                                floodcase = 1;
-
-                                cout << "Rescue Process Ongoing : Waiting for 3 seconds" << endl;
-
-                                //wait for 3 seconds
-                                for (int i = 0; i < 3000 / timeStep; ++i)
-                                {
-                                    step(timeStep);
-                                }
-
-                                cout << "Survivor " << (greenptr) << " Rescued" << endl;
-
-                                if (greenptr == 3) {
-                                    cout << "All Survivors Rescued !!!" << endl;
-                                    floodcase = 3;
-                                }
-                            }else
-                            {
-                                char move = toMove(XY, XY_prev, orient);
-                                moveRobot(move, robot_case);
-                            }
-                            break;
-                                                                                                               
-                        }
-
-                    case 3: // Set floodfill to the starting position
-                            initializeFlood(10,0);
-
-                            // cout << "Flood Fill Started" << endl;
-
-                            struct coordinate startCoor;
-                            startCoor.x = 10;
-                            startCoor.y = 0;
-
-                            floodFill(startCoor,startCoor);
-
-                            // cout << "Flood Fill Finished" << endl;                            
-                            floodcase = 4;
-                        break;
-
-                    case 4: // Move to the starting position
-                        if (flood[XY.y][XY.x] == 0) {
-                            // cout << "Reached the Starting Position" << endl;
-                            floodcase = 5;
-                            robot_case = 1;
-                        }else
+                        location_stack->push(XY);
+                        if (isBranchable(XY, wall_arrangement))
                         {
-                            char move = toMove(XY, XY_prev, orient);
-                            moveRobot(move, robot_case);
+                            branch_stack->push(XY);
                         }
-                        break;
-                    
-                    default:
-                        break;
+
+                        char move = toMoveForward(XY, wall_arrangement);
+                        moveRobot(move, robot_case);
                     }
-                    
                     break;
-            
+
+                case 1: // Going backward until a branch is found
+                    if (compareCoordinates(XY, branch_stack->top()))
+                    {
+                        dfs_case = 0;
+                        branch_stack->pop();
+                    }
+                    else
+                    {
+                        struct coordinate next_coor = location_stack->top();
+                        location_stack->pop();
+
+                        char move = toMoveBackward(XY, next_coor);
+                        moveRobot(move, robot_case);
+
+                        if (location_stack->empty())
+                        {
+                            cout << "Maze exploration finished" << endl;
+                            robot_case = 1;
+                        }
+                    }
+                    break;
+
                 default:
                     break;
+                }
+                break;
+
+            case 1: // go out of the maze and come to the starting position
+                    // ##################################
+                //  Again this is not the currect starting position
+                switch (orient)
+                {
+                case 0: // North
+                    moveRobot('B', robot_case);
+                    turnLeft();
+                    turnLeft();
+                    break;
+                case 1: // East
+                    moveRobot('R', robot_case);
+                    turnLeft();
+                    turnLeft();
+                    break;
+                case 2: // South
+                    moveRobot('F', robot_case);
+                    turnLeft();
+                    turnLeft();
+                    break;
+                case 3: // West
+                    moveRobot('L', robot_case);
+                    turnLeft();
+                    turnLeft();
+                    break;
+                default:
+                    break;
+                }
+
+                cout << "Robot Came to the Starting Position" << endl;
+                robot_case = 2;
+
+                // wait for 3 seconds
+                for (int i = 0; i < 3000 / timeStep; ++i)
+                {
+                    step(timeStep);
+                }
+
+                break;
+
+            case 2: // Rescue the Survivors
+
+                switch (floodcase)
+                {
+                case 0:
+
+                    cout << "Starting the Rescue Mission..." << endl;
+                    goForward(1); // This is to enter the maze
+                    // This has to be fixed to the correct starting position
+                    struct coordinate survCoor;
+                    // cout << "Building FirePit Walls" << endl;
+                    // buildFirepitWalls();
+                    // cout << "Firepit Walls Built" << endl;
+                    greenptr = 0;
+                    floodcase = 1;
+                    break;
+                case 1: // Initialize the flood fill
+                {
+                    survCoor = greenCells[greenptr];
+
+                    int survivor_x = survCoor.x;
+                    int survivor_y = survCoor.y;
+                    cout << "Next Survivor Coordinates: X=" << survivor_x << ", Y=" << survivor_y << endl;
+
+                    initializeFlood(survivor_x, survivor_y);
+
+                    // cout << "Flood Fill Started" << endl;
+
+                    floodFill(survCoor, survCoor);
+
+                    // cout << "Flood Fill Finished" << endl;
+
+                    floodcase = 2;
+                    break;
+                }
+
+                case 2: // Move to the survivor
+                {
+                    if (flood[XY.y][XY.x] == 0)
+                    {
+                        cout << "Survivor " << (greenptr + 1) << " Found : Starting Rescue Process" << endl;
+                        greenptr++;
+                        floodcase = 1;
+
+                        cout << "Rescue Process Ongoing : Waiting for 3 seconds" << endl;
+
+                        // wait for 3 seconds
+                        for (int i = 0; i < 3000 / timeStep; ++i)
+                        {
+                            step(timeStep);
+                        }
+
+                        cout << "Survivor " << (greenptr) << " Rescued" << endl;
+
+                        if (greenptr == 3)
+                        {
+                            cout << "All Survivors Rescued !!!" << endl;
+                            floodcase = 3;
+                        }
+                    }
+                    else
+                    {
+                        char move = toMove(XY, XY_prev, orient);
+                        moveRobot(move, robot_case);
+                    }
+                    break;
+                }
+
+                case 3: // Set floodfill to the starting position
+                    initializeFlood(10, 0);
+
+                    // cout << "Flood Fill Started" << endl;
+
+                    struct coordinate startCoor;
+                    startCoor.x = 10;
+                    startCoor.y = 0;
+
+                    floodFill(startCoor, startCoor);
+
+                    // cout << "Flood Fill Finished" << endl;
+                    floodcase = 4;
+                    break;
+
+                case 4: // Move to the starting position
+                    if (flood[XY.y][XY.x] == 0)
+                    {
+                        // cout << "Reached the Starting Position" << endl;
+                        floodcase = 5;
+                        robot_case = 1;
+                    }
+                    else
+                    {
+                        char move = toMove(XY, XY_prev, orient);
+                        moveRobot(move, robot_case);
+                    }
+                    break;
+
+                default:
+                    break;
+                }
+
+                break;
+
+            default:
+                break;
             }
-        }   
-            
+        }
     }
-            
 
 private:
     int timeStep;
