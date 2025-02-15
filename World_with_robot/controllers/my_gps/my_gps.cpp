@@ -102,7 +102,7 @@ int cells[ROWS][COLUMNS] = {
 };
 
 
-// Cell colors => 0: Default, 1: Yellow, 2: Orange, 3: Red
+// Cell colors => -1: Default, 1: Yellow, 2: Orange, 3: Red
 int cell_colors[ROWS][COLUMNS] = {
     {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
     {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
@@ -251,11 +251,11 @@ public:
      * @param camera - Pointer to the Webots camera.
      * @return The detected color name (Yellow, Orange, Red) or an empty string if default.
      */
-    std::string getFloorColor(Camera *camera) {
-        if (!camera) return "ERROR: Floor Camera Not Found";
+    char getFloorColor(Camera *camera) {
+        if (!camera) return 'E';
 
         const unsigned char *image = camera->getImage();
-        if (!image) return "ERROR: Failed to get floor image";
+        if (!image) return 'E';
 
         int width = camera->getWidth();
         int height = camera->getHeight();
@@ -273,7 +273,7 @@ public:
         if (r >= DEFAULT_FLOOR.r_min && r <= DEFAULT_FLOOR.r_max &&
             g >= DEFAULT_FLOOR.g_min && g <= DEFAULT_FLOOR.g_max &&
             b >= DEFAULT_FLOOR.b_min && b <= DEFAULT_FLOOR.b_max) {
-            return "X";  // unrecognized color
+            return 'X';  // unrecognized color
         }
 
         // Check for predefined colors
@@ -282,19 +282,19 @@ public:
                 g >= color.g_min && g <= color.g_max &&
                 b >= color.b_min && b <= color.b_max) {
                     if (color.name == "Yellow") {
-                        return "Y";
+                        return 'Y';
                     }else if (color.name == "Orange") {
-                        return "O";
+                        return 'O';
                     }else if (color.name == "Red"){
-                        return "R";
+                        return 'R';
                     }else{
-                        return "X";
+                        return 'X';
                     }                    
                 // return "Detected Color: " + color.name + " (RGB: " + to_string(r) + ", " + to_string(g) + ", " + to_string(b) + ")";
             }
         }
 
-        return "X";  // Unrecognized color
+        return 'X';  // Unrecognized color
     }
 
     int getDistanceSensors()
@@ -374,9 +374,9 @@ public:
                 if ((initialLeftPosition - getLeftWheelSensor()) >= 10.5 && (initialLeftPosition - getLeftWheelSensor()) < 11)
                 {
                     wall_arrangement = getDistanceSensors();
-                    cout << "Wall Arrangement: " << wall_arrangement << endl;
+                    // cout << "Wall Arrangement: " << wall_arrangement << endl;
                     floor_color = getFloorColor(floor_camera);
-                    cout << "Floor Color: " << floor_color << endl;
+                    // cout << "Floor Color: " << floor_color << endl;
                 }
 
                 // Wall following using PID control
@@ -924,7 +924,7 @@ public:
         return 'X'; // invalid move
     }
 
-    void moveRobot(char move)
+    void moveRobot(char move, int robotcase)
     {
         switch (move)
         {
@@ -942,8 +942,12 @@ public:
                 }
                 else
                 {
-                    cout << "Green Detected" << endl;
-                    addToGreenCells(XY);
+                    // cout << "Green Detected" << endl;
+                    if (robotcase == 0)
+                    {
+                        addToGreenCells(XY);
+                    }
+                    
                 }
             }
             turnLeft();
@@ -960,8 +964,11 @@ public:
                 }
                 else
                 {
-                    cout << "Green Detected" << endl;
-                    addToGreenCells(XY);
+                    // cout << "Green Detected" << endl;
+                    if (robotcase == 0)
+                    {
+                        addToGreenCells(XY);
+                    }
                 }
             }
             turnRight();
@@ -978,8 +985,11 @@ public:
                 }
                 else
                 {
-                    cout << "Green Detected" << endl;
-                    addToGreenCells(XY);
+                    // cout << "Green Detected" << endl;
+                    if (robotcase == 0)
+                    {
+                        addToGreenCells(XY);
+                    }
                 }
             }
             turnLeft();
@@ -993,8 +1003,11 @@ public:
                 }
                 else
                 {
-                    cout << "Green Detected" << endl;
-                    addToGreenCells(XY);
+                    // cout << "Green Detected" << endl;
+                    if (robotcase == 0)
+                    {
+                        addToGreenCells(XY);
+                    }
                 }
             }
             turnLeft();
@@ -1266,19 +1279,19 @@ public:
     {   
         if (compareCoordinates(p, greenCells[0]) || compareCoordinates(p, greenCells[1]) || compareCoordinates(p, greenCells[2]) )
         {   
-            cout << "Green Cell Already Added" << endl;
+            cout << "Survivor Already Known" << endl;
             return;
         }else
         {
             if (greenptr < 3)
             {
                 greenCells[greenptr] = p;
-                cout << "Green Cell Added : " << p.x << "," << p.y << endl;
+                cout << "Survivor Detected : " << p.x << "," << p.y << endl;
                 greenptr++;
             }
             else
             {
-                cout << "Green Cells are full" << endl;
+                cout << "Survivor array is full" << endl;
             }
             
         }
@@ -1392,10 +1405,10 @@ public:
     
         if (p.x == p1.x) {
             if (p.y > p1.y) {
-                if (cells[p.y][p.x] == 4 || cells[p.y][p.x] == 5
+                if ((cells[p.y][p.x] == 4 || cells[p.y][p.x] == 5
                         || cells[p.y][p.x] == 6 || cells[p.y][p.x] == 10
                         || cells[p.y][p.x] == 11 || cells[p.y][p.x] == 12
-                        || cells[p.y][p.x] == 14) {
+                        || cells[p.y][p.x] == 14) || (cell_colors[p1.y][p1.x] == 2 || cell_colors[p1.y][p1.x] == 3)) {
                     return false;
                 }
     
@@ -1403,10 +1416,10 @@ public:
                     return true;
                 }
             } else {
-                if (cells[p.y][p.x] == 2 || cells[p.y][p.x] == 7
+                if ((cells[p.y][p.x] == 2 || cells[p.y][p.x] == 7
                         || cells[p.y][p.x] == 8 || cells[p.y][p.x] == 10
                         || cells[p.y][p.x] == 12 || cells[p.y][p.x] == 13
-                        || cells[p.y][p.x] == 14) {
+                        || cells[p.y][p.x] == 14) || (cell_colors[p1.y][p1.x] == 2 || cell_colors[p1.y][p1.x] == 3)) {
                     return false;
                 }
     
@@ -1417,19 +1430,19 @@ public:
             }
         } else if (p.y == p1.y) {
             if (p.x > p1.x) {
-                if (cells[p.y][p.x] == 1 || cells[p.y][p.x] == 5
+                if ((cells[p.y][p.x] == 1 || cells[p.y][p.x] == 5
                         || cells[p.y][p.x] == 8 || cells[p.y][p.x] == 9
                         || cells[p.y][p.x] == 11 || cells[p.y][p.x] == 13
-                        || cells[p.y][p.x] == 14) {
+                        || cells[p.y][p.x] == 14) || (cell_colors[p1.y][p1.x] == 2 || cell_colors[p1.y][p1.x] == 3)) {
                     return false;
                 } else {
                     return true;
                 }
             } else {
-                if (cells[p.y][p.x] == 3 || cells[p.y][p.x] == 6
+                if ((cells[p.y][p.x] == 3 || cells[p.y][p.x] == 6
                         || cells[p.y][p.x] == 7 || cells[p.y][p.x] == 9
                         || cells[p.y][p.x] == 11 || cells[p.y][p.x] == 12
-                        || cells[p.y][p.x] == 13) {
+                        || cells[p.y][p.x] == 13) || (cell_colors[p1.y][p1.x] == 2 || cell_colors[p1.y][p1.x] == 3)) {
                     return false;
                 } else {
                     return true;
@@ -1685,6 +1698,48 @@ public:
         XY = calculateCell(gps_x, gps_y);
     }
 
+    // void buildFirepitWalls() {
+    //     for (int i = 0; i < ROWS; i++) {
+    //         for (int j = 0; j < COLUMNS; j++) {
+    //             if (cell_colors[i][j] > 0) { // Fire pit cell
+    //                 // Check adjacent cells to determine wall placement
+    //                 bool left = (j == 0 || cell_colors[i][j - 1] == -1);
+    //                 bool right = (j == COLUMNS - 1 || cell_colors[i][j + 1] == -1);
+    //                 bool top = (i == 0 || cell_colors[i - 1][j] == -1);
+    //                 bool bottom = (i == ROWS - 1 || cell_colors[i + 1][j] == -1);
+                    
+    //                 // Assign appropriate wall number
+    //                 if (left && bottom) cells[i][j] = 5;
+    //                 else if (right && bottom) cells[i][j] = 6;
+    //                 else if (right && top) cells[i][j] = 7;
+    //                 else if (left && top) cells[i][j] = 8;
+    //                 else if (left) cells[i][j] = 1;
+    //                 else if (top) cells[i][j] = 2;
+    //                 else if (right) cells[i][j] = 3;
+    //                 else if (bottom) cells[i][j] = 4;
+    //             }
+    //         }
+    //     }
+    // }
+    
+
+    void identifyFirepits(struct coordinate p){
+        switch (floor_color)
+        {
+        case 'R':
+            cell_colors[p.y][p.x] = 3;  
+            break;
+        case 'O':
+            cell_colors[p.y][p.x] = 2;  
+            break;
+        case 'Y':
+            cell_colors[p.y][p.x] = 1;  
+            break;
+        default:
+            break;
+        }
+    }
+
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     // Main simulation loop
@@ -1724,15 +1779,16 @@ public:
             int x = XY.x;
             int y = XY.y;
 
-            if (x != -1 && y != -1)
-            {
-                //cout << "GPS Coordinates: X=" << gps_x << ", Y=" << gps_y << " | X =" << x << ", Y =" << y << endl;
-            }
+            // if (x != -1 && y != -1)
+            // {
+            //     cout << "GPS Coordinates: X=" << gps_x << ", Y=" << gps_y << " | X =" << x << ", Y =" << y << endl;
+            // }
 
             switch (robot_case) {
                 case 0: // To explore the maze
                     visited[y][x] = true;
                     updateWalls(XY);
+                    identifyFirepits(XY);
                               
                     // Update wall arrangement in cells
                     switch (dfs_case) {
@@ -1747,7 +1803,7 @@ public:
                                 }
             
                                 char move = toMoveForward(XY, wall_arrangement);
-                                moveRobot(move);
+                                moveRobot(move, robot_case);
                             }
                             break;
             
@@ -1760,7 +1816,7 @@ public:
                                 location_stack->pop();
             
                                 char move = toMoveBackward(XY, next_coor);
-                                moveRobot(move);
+                                moveRobot(move, robot_case);
 
                                 if (location_stack->empty()) {
                                     cout << "Maze exploration finished" << endl;                                    
@@ -1780,22 +1836,22 @@ public:
                     switch (orient)
                     {
                     case 0: // North
-                        moveRobot('B');
+                        moveRobot('B', robot_case);
                         turnLeft();
                         turnLeft();
                         break;
                     case 1: // East
-                        moveRobot('R');
+                        moveRobot('R', robot_case);
                         turnLeft();
                         turnLeft();
                         break;
                     case 2: // South
-                        moveRobot('F');
+                        moveRobot('F', robot_case);
                         turnLeft();
                         turnLeft();
                         break;
                     case 3: // West
-                        moveRobot('L');
+                        moveRobot('L', robot_case);
                         turnLeft();
                         turnLeft();
                         break;                    
@@ -1803,8 +1859,15 @@ public:
                         break;
                     }
 
+                    cout << "Robot Came to the Starting Position" << endl;
                     robot_case = 2;
-                    cout << "Going to the starting position" << endl;
+
+                    // wait for 3 seconds
+                    for (int i = 0; i < 3000 / timeStep; ++i)
+                    {
+                        step(timeStep);
+                    }
+                    
                     break;
 
                 case 2: // Rescue the Survivors
@@ -1812,9 +1875,14 @@ public:
                     switch (floodcase)
                     {
                     case 0:
+                        
+                        cout << "Starting the Rescue Mission..." << endl;
                         goForward(1); // This is to enter the maze
                         // This has to be fixed to the correct starting position
                         struct coordinate survCoor;
+                        // cout << "Building FirePit Walls" << endl;
+                        // buildFirepitWalls();
+                        // cout << "Firepit Walls Built" << endl;
                         greenptr = 0;
                         floodcase = 1;
                         break;
@@ -1824,6 +1892,7 @@ public:
                             
                             int survivor_x = survCoor.x;
                             int survivor_y = survCoor.y;
+                            cout << "Next Survivor Coordinates: X=" << survivor_x << ", Y=" << survivor_y << endl;
 
                             initializeFlood(survivor_x, survivor_y);
 
@@ -1841,21 +1910,59 @@ public:
                     case 2: // Move to the survivor
                         {      
                             if (flood[XY.y][XY.x] == 0) {
-                                cout << "Survivor " << (greenptr + 1) << " Found" << endl;
+                                cout << "Survivor " << (greenptr + 1) << " Found : Starting Rescue Process" << endl;
                                 greenptr++;
                                 floodcase = 1;
+
+                                cout << "Rescue Process Ongoing : Waiting for 3 seconds" << endl;
+
+                                //wait for 3 seconds
+                                for (int i = 0; i < 3000 / timeStep; ++i)
+                                {
+                                    step(timeStep);
+                                }
+
+                                cout << "Survivor " << (greenptr) << " Rescued" << endl;
+
                                 if (greenptr == 3) {
-                                    cout << "All Survivors Found" << endl;
+                                    cout << "All Survivors Rescued !!!" << endl;
                                     floodcase = 3;
                                 }
                             }else
                             {
                                 char move = toMove(XY, XY_prev, orient);
-                                moveRobot(move);
+                                moveRobot(move, robot_case);
                             }
                             break;
                                                                                                                
                         }
+
+                    case 3: // Set floodfill to the starting position
+                            initializeFlood(10,0);
+
+                            // cout << "Flood Fill Started" << endl;
+
+                            struct coordinate startCoor;
+                            startCoor.x = 10;
+                            startCoor.y = 0;
+
+                            floodFill(startCoor,startCoor);
+
+                            // cout << "Flood Fill Finished" << endl;                            
+                            floodcase = 4;
+                        break;
+
+                    case 4: // Move to the starting position
+                        if (flood[XY.y][XY.x] == 0) {
+                            // cout << "Reached the Starting Position" << endl;
+                            floodcase = 5;
+                            robot_case = 1;
+                        }else
+                        {
+                            char move = toMove(XY, XY_prev, orient);
+                            moveRobot(move, robot_case);
+                        }
+                        break;
                     
                     default:
                         break;
@@ -1874,7 +1981,7 @@ public:
 private:
     int timeStep;
     int wall_arrangement;
-    string floor_color;
+    char floor_color;
     GPS *gps;
     Motor *leftMotor;
     Motor *rightMotor;
