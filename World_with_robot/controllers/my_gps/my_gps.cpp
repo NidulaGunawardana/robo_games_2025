@@ -17,7 +17,7 @@
 #include <queue>
 
 #define GREEN_THRESHOLD 80        // Minimum green intensity for detection
-#define GREEN_AREA_THRESHOLD 0.08 // 8% of the image must be green to trigger detection
+#define GREEN_AREA_THRESHOLD 0.06 // 8% of the image must be green to trigger detection
 
 using namespace webots;
 using namespace std;
@@ -79,6 +79,31 @@ struct coordinate greenCells[3];
 int greenptr = 0;
 
 int cells[ROWS][COLUMNS] = {
+    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}
+};
+
+
+// Cell colors => 0: Default, 1: Yellow, 2: Orange, 3: Red
+int cell_colors[ROWS][COLUMNS] = {
     {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
     {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
     {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
@@ -248,7 +273,7 @@ public:
         if (r >= DEFAULT_FLOOR.r_min && r <= DEFAULT_FLOOR.r_max &&
             g >= DEFAULT_FLOOR.g_min && g <= DEFAULT_FLOOR.g_max &&
             b >= DEFAULT_FLOOR.b_min && b <= DEFAULT_FLOOR.b_max) {
-            return "";  // Return nothing if it's the default floor
+            return "X";  // unrecognized color
         }
 
         // Check for predefined colors
@@ -256,11 +281,20 @@ public:
             if (r >= color.r_min && r <= color.r_max &&
                 g >= color.g_min && g <= color.g_max &&
                 b >= color.b_min && b <= color.b_max) {
-                return "Detected Color: " + color.name + " (RGB: " + to_string(r) + ", " + to_string(g) + ", " + to_string(b) + ")";
+                    if (color.name == "Yellow") {
+                        return "Y";
+                    }else if (color.name == "Orange") {
+                        return "O";
+                    }else if (color.name == "Red"){
+                        return "R";
+                    }else{
+                        return "X";
+                    }                    
+                // return "Detected Color: " + color.name + " (RGB: " + to_string(r) + ", " + to_string(g) + ", " + to_string(b) + ")";
             }
         }
 
-        return "Unknown Color (RGB: " + to_string(r) + ", " + to_string(g) + ", " + to_string(b) + ")";
+        return "X";  // Unrecognized color
     }
 
     int getDistanceSensors()
@@ -340,6 +374,9 @@ public:
                 if ((initialLeftPosition - getLeftWheelSensor()) >= 10.5 && (initialLeftPosition - getLeftWheelSensor()) < 11)
                 {
                     wall_arrangement = getDistanceSensors();
+                    cout << "Wall Arrangement: " << wall_arrangement << endl;
+                    floor_color = getFloorColor(floor_camera);
+                    cout << "Floor Color: " << floor_color << endl;
                 }
 
                 // Wall following using PID control
@@ -1696,7 +1733,7 @@ public:
                 case 0: // To explore the maze
                     visited[y][x] = true;
                     updateWalls(XY);
-            
+                              
                     // Update wall arrangement in cells
                     switch (dfs_case) {
                         case 0: // Going until a dead end is found
@@ -1837,6 +1874,7 @@ public:
 private:
     int timeStep;
     int wall_arrangement;
+    string floor_color;
     GPS *gps;
     Motor *leftMotor;
     Motor *rightMotor;
