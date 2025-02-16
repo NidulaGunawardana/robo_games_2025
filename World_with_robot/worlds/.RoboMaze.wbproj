@@ -10,6 +10,6 @@ orthographicViewHeight: 1
 textFiles: 0 "controllers/my_gps/my_gps.cpp"
 globalOptionalRendering: DistanceSensorRays
 consoles: Console:All:All
-renderingDevicePerspectives: robot:camera;1;1.49526;0.748186;0
+renderingDevicePerspectives: robot:camera;1;2.98844;0.748186;0
 renderingDevicePerspectives: robot:camera_2;1;1.98438;0;0
 renderingDevicePerspectives: robot:display;1;2;0.120471;0
