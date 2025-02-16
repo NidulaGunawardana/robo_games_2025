@@ -8,6 +8,6 @@ orthographicViewHeight: 1
 textFiles: 0 "controllers/my_gps/my_gps.cpp"
 globalOptionalRendering: LidarRaysPaths::DistanceSensorRays
 consoles: Console:All:All
-renderingDevicePerspectives: robot:camera;1;1.22144;0.793823;0
-renderingDevicePerspectives: robot:camera_2;1;2.9375;0;0
-renderingDevicePerspectives: robot:display;1;2.77598;0;0.2916
+renderingDevicePerspectives: robot:camera;1;1.22144;0.891545;0.00133511
+renderingDevicePerspectives: robot:camera_2;1;3.42188;0;0
+renderingDevicePerspectives: robot:display;1;3.4375;0;0.295605
