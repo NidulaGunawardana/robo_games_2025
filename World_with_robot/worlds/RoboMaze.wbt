@@ -5,23 +5,24 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/project
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/floors/protos/RectangleArena.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/apartment_structure/protos/Wall.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/appearances/protos/Roughcast.proto"
-EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/devices/sharp/protos/SharpGP2D120.proto"
 
 WorldInfo {
 }
 Viewpoint {
-  orientation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0944
-  position -0.386938141416282 0.35510684711631924 10.827810516125737
+  orientation 0.38068353137550076 -0.575394775100243 -0.7238790656779758 4.802217501493177
+  position -3.29286670326895 -8.66031110557594 12.97945828298884
 }
 TexturedBackground {
 }
 TexturedBackgroundLight {
+  luminosity 0.7
   castShadows FALSE
 }
 RectangleArena {
   floorSize 5 6
   floorAppearance PBRAppearance {
     metalness 0
+    IBLStrength 0
   }
 }
 Robot {
@@ -180,23 +181,57 @@ Robot {
   physics Physics {
     density 500
   }
+  recognitionColors [
+    0 0 0
+  ]
   controller "my_gps"
 }
 Wall {
-  translation 0.14 -2.25 -0.0046
-  rotation 0 0 1 -1.5707953071795862
-  name "wall(240)"
-  size 0.01 0.25 0.005
+  translation -1.125 2 0
+  name "wall(241)"
+  size 0.25 0.01 0.1
+}
+Wall {
+  translation -1.375 2 0
+  name "wall(80)"
+  size 0.25 0.01 0.1
   appearance Roughcast {
-    colorOverride 0 0 0
+    colorOverride 1 1 0.498
     textureTransform TextureTransform {
       scale 2.4 1
     }
   }
 }
 Wall {
-  translation 1.20369 1.79588 0
-  rotation 0 0 1 0.825351
+  translation -1.375 2.25 0
+  name "wall(88)"
+  size 0.25 0.01 0.1
+  appearance Roughcast {
+    colorOverride 1 1 0.498
+    textureTransform TextureTransform {
+      scale 2.4 1
+    }
+  }
+}
+Wall {
+  translation -1.125 2.25 0
+  name "wall(240)"
+  size 0.25 0.01 0.1
+}
+Wall {
+  translation -1.375 2.75 0
+  name "wall(205)"
+  size 0.25 0.01 0.1
+  appearance Roughcast {
+    colorOverride 1 1 0.498
+    textureTransform TextureTransform {
+      scale 2.4 1
+    }
+  }
+}
+Wall {
+  translation 1.21 1.789 0
+  rotation 0 0 1 0.785
   name "wall(239)"
   size 0.1 0.01 0.1
   appearance Roughcast {
@@ -211,24 +246,21 @@ Wall {
   rotation 0 0 1 -0.785
   name "wall(238)"
   size 0.1 0.01 0.1
-  appearance Roughcast {
-    colorOverride 0 1 0
-    textureTransform TextureTransform {
-      scale 2.4 1
-    }
-    IBLStrength 11
+  appearance PBRAppearance {
+    baseColor 0 1 0
+    metalness 0
+    IBLStrength 6
   }
 }
 Wall {
-  translation -0.540878 0.2956 0
-  rotation 0 0 -1 -0.7850003061004254
+  translation -1.71 1.71 0
+  rotation 0 0 1 0.7850000000000003
   name "wall(237)"
   size 0.1 0.01 0.1
-  appearance Roughcast {
-    colorOverride 0.333 1 0
-    textureTransform TextureTransform {
-      scale 2.4 1
-    }
+  appearance PBRAppearance {
+    baseColor 0 1 0
+    metalness 0
+    IBLStrength 9
   }
 }
 Wall {
@@ -237,15 +269,9 @@ Wall {
   size 0.25 0.01 0.1
 }
 Wall {
-  translation 0.625 0.25 0
+  translation 1.13 0.25 0
   name "wall(48)"
   size 0.25 0.01 0.1
-  appearance Roughcast {
-    colorOverride 1 1 0.498
-    textureTransform TextureTransform {
-      scale 2.4 1
-    }
-  }
 }
 Wall {
   translation 1.375 0.75 0
@@ -261,23 +287,11 @@ Wall {
   translation 0.625 0.75 0
   name "wall(233)"
   size 0.25 0.01 0.1
-  appearance Roughcast {
-    colorOverride 1 1 0.498
-    textureTransform TextureTransform {
-      scale 2.4 1
-    }
-  }
 }
 Wall {
   translation 0.625 1 0
   name "wall(58)"
   size 0.25 0.01 0.1
-  appearance Roughcast {
-    colorOverride 1 1 0.498
-    textureTransform TextureTransform {
-      scale 2.4 1
-    }
-  }
 }
 Wall {
   translation 0 -0.125 0
@@ -290,41 +304,23 @@ Wall {
   rotation 0 0 1 1.57
   name "wall(231)"
   size 0.25 0.01 0.1
-  appearance Roughcast {
-    colorOverride 1 1 0.498
-    textureTransform TextureTransform {
-      scale 2.4 1
-    }
-  }
 }
 Wall {
   translation 0 0.5 0
   rotation 0 0 1 1.57
   name "wall(151)"
   size 0.5 0.01 0.1
-  appearance Roughcast {
-    colorOverride 1 0.3333 0
-    textureTransform TextureTransform {
-      scale 2.4 1
-    }
-  }
 }
 Wall {
   translation 0.25 0.875 0
   rotation 0 0 1 1.57
   name "wall(230)"
   size 0.25 0.01 0.1
-  appearance Roughcast {
-    colorOverride 1 0.33333 0
-    textureTransform TextureTransform {
-      scale 2.4 1
-    }
-  }
 }
 Wall {
-  translation 0.125 0.875 -0.00049
+  translation -1.875 2.625 -0.00049
   name "wall(201)"
-  size 0.75 0.25 0.0008
+  size 0.75 0.25 0.0005
   appearance Roughcast {
     colorOverride 1 0.333 0
     textureTransform TextureTransform {
@@ -337,12 +333,6 @@ Wall {
   rotation 0 0 1 1.57
   name "wall(154)"
   size 0.25 0.01 0.1
-  appearance Roughcast {
-    colorOverride 1 0.33333 0
-    textureTransform TextureTransform {
-      scale 2.4 1
-    }
-  }
 }
 Wall {
   translation 0.25 1.375 0
@@ -355,12 +345,6 @@ Wall {
   rotation 0 0 1 1.57
   name "wall(147)"
   size 0.25 0.01 0.1
-  appearance Roughcast {
-    colorOverride 1 1 0.498
-    textureTransform TextureTransform {
-      scale 2.4 1
-    }
-  }
 }
 Wall {
   translation 2 1.625 0
@@ -371,7 +355,7 @@ Wall {
 Wall {
   translation 1.875 2.375 -0.00049
   name "wall(227)"
-  size 0.25 0.25 0.0008
+  size 0.25 0.25 0.0005
   appearance Roughcast {
     colorOverride 1 0 0
     textureTransform TextureTransform {
@@ -382,7 +366,7 @@ Wall {
 Wall {
   translation 1.875 2.125 -0.00049
   name "wall(226)"
-  size 0.25 0.25 0.0008
+  size 0.25 0.25 0.0005
   appearance Roughcast {
     colorOverride 1 0.333 0
     textureTransform TextureTransform {
@@ -394,7 +378,7 @@ Wall {
   translation 1.625 2.25 -0.00049
   rotation 0 0 1 1.57
   name "wall(225)"
-  size 0.5 0.25 0.0008
+  size 0.5 0.25 0.0005
   appearance Roughcast {
     colorOverride 1 0.333 0
     textureTransform TextureTransform {
@@ -406,7 +390,7 @@ Wall {
   translation 2.125 2.25 -0.00049
   rotation 0 0 1 1.57
   name "wall(224)"
-  size 0.5 0.25 0.0008
+  size 0.5 0.25 0.0005
   appearance Roughcast {
     colorOverride 1 0.333 0
     textureTransform TextureTransform {
@@ -417,7 +401,7 @@ Wall {
 Wall {
   translation 1.875 2.625 -0.00049
   name "wall(223)"
-  size 0.75 0.25 0.0008
+  size 0.75 0.25 0.0005
   appearance Roughcast {
     colorOverride 1 0.333 0
     textureTransform TextureTransform {
@@ -429,7 +413,7 @@ Wall {
   translation 1.375 2.375 -0.00049
   rotation 0 0 1 1.57
   name "wall(222)"
-  size 1.25 0.25 0.0008
+  size 1.25 0.25 0.0005
   appearance Roughcast {
     colorOverride 1 1 0.498
     textureTransform TextureTransform {
@@ -440,7 +424,7 @@ Wall {
 Wall {
   translation 1.875 2.875 -0.00049
   name "wall(221)"
-  size 0.75 0.25 0.0008
+  size 0.75 0.25 0.0005
   appearance Roughcast {
     colorOverride 1 1 0.498
     textureTransform TextureTransform {
@@ -451,7 +435,7 @@ Wall {
 Wall {
   translation 1.875 1.875 -0.00049
   name "wall(220)"
-  size 0.75 0.25 0.0008
+  size 0.75 0.25 0.0005
   appearance Roughcast {
     colorOverride 1 1 0.498
     textureTransform TextureTransform {
@@ -463,7 +447,7 @@ Wall {
   translation 2.375 2.375 -0.00049
   rotation 0 0 1 1.57
   name "wall(219)"
-  size 1.25 0.25 0.0008
+  size 1.25 0.25 0.0005
   appearance Roughcast {
     colorOverride 1 1 0.498
     textureTransform TextureTransform {
@@ -476,12 +460,6 @@ Wall {
   rotation 0 0 1 1.57
   name "wall(146)"
   size 0.25 0.01 0.1
-  appearance Roughcast {
-    colorOverride 1 1 0.498
-    textureTransform TextureTransform {
-      scale 2.4 1
-    }
-  }
 }
 Wall {
   translation -1.375 -1.25 0
@@ -508,7 +486,7 @@ Wall {
 Wall {
   translation -1.875 -1.375 -0.00049
   name "wall(218)"
-  size 0.25 0.25 0.0008
+  size 0.25 0.25 0.0005
   appearance Roughcast {
     colorOverride 1 0 0
     textureTransform TextureTransform {
@@ -519,7 +497,7 @@ Wall {
 Wall {
   translation -1.875 -1.625 -0.00049
   name "wall(217)"
-  size 0.25 0.25 0.0008
+  size 0.25 0.25 0.0005
   appearance Roughcast {
     colorOverride 1 0.333 0
     textureTransform TextureTransform {
@@ -531,7 +509,7 @@ Wall {
   translation -1.625 -1.5 -0.00049
   rotation 0 0 1 1.57
   name "wall(216)"
-  size 0.5 0.25 0.0008
+  size 0.5 0.25 0.0005
   appearance Roughcast {
     colorOverride 1 0.333 0
     textureTransform TextureTransform {
@@ -543,7 +521,7 @@ Wall {
   translation -2.125 -1.5 -0.00049
   rotation 0 0 1 1.57
   name "wall(215)"
-  size 0.5 0.25 0.0008
+  size 0.5 0.25 0.0005
   appearance Roughcast {
     colorOverride 1 0.333 0
     textureTransform TextureTransform {
@@ -554,7 +532,7 @@ Wall {
 Wall {
   translation -1.875 -1.125 -0.00049
   name "wall(214)"
-  size 0.75 0.25 0.0008
+  size 0.75 0.25 0.0005
   appearance Roughcast {
     colorOverride 1 0.333 0
     textureTransform TextureTransform {
@@ -566,7 +544,7 @@ Wall {
   translation -1.375 -1.375 -0.00049
   rotation 0 0 1 1.57
   name "wall(213)"
-  size 1.25 0.25 0.0008
+  size 1.25 0.25 0.0005
   appearance Roughcast {
     colorOverride 1 1 0.498
     textureTransform TextureTransform {
@@ -577,7 +555,7 @@ Wall {
 Wall {
   translation -1.875 -0.875 -0.00049
   name "wall(212)"
-  size 0.75 0.25 0.0008
+  size 0.75 0.25 0.0005
   appearance Roughcast {
     colorOverride 1 1 0.498
     textureTransform TextureTransform {
@@ -588,7 +566,7 @@ Wall {
 Wall {
   translation -1.875 -1.875 -0.00049
   name "wall(211)"
-  size 0.75 0.25 0.0008
+  size 0.75 0.25 0.0005
   appearance Roughcast {
     colorOverride 1 1 0.498
     textureTransform TextureTransform {
@@ -600,7 +578,7 @@ Wall {
   translation -2.375 -1.375 -0.00049
   rotation 0 0 1 1.57
   name "wall(210)"
-  size 1.25 0.25 0.0008
+  size 1.25 0.25 0.0005
   appearance Roughcast {
     colorOverride 1 1 0.498
     textureTransform TextureTransform {
@@ -609,10 +587,10 @@ Wall {
   }
 }
 Wall {
-  translation 0.625 0.625 -0.00049
+  translation -1.375 2.375 -0.00049
   rotation 0 0 1 1.57
   name "wall(209)"
-  size 1.25 0.25 0.0008
+  size 1.25 0.25 0.0005
   appearance Roughcast {
     colorOverride 1 1 0.498
     textureTransform TextureTransform {
@@ -621,9 +599,9 @@ Wall {
   }
 }
 Wall {
-  translation 0.125 0.125 -0.00049
+  translation -1.875 1.875 -0.00049
   name "wall(208)"
-  size 0.75 0.25 0.0008
+  size 0.75 0.25 0.0005
   appearance Roughcast {
     colorOverride 1 1 0.498
     textureTransform TextureTransform {
@@ -632,9 +610,9 @@ Wall {
   }
 }
 Wall {
-  translation 0.125 1.125 -0.00049
+  translation -1.875 2.875 -0.00049
   name "wall(207)"
-  size 0.75 0.25 0.0008
+  size 0.75 0.25 0.0005
   appearance Roughcast {
     colorOverride 1 1 0.498
     textureTransform TextureTransform {
@@ -643,10 +621,10 @@ Wall {
   }
 }
 Wall {
-  translation -0.375 0.625 -0.00049
+  translation -2.375 2.375 -0.00049
   rotation 0 0 1 1.57
   name "wall(206)"
-  size 1.25 0.25 0.0008
+  size 1.25 0.25 0.0005
   appearance Roughcast {
     colorOverride 1 1 0.498
     textureTransform TextureTransform {
@@ -655,9 +633,9 @@ Wall {
   }
 }
 Wall {
-  translation 0.125 0.375 -0.00049
+  translation -1.875 2.125 -0.00049
   name "wall(204)"
-  size 0.25 0.25 0.0008
+  size 0.25 0.25 0.0005
   appearance Roughcast {
     colorOverride 1 0.333 0
     textureTransform TextureTransform {
@@ -666,10 +644,10 @@ Wall {
   }
 }
 Wall {
-  translation 0.375 0.5 -0.00049
+  translation -1.625 2.25 -0.00049
   rotation 0 0 1 1.57
   name "wall(203)"
-  size 0.5 0.25 0.0008
+  size 0.5 0.25 0.0005
   appearance Roughcast {
     colorOverride 1 0.333 0
     textureTransform TextureTransform {
@@ -678,10 +656,10 @@ Wall {
   }
 }
 Wall {
-  translation -0.125 0.5 -0.00049
+  translation -2.125 2.25 -0.00049
   rotation 0 0 1 1.57
   name "wall(202)"
-  size 0.5 0.25 0.0008
+  size 0.5 0.25 0.0005
   appearance Roughcast {
     colorOverride 1 0.333 0
     textureTransform TextureTransform {
@@ -694,17 +672,11 @@ Wall {
   rotation 0 0 1 1.57
   name "wall(229)"
   size 0.25 0.01 0.1
-  appearance Roughcast {
-    colorOverride 1 0.33333 0
-    textureTransform TextureTransform {
-      scale 2.4 1
-    }
-  }
 }
 Wall {
-  translation 0.125 0.625 -0.00049
+  translation -1.875 2.375 -0.00049
   name "wall(200)"
-  size 0.25 0.25 0.0008
+  size 0.25 0.25 0.0005
   appearance Roughcast {
     colorOverride 1 0 0
     textureTransform TextureTransform {
@@ -789,18 +761,36 @@ Wall {
   rotation 0 0 1 1.57
   name "wall(191)"
   size 0.5 0.01 0.1
+  appearance Roughcast {
+    colorOverride 1 0.3333 0
+    textureTransform TextureTransform {
+      scale 2.4 1
+    }
+  }
 }
 Wall {
   translation -2 1.875 0
   rotation 0 0 1 1.57
   name "wall(190)"
   size 0.25 0.01 0.1
+  appearance Roughcast {
+    colorOverride 1 1 0.498
+    textureTransform TextureTransform {
+      scale 2.4 1
+    }
+  }
 }
 Wall {
   translation -1.75 2.125 0
   rotation 0 0 1 1.57
   name "wall(189)"
   size 0.25 0.01 0.1
+  appearance Roughcast {
+    colorOverride 1 0.33333 0
+    textureTransform TextureTransform {
+      scale 2.4 1
+    }
+  }
 }
 Wall {
   translation -1.75 1 0
@@ -843,6 +833,12 @@ Wall {
   rotation 0 0 1 1.57
   name "wall(183)"
   size 0.25 0.01 0.1
+  appearance Roughcast {
+    colorOverride 1 0.3333 0
+    textureTransform TextureTransform {
+      scale 2.4 1
+    }
+  }
 }
 Wall {
   translation -1.25 1.625 0
@@ -933,6 +929,12 @@ Wall {
   rotation 0 0 1 1.57
   name "wall(169)"
   size 0.5 0.01 0.1
+  appearance Roughcast {
+    colorOverride 1 1 0.498
+    textureTransform TextureTransform {
+      scale 2.4 1
+    }
+  }
 }
 Wall {
   translation -0.75 2.625 0
@@ -981,24 +983,12 @@ Wall {
   rotation 0 0 1 1.57
   name "wall(161)"
   size 0.25 0.01 0.1
-  appearance Roughcast {
-    colorOverride 1 1 0.498
-    textureTransform TextureTransform {
-      scale 2.4 1
-    }
-  }
 }
 Wall {
   translation -0.5 0.875 0
   rotation 0 0 1 1.57
   name "wall(160)"
   size 0.25 0.01 0.1
-  appearance Roughcast {
-    colorOverride 1 1 0.498
-    textureTransform TextureTransform {
-      scale 2.4 1
-    }
-  }
 }
 Wall {
   translation -0.5 2.25 0
@@ -1029,12 +1019,6 @@ Wall {
   rotation 0 0 1 1.57
   name "wall(153)"
   size 0.25 0.01 0.1
-  appearance Roughcast {
-    colorOverride 1 1 0.498
-    textureTransform TextureTransform {
-      scale 2.4 1
-    }
-  }
 }
 Wall {
   translation -0.25 -1.5 0
@@ -1089,24 +1073,12 @@ Wall {
   rotation 0 0 1 1.57
   name "wall(141)"
   size 0.5 0.01 0.1
-  appearance Roughcast {
-    colorOverride 1 0.3333 0
-    textureTransform TextureTransform {
-      scale 2.4 1
-    }
-  }
 }
 Wall {
   translation 0.5 1.125 0
   rotation 0 0 1 1.57
   name "wall(140)"
   size 0.25 0.01 0.1
-  appearance Roughcast {
-    colorOverride 1 1 0.498
-    textureTransform TextureTransform {
-      scale 2.4 1
-    }
-  }
 }
 Wall {
   translation 0.5 1.625 0
@@ -1137,12 +1109,6 @@ Wall {
   rotation 0 0 1 1.57
   name "wall(135)"
   size 0.25 0.01 0.1
-  appearance Roughcast {
-    colorOverride 1 1 0.498
-    textureTransform TextureTransform {
-      scale 2.4 1
-    }
-  }
 }
 Wall {
   translation 0.75 -0.375 0
@@ -1397,9 +1363,15 @@ Wall {
   size 0.25 0.01 0.1
 }
 Wall {
-  translation -1.625 2.75 0
+  translation -1.875 2.75 0
   name "wall(98)"
-  size 1.25 0.01 0.1
+  size 0.75 0.01 0.1
+  appearance Roughcast {
+    colorOverride 1 0.333 0
+    textureTransform TextureTransform {
+      scale 2.4 1
+    }
+  }
 }
 Wall {
   translation 0.125 2.75 0
@@ -1464,16 +1436,23 @@ Wall {
   translation -1.75 2.5 0
   name "wall(90)"
   size 0.5 0.01 0.1
+  appearance Roughcast {
+    colorOverride 1 0.33333 0
+    textureTransform TextureTransform {
+      scale 2.4 1
+    }
+  }
 }
 Wall {
   translation -1.875 2.25 0
   name "wall(89)"
   size 0.25 0.01 0.1
-}
-Wall {
-  translation -1.25 2.25 0
-  name "wall(88)"
-  size 0.5 0.01 0.1
+  appearance Roughcast {
+    colorOverride 1 0.33333 0
+    textureTransform TextureTransform {
+      scale 2.4 1
+    }
+  }
 }
 Wall {
   translation -0.125 2.25 0
@@ -1535,19 +1514,26 @@ Wall {
   size 0.25 0.01 0.1
 }
 Wall {
-  translation -1.375 2 0
-  name "wall(80)"
-  size 0.75 0.01 0.1
-}
-Wall {
   translation -2.125 2 0
   name "wall(79)"
   size 0.25 0.01 0.1
+  appearance Roughcast {
+    colorOverride 1 0.333 0
+    textureTransform TextureTransform {
+      scale 2.4 1
+    }
+  }
 }
 Wall {
   translation -1.875 1.75 0
   name "wall(78)"
   size 0.75 0.01 0.1
+  appearance Roughcast {
+    colorOverride 1 1 0.498
+    textureTransform TextureTransform {
+      scale 2.4 1
+    }
+  }
 }
 Wall {
   translation -0.625 1.75 0
@@ -1624,23 +1610,11 @@ Wall {
   translation 0.625 1 0
   name "wall(64)"
   size 0.25 0.01 0.1
-  appearance Roughcast {
-    colorOverride 1 1 0.498
-    textureTransform TextureTransform {
-      scale 2.4 1
-    }
-  }
 }
 Wall {
   translation 0 1 0
   name "wall(63)"
   size 0.5 0.01 0.1
-  appearance Roughcast {
-    colorOverride 1 0.3333 0
-    textureTransform TextureTransform {
-      scale 2.4 1
-    }
-  }
 }
 Wall {
   translation -0.875 1 0
@@ -1676,12 +1650,6 @@ Wall {
   translation 0.375 0.5 0
   name "wall(55)"
   size 0.25 0.01 0.1
-  appearance Roughcast {
-    colorOverride 1 0.333 0
-    textureTransform TextureTransform {
-      scale 2.4 1
-    }
-  }
 }
 Wall {
   translation -0.625 0.5 0
@@ -1727,12 +1695,6 @@ Wall {
   translation -0.375 0 0
   name "wall(45)"
   size 0.25 0.01 0.1
-  appearance Roughcast {
-    colorOverride 1 1 0.498
-    textureTransform TextureTransform {
-      scale 2.4 1
-    }
-  }
 }
 Wall {
   translation -0.874 0 0
