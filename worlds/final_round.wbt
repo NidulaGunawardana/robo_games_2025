@@ -8,8 +8,8 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/project
 WorldInfo {
 }
 Viewpoint {
-  orientation -0.4283635839640391 -0.23669545931882083 0.8720549864953104 4.0852748520997695
-  position 0.7414403696646698 2.1575227675763307 2.3197379876384705
+  orientation -0.5737016217847429 -0.3903518898144127 0.7200637827858533 4.086690211438209
+  position 0.6332604068822595 2.1401075171083264 7.596663053065384
 }
 TexturedBackground {
 }
@@ -19,9 +19,13 @@ RectangleArena {
   floorSize 3 3
 }
 Robot {
-  translation 0.13775896965050416 0.650262876353899 -0.0006295579911958157
-  rotation 0.0003187378105861705 0.0020337571566253912 0.9999978811167731 2.9137628894262337
+  translation 0.1377589812143922 0.6502629262035505 -0.0006230311251362308
+  rotation 0.00027344756485318307 0.0016382068309591417 0.9999986207514528 2.913762789148122
   children [
+    RangeFinder {
+      translation 4.2126e-07 0.09 0.11
+      rotation 0 0 -1 -1.5708053071795867
+    }
     Display {
     }
     Camera {
@@ -87,7 +91,7 @@ Robot {
     }
     HingeJoint {
       jointParameters HingeJointParameters {
-        position -138.15041807036573
+        position -138.15041806853043
         anchor -0.105 -0.01 0.0126
       }
       device [
@@ -99,8 +103,8 @@ Robot {
         }
       ]
       endPoint Solid {
-        translation -0.10499999999999998 -0.00999106252571107 0.012558917107129308
-        rotation -0.3266369840251048 -0.8869139273710994 0.326637361767076 1.6905123416159606
+        translation -0.10499999999999998 -0.00999106252563567 0.012558917107145712
+        rotation -0.3266369832980576 -0.8869139279066194 0.3266373610400323 1.6905123410164828
         children [
           DEF wheel Shape {
             appearance PBRAppearance {
@@ -120,7 +124,7 @@ Robot {
     }
     HingeJoint {
       jointParameters HingeJointParameters {
-        position -230.74742168434818
+        position -230.7474216831195
         anchor 0.105 -0.01 0.0125
       }
       device [
@@ -132,8 +136,8 @@ Robot {
         }
       ]
       endPoint Solid {
-        translation 0.10499999999999998 -0.009998949999824027 0.012523299999992068
-        rotation 0.6057050095424032 0.5159839388013243 0.6057078638372697 2.1888885887481018
+        translation 0.10499999999999998 -0.009998949999852656 0.012523299999993359
+        rotation 0.605705009743094 0.5159839383301476 0.6057078640379606 2.188888589492314
         children [
           USE wheel
         ]
@@ -170,5 +174,5 @@ Robot {
   physics Physics {
     density 500
   }
-  controller "my_controller"
+  controller "Final_round_controller"
 }
