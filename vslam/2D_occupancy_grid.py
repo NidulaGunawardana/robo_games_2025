@@ -1,11 +1,6 @@
 import pyrealsense2 as rs
 import numpy as np
 import cv2
-import os
-
-# Create output directory
-output_dir = "coordinate_images"
-os.makedirs(output_dir, exist_ok=True)
 
 # Initialize RealSense pipeline
 pipe = rs.pipeline()
@@ -17,59 +12,83 @@ pipe.start(config)
 # Get camera intrinsics
 profile = pipe.get_active_profile()
 intrinsics = profile.get_stream(rs.stream.depth).as_video_stream_profile().get_intrinsics()
+fx, fy = intrinsics.fx, intrinsics.fy
+cx, cy = intrinsics.ppx, intrinsics.ppy
+
+# Variables to store selected pixel coordinates
+selected_pixel = None
+
+# Grid parameters
+grid_size = 300  # 300x300 cells
+cell_size = 0.1  # Each cell represents 0.1 cm
+
+def get_real_world_coordinates(x, y, depth):
+    Z = depth * 100  # Convert depth to cm
+    X = (x - cx) * Z / fx
+    Y = (y - cy) * Z / fy  # Compute Y coordinate
+    return X, Y, Z - 15  # Projecting onto the X-Z plane
+
+# Mouse callback function
+def mouse_callback(event, x, y, flags, param):
+    global selected_pixel
+    if event == cv2.EVENT_LBUTTONDOWN:
+        selected_pixel = (x, y)
 
 try:
-    # Capture a single frame
-    frames = pipe.wait_for_frames()
-    depth_frame = frames.get_depth_frame()
-    color_frame = frames.get_color_frame()
+    cv2.namedWindow("Depth Image")
+    cv2.setMouseCallback("Depth Image", mouse_callback)
+    
+    while True:
+        # Capture frames
+        frames = pipe.wait_for_frames()
+        depth_frame = frames.get_depth_frame()
+        color_frame = frames.get_color_frame()
 
-    if depth_frame and color_frame:
+        if not depth_frame or not color_frame:
+            continue
+        
         # Convert depth frame to numpy array
-        depth_image = np.asanyarray(depth_frame.get_data()) * 0.001  # Convert to meters
-
-        # Convert color frame to numpy array
-        color_image = np.asanyarray(color_frame.get_data())  # Original RGB image
-
-        # Get depth dimensions
+        depth_image = np.asanyarray(depth_frame.get_data())
+        depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
+        
+        # Create top-view grid
+        grid = np.zeros((grid_size, grid_size, 3), dtype=np.uint8)
+        
+        # Iterate over depth image and map to grid
         height, width = depth_image.shape
-        fx, fy = intrinsics.fx, intrinsics.fy
-        cx, cy = intrinsics.ppx, intrinsics.ppy
-
-        # Generate pixel grid
-        xx, yy = np.meshgrid(np.arange(width), np.arange(height))
-
-        # Compute real-world coordinates (X, Y, Z)
-        Z = depth_image  # Depth (meters)
-        X = (xx - cx) * Z / fx  # X coordinate (Left-Right)
-        Y = (yy - cy) * Z / fy  # Y coordinate (Up-Down)
-
-        # Normalize values for image representation
-        def normalize_to_8bit(array):
-            array = np.nan_to_num(array, nan=0.0)  # Replace NaN values
-            min_val, max_val = np.min(array), np.max(array)
-            return np.uint8(255 * (array - min_val) / (max_val - min_val))
-
-        # Convert X, Y, and Z to 8-bit grayscale images
-        X_image = normalize_to_8bit(X)
-        Y_image = normalize_to_8bit(Y)
-        Z_image = normalize_to_8bit(Z)
-
-        # Save images
-        cv2.imwrite(os.path.join(output_dir, "X_image.png"), X_image)
-        cv2.imwrite(os.path.join(output_dir, "Y_image.png"), Y_image)
-        cv2.imwrite(os.path.join(output_dir, "Z_image.png"), Z_image)
-        cv2.imwrite(os.path.join(output_dir, "Color_image.png"), color_image)
-
-        print("Saved: X_image.png, Y_image.png, Z_image.png, Color_image.png")
-
-        # Display images for comparison
-        cv2.imshow("X Coordinate Image", X_image)
-        cv2.imshow("Y Coordinate Image", Y_image)
-        cv2.imshow("Z Coordinate Image", Z_image)
-        cv2.imshow("Original Color Image", color_image)
-
-        cv2.waitKey(0)  # Wait for key press before closing
+        for i in range(0, height, height // grid_size):
+            for j in range(0, width, width // grid_size):
+                depth_value = depth_frame.get_distance(j, i)
+                X, Y, Z = get_real_world_coordinates(j, i, depth_value)
+                
+                # Ground removal condition (ignore points below -10cm in Y coordinate)
+                if Y > 10:
+                    continue
+                
+                grid_x = int((X + (grid_size * cell_size / 2)) / cell_size)
+                grid_z = int((Z + (grid_size * cell_size / 2)) / cell_size)
+                if 0 <= grid_x < grid_size and 0 <= grid_z < grid_size:
+                    grid[grid_z, grid_x] = (255, 255, 255)  # Mark occupied cell
+        
+        # Scale grid for visualization
+        grid_display = cv2.resize(grid, (300, 300), interpolation=cv2.INTER_NEAREST)
+        
+        # Display selected pixel coordinates
+        if selected_pixel:
+            x, y = selected_pixel
+            depth_value = depth_frame.get_distance(x, y)
+            X, Y, Z = get_real_world_coordinates(x, y, depth_value)
+            text = f"X: {X:.3f}cm, Y: {Y:.3f}cm, Z: {Z:.3f}cm"
+            cv2.putText(depth_colormap, text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+            cv2.circle(depth_colormap, (x, y), 5, (0, 0, 255), -1)
+        
+        # Display images
+        cv2.imshow("Depth Image", depth_colormap)
+        cv2.imshow("Top View Grid", grid_display)
+        
+        # Break loop on key press
+        if cv2.waitKey(1) & 0xFF == 27:  # Press 'Esc' to exit
+            break
 
 finally:
     pipe.stop()
