@@ -35,7 +35,7 @@ class MotorController:
         self.right_motor.setVelocity(-10.0)
         current = self.get_left_position()
         while self.ROBOT.step(32) != -1:
-            if abs(current - self.get_left_position()) > 20:
+            if abs(current - self.get_left_position()) > 23.75:
                 self.stop()
                 break
     
@@ -44,7 +44,7 @@ class MotorController:
         self.right_motor.setVelocity(10.0)
         current = self.get_left_position()
         while self.ROBOT.step(32) != -1:
-            if abs(current - self.get_left_position()) < 20:
+            if abs(current - self.get_left_position()) < 23.75:
                 self.stop()
                 break
         
@@ -53,7 +53,7 @@ class MotorController:
         self.right_motor.setVelocity(-3.0)
         current = self.get_left_position()
         while self.ROBOT.step(32) != -1:
-            if abs(current - self.get_left_position()) > 10:
+            if abs(current - self.get_left_position()) > 13.6:
                 self.stop()
                 break
         
@@ -62,7 +62,7 @@ class MotorController:
         self.right_motor.setVelocity(3.0)
         current = self.get_left_position()
         while self.ROBOT.step(32) != -1:
-            if abs(current - self.get_left_position()) > 10:
+            if abs(current - self.get_left_position()) > 13.6:
                 self.stop()
                 break
 

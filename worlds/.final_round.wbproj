@@ -5,7 +5,7 @@ sceneTreePerspectives: 000000ff00000001000000030000001e000002ae000000fa010000000
 maximizedDockId: -1
 centralWidgetVisible: 1
 orthographicViewHeight: 1
-textFiles: 0 "controllers/Final_round_controller/Final_round_controller.py" "controllers/Final_round_controller/depth_vision.py" "C:/Program Files/Webots/lib/controller/python/controller/display.py"
+textFiles: 2 "controllers/Final_round_controller/depth_vision.py" "C:/Program Files/Webots/lib/controller/python/controller/display.py" "controllers/Final_round_controller/Final_round_controller.py"
 globalOptionalRendering: RangeFinderFrustums
 consoles: Console:All:All
 renderingDevicePerspectives: robot:camera;0;3.1875;0;0

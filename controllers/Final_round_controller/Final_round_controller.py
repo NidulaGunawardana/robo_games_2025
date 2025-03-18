@@ -31,6 +31,7 @@ while robot.step(timestep) != -1:
     #  val = ds.getValue()
     # cc.display_image()
     mc.move_forward()
+    mc.turn_right()
     mc.turn_left()
     mc.move_forward()
     mc.turn_right()
