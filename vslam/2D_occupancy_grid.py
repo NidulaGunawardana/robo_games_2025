@@ -69,15 +69,6 @@ try:
                 grid_z = int((Z + (grid_size * cell_size / 2)) / cell_size)
                 if 0 <= grid_x < grid_size and 0 <= grid_z < grid_size:
                     grid[grid_z, grid_x] = (255, 255, 255)  # Mark occupied cell
-
-        for i in range(-grid_size//2, grid_size//2 + 1):
-            s = -15
-            for j in range(-grid_size//2, grid_size//2 +1):
-                s_z = s
-                s_x_l = (0 - cx) * s_z / fx
-                s_x_h = (640 - cx) * s_z / fx
-                grid[s_z, s_x_l] = (255, 0, 0)  # Mark invisible cells
-            s += 0.1
         
         # Scale grid for visualization
         grid_display = cv2.resize(grid, (300, 300), interpolation=cv2.INTER_NEAREST)
