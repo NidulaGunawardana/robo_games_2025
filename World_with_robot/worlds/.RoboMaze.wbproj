@@ -5,7 +5,7 @@ sceneTreePerspectives: 000000ff00000001000000030000002200000292000000fa010000000
 maximizedDockId: -1
 centralWidgetVisible: 1
 orthographicViewHeight: 1
-textFiles: 0 "controllers/my_gps/my_gps.cpp"
+textFiles: 0 "D:/IESL_RoboGames/robo_games_2025/World_with_robot/controllers/my_gps/my_gps.cpp"
 consoles: Console:All:All
 renderingDevicePerspectives: robot:camera;1;1;0.000889679;0.312329
 renderingDevicePerspectives: robot:camera_2;1;1;0.00177936;0.143836
