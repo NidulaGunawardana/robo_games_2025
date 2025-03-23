@@ -1,6 +1,5 @@
 import time
 
-
 class MotorController:
     ROBOT = None
     left_motor = None
@@ -33,38 +32,38 @@ class MotorController:
     def move_forward(self):
         self.left_motor.setVelocity(-10.0)
         self.right_motor.setVelocity(-10.0)
-        current = self.get_left_position()
-        while self.ROBOT.step(32) != -1:
-            if abs(current - self.get_left_position()) > 24:
-                self.stop()
-                break
+        # current = self.get_left_position()
+        # while self.ROBOT.step(32) != -1:
+        #     if abs(current - self.get_left_position()) > 24:
+        #         self.stop()
+                # break
     
     def move_backward(self):
         self.left_motor.setVelocity(10.0)
         self.right_motor.setVelocity(10.0)
-        current = self.get_left_position()
-        while self.ROBOT.step(32) != -1:
-            if abs(current - self.get_left_position()) < 24:
-                self.stop()
-                break
+        # current = self.get_left_position()
+        # while self.ROBOT.step(32) != -1:
+        #     if abs(current - self.get_left_position()) < 24:
+        #         self.stop()
+        #         break
         
     def turn_left(self):
         self.left_motor.setVelocity(3.0)
         self.right_motor.setVelocity(-3.0)
-        current = self.get_left_position()
-        while self.ROBOT.step(32) != -1:
-            if abs(current - self.get_left_position()) > 13.6:
-                self.stop()
-                break
+        # current = self.get_left_position()
+        # while self.ROBOT.step(32) != -1:
+        #     if abs(current - self.get_left_position()) > 13.6:
+        #         self.stop()
+        #         break
         
     def turn_right(self):
         self.left_motor.setVelocity(-3.0)
         self.right_motor.setVelocity(3.0)
-        current = self.get_left_position()
-        while self.ROBOT.step(32) != -1:
-            if abs(current - self.get_left_position()) > 13.6:
-                self.stop()
-                break
+        # current = self.get_left_position()
+        # while self.ROBOT.step(32) != -1:
+        #     if abs(current - self.get_left_position()) > 13.6:
+        #         self.stop()
+        #         break
 
     def stop(self):
         self.left_motor.setVelocity(0.0)

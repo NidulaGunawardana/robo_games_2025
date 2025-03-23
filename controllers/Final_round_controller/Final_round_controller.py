@@ -1,59 +1,62 @@
-"""Final_round_controller controller."""
-
-# You may need to import some classes of the controller module. Ex:
-#  from controller import Robot, Motor, DistanceSensor
-from controller import Robot
-from motor_controller import MotorController
-from depth_vision import CameraControl
-
+from controller import Robot, Camera, Display
+import numpy as np
 import cv2
 
-# create the Robot instance.
 robot = Robot()
-
-# get the time step of the current world.
 timestep = int(robot.getBasicTimeStep())
-print(timestep)
 
-# You should insert a getDevice-like function in order to get the
-# instance of a device of the robot. Something like:
-# ds = robot.getDevice('dsname')
-# ds.enable(timestep)
+camera = robot.getDevice('camera')
+camera.enable(timestep)
+width = camera.getWidth()
+height = camera.getHeight()
+display = robot.getDevice('display')
 
-mc = MotorController(robot)
-mc.init_motor_controller()
-
-cc = CameraControl(robot)
-
-# Main loop:
-# - perform simulation steps until Webots is stopping the controller
 while robot.step(timestep) != -1:
-    # Read the sensors:
-    # Enter here functions to read sensor data, like:
-    #  val = ds.getValue()
-    # cc.display_image()
-    mc.move_forward()
-    mc.turn_right()
-    mc.turn_left()
-    mc.move_forward()
-    mc.turn_right()
-    mc.move_forward()
-    mc.turn_right()
-    mc.move_forward()
-    mc.turn_left()
+    data = camera.getImage()
     
-    # while timestep <1000:
-        # timestep += 1
-    # mc.turn_left()
-    # mc.move_forward()
-    # mc.turn_right()
-    # mc.move_forward()
-    # mc.turn_right()
+    if data:
+        # Convert raw image to NumPy RGBA
+        image = np.frombuffer(data, np.uint8).reshape((height, width, 4))  # RGBA
+        image_bgr = cv2.cvtColor(image, cv2.COLOR_RGBA2BGR)  # Original camera feed
+        image_hsv = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2HSV)
 
-    # Process sensor data here.
+        # Define HSV ranges for red, green, blue, and yellow
+        lower_red = np.array([0, 100, 100])
+        upper_red = np.array([10, 255, 255])
+        
+        lower_green = np.array([40, 70, 70])
+        upper_green = np.array([80, 255, 255])
+        
+        lower_blue = np.array([100, 200, 200])
+        upper_blue = np.array([255, 255, 255])
+        
+        lower_yellow = np.array([20, 150, 150])
+        upper_yellow = np.array([100, 255, 255])
 
-    # Enter here functions to send actuator commands, like:
-    #  motor.setPosition(10.0)
-    pass
+        # Create color masks
+        color_masks = {
+            "Blue": cv2.inRange(image_hsv, lower_red, upper_red),
+            "Green": cv2.inRange(image_hsv, lower_green, upper_green),
+            "Red": cv2.inRange(image_hsv, lower_blue, upper_blue),
+            "Yellow": cv2.inRange(image_hsv, lower_yellow, upper_yellow)
+        }
 
-# Enter here exit cleanup code.
+        # Draw bounding boxes on original image
+        for color_name, mask in color_masks.items():
+            contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            for cnt in contours:
+                area = cv2.contourArea(cnt)
+                if area > 30:
+                    x, y, w, h = cv2.boundingRect(cnt)
+                    cv2.rectangle(image_bgr, (x, y), (x + w, y + h), (0, 255, 255), 2)
+                    cv2.putText(image_bgr, color_name, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX,
+                                0.6, (0, 255, 255), 2)
+
+        # Convert annotated image back to RGBA for Webots Display
+        annotated_rgba = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGBA)
+        image_bytes = annotated_rgba.tobytes()
+
+        # ✅ Display logic remains unchanged
+        ir = display.imageNew(image_bytes, Display.BGRA, width, height)
+        display.imagePaste(ir, 0, 0, False)
+        display.imageDelete(ir)
