@@ -6,6 +6,8 @@ from controller import Robot
 from motor_controller import MotorController
 from depth_vision import CameraControl
 
+import cv2
+
 # create the Robot instance.
 robot = Robot()
 

@@ -8,8 +8,8 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/project
 WorldInfo {
 }
 Viewpoint {
-  orientation -0.547524591940389 -0.5309057718667002 0.6468043619357661 4.297606397216745
-  position 0.5422201847948612 1.172821936513804 5.862513365939031
+  orientation -0.5774366550588885 -0.5616274801119171 0.5925719221980911 4.2210814202701465
+  position -0.0016929017282186765 0.39167974878562617 5.896066476170032
 }
 TexturedBackground {
 }
@@ -181,14 +181,10 @@ Robot {
       rotation 0 0 -1 -1.5708053071795867
     }
     Display {
+      translation 0 0 0.11
     }
     Camera {
-      translation -2e-07 0.04 0.02
-      rotation 0.35740707410586264 -0.3574040741052406 -0.8628571789074145 -1.7177753071795863
-      name "camera_2"
-    }
-    Camera {
-      translation -1.10196e-07 0.0299999 0.04
+      translation -3.30588e-07 0.09 0.11
       rotation 0 0 1 1.5708
       fieldOfView 1.5
     }
