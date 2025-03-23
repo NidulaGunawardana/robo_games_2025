@@ -1,4 +1,4 @@
-#VRML_SIM R2023b utf8
+#VRML_SIM R2025a utf8
 
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
@@ -9,8 +9,8 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/project
 WorldInfo {
 }
 Viewpoint {
-  orientation -0.5716652728112366 -0.5685671167949146 0.5915490254925386 4.239347571796069
-  position 0.2868841385679245 0.5051103565483768 6.241152139675179
+  orientation -0.5799963153422786 -0.569386875883412 0.5825829209315257 4.214276426826617
+  position 0.2929857969522455 1.3240565770403019 2.0166695386949827
 }
 TexturedBackground {
   skybox FALSE
@@ -25,6 +25,7 @@ RectangleArena {
   floorAppearance Parquetry {
     type "dark strip"
   }
+  wallHeight 0.5
 }
 Solid {
   translation 0.67 0.7 0
@@ -88,12 +89,43 @@ Pose {
   ]
 }
 Pose {
+  translation 1.53 0.25 0.2301
+  rotation 0 1 0 -1.5707953071795862
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 1 0 0
+        roughness 1
+        metalness 0
+      }
+      geometry Plane {
+        size 0.5 0.5
+      }
+    }
+  ]
+}
+Pose {
   translation -1.27 0.25 0.0001
   children [
     Shape {
       appearance PBRAppearance {
         baseColor 0 0 1
         roughness 1
+        metalness 0
+      }
+      geometry Plane {
+        size 0.5 0.5
+      }
+    }
+  ]
+}
+Pose {
+  translation -1.51 0.25 0.250101
+  rotation 0 1 0 1.5708
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0 0 1
         metalness 0
       }
       geometry Plane {
@@ -118,7 +150,39 @@ Pose {
   ]
 }
 Pose {
+  translation -1.51 -1.09 0.240101
+  rotation 0 1 0 1.5708
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0 1 0
+        roughness 1
+        metalness 0
+      }
+      geometry Plane {
+        size 0.5 0.5
+      }
+    }
+  ]
+}
+Pose {
   translation 1.29 -1.11 0.0001
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 1 1 0
+        roughness 1
+        metalness 0
+      }
+      geometry Plane {
+        size 0.5 0.5
+      }
+    }
+  ]
+}
+Pose {
+  translation 1.53 -1.11 0.2101
+  rotation 0 1 0 -1.5707953071795862
   children [
     Shape {
       appearance PBRAppearance {
@@ -192,7 +256,7 @@ Robot {
     Camera {
       translation -3.30588e-07 0.09 0.11
       rotation 0 0 1 1.5708
-      fieldOfView 1.5
+      fieldOfView 0.8
     }
     InertialUnit {
       translation 0 -0.03 0.03
@@ -260,7 +324,7 @@ Robot {
       ]
       endPoint Solid {
         translation -0.10499999999999998 -0.00999106252563571 0.012558917107145691
-        rotation -0.32663698329806856 -0.8869139279066046 0.32663736104006164 1.6905123410156169
+        rotation -0.3266369832980686 -0.8869139279066046 0.32663736104006164 1.6905123410156169
         children [
           DEF wheel Shape {
             appearance PBRAppearance {
@@ -319,6 +383,58 @@ Robot {
           ]
           name "solid(2)"
           boundingObject USE caster_wheel
+          physics Physics {
+            density 100
+          }
+        }
+      ]
+    }
+    Pose {
+      translation 0 0.07 -0.005
+      rotation 0 1 0 0
+      children [
+        Solid {
+          translation -0.0899999 0.06 0.055
+          rotation 0 1 0 -1.5707953071795862
+          children [
+            DEF Arm_left Shape {
+              appearance PBRAppearance {
+                roughness 1
+                metalness 0
+              }
+              geometry Box {
+                size 0.08 0.1 0.01
+              }
+            }
+          ]
+          name "solid(3)"
+          boundingObject USE Arm_left
+          physics Physics {
+            density 100
+          }
+        }
+      ]
+    }
+    Pose {
+      translation 0.18 0.07 -0.005
+      rotation 0 1 0 0
+      children [
+        Solid {
+          translation -0.0899999 0.06 0.055
+          rotation 0 1 0 -1.5707953071795862
+          children [
+            DEF Arm_right Shape {
+              appearance PBRAppearance {
+                roughness 1
+                metalness 0
+              }
+              geometry Box {
+                size 0.08 0.1 0.01
+              }
+            }
+          ]
+          name "solid(4)"
+          boundingObject USE Arm_right
           physics Physics {
             density 100
           }
