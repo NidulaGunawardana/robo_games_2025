@@ -1,24 +1,30 @@
-#VRML_SIM R2025a utf8
+#VRML_SIM R2023b utf8
 
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/RectangleArena.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/devices/sharp/protos/SharpGP2D120.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/appearances/protos/Parquetry.proto"
 
 WorldInfo {
 }
 Viewpoint {
-  orientation -0.5774366550588885 -0.5616274801119171 0.5925719221980911 4.2210814202701465
-  position -0.0016929017282186765 0.39167974878562617 5.896066476170032
+  orientation -0.45098759713526426 -0.4469889667328174 0.7725354689910934 4.4921034828188535
+  position 0.06089064804952338 3.25238881973549 5.951247275595786
 }
 TexturedBackground {
+  skybox FALSE
 }
 TexturedBackgroundLight {
+  castShadows FALSE
 }
 RectangleArena {
   translation 0.01 0 0
   floorSize 3.048 3.048
   floorTileSize 0.61 0.61
+  floorAppearance Parquetry {
+    type "dark strip"
+  }
 }
 Solid {
   translation 0.67 0.7 0
@@ -253,8 +259,8 @@ Robot {
         }
       ]
       endPoint Solid {
-        translation -0.10499999999999998 -0.00999106252563567 0.012558917107145712
-        rotation -0.3266369832980576 -0.8869139279066194 0.3266373610400323 1.6905123410164828
+        translation -0.10499999999999998 -0.009991062525635705 0.012558917107145686
+        rotation -0.3266369832980676 -0.8869139279066066 0.3266373610400569 1.6905123410157024
         children [
           DEF wheel Shape {
             appearance PBRAppearance {
@@ -286,8 +292,8 @@ Robot {
         }
       ]
       endPoint Solid {
-        translation 0.10499999999999998 -0.009998949999852656 0.012523299999993359
-        rotation 0.605705009743094 0.5159839383301476 0.6057078640379606 2.188888589492314
+        translation 0.10499999999999998 -0.009998949999852636 0.01252329999999331
+        rotation 0.6057050097429882 0.5159839383301923 0.6057078640380283 2.1888885894919246
         children [
           USE wheel
         ]
