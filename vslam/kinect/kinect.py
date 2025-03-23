@@ -16,7 +16,7 @@ selected_pixel = None
 
 # Grid parameters
 grid_size = 300  # 300x300 cells
-cell_size = 0.1  # Each cell represents 0.1 cm
+cell_size = 1  # Each cell represents 0.1 cm
 
 def get_real_world_coordinates(x, y, depth):
     Z = depth * 0.1  # Convert depth to cm (approximate scale factor for Kinect v1)
