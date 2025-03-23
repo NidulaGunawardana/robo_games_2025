@@ -8,17 +8,19 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/project
 WorldInfo {
 }
 Viewpoint {
-  orientation -0.5774366550588885 -0.5616274801119171 0.5925719221980911 4.2210814202701465
-  position -0.0016929017282186765 0.39167974878562617 5.896066476170032
+  orientation -0.5999218922151281 -0.5848335722180963 0.5459518440738531 4.152266101749765
+  position 0.30001584364237965 -0.3515285199524137 6.568555379613766
 }
 TexturedBackground {
 }
 TexturedBackgroundLight {
+  castShadows FALSE
 }
 RectangleArena {
   translation 0.01 0 0
   floorSize 3.048 3.048
   floorTileSize 0.61 0.61
+  wallHeight 0.5
 }
 Solid {
   translation 0.67 0.7 0
@@ -82,12 +84,43 @@ Pose {
   ]
 }
 Pose {
+  translation 1.53 0.25 0.2301
+  rotation 0 1 0 -1.5707953071795862
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 1 0 0
+        roughness 1
+        metalness 0
+      }
+      geometry Plane {
+        size 0.5 0.5
+      }
+    }
+  ]
+}
+Pose {
   translation -1.27 0.25 0.0001
   children [
     Shape {
       appearance PBRAppearance {
         baseColor 0 0 1
         roughness 1
+        metalness 0
+      }
+      geometry Plane {
+        size 0.5 0.5
+      }
+    }
+  ]
+}
+Pose {
+  translation -1.51 0.25 0.250101
+  rotation 0 1 0 1.5708
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0 0 1
         metalness 0
       }
       geometry Plane {
@@ -112,7 +145,39 @@ Pose {
   ]
 }
 Pose {
+  translation -1.51 -1.09 0.240101
+  rotation 0 1 0 1.5708
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0 1 0
+        roughness 1
+        metalness 0
+      }
+      geometry Plane {
+        size 0.5 0.5
+      }
+    }
+  ]
+}
+Pose {
   translation 1.29 -1.11 0.0001
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 1 1 0
+        roughness 1
+        metalness 0
+      }
+      geometry Plane {
+        size 0.5 0.5
+      }
+    }
+  ]
+}
+Pose {
+  translation 1.53 -1.11 0.2101
+  rotation 0 1 0 -1.5707953071795862
   children [
     Shape {
       appearance PBRAppearance {
@@ -186,7 +251,7 @@ Robot {
     Camera {
       translation -3.30588e-07 0.09 0.11
       rotation 0 0 1 1.5708
-      fieldOfView 1.5
+      fieldOfView 0.8
     }
     InertialUnit {
       translation 0 -0.03 0.03
