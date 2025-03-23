@@ -1,13 +1,11 @@
 import cv2
 import freenect
 
-
 # Function to get RGB and depth data from the Kinect
 def get_depth_and_rgb():
     depth, timestamp = freenect.sync_get_depth()
     rgb, timestamp = freenect.sync_get_video()
     return depth, rgb
-
 
 while True:
     depth, rgb = get_depth_and_rgb()

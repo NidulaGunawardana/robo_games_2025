@@ -1,59 +1,63 @@
+import freenect
 import numpy as np
 import cv2
-from pykinect import nui
 
-# Initialize Kinect v1
-kinect = nui.Runtime()
-kinect.depth_frame_ready += lambda frame: None
-kinect.depth_stream.open(nui.ImageStreamType.Depth, 2, nui.ImageResolution.Resolution640x480, nui.ImageType.Depth)
+# Approximate camera intrinsics for Kinect v1
+fx, fy = 594.21, 591.04
+cx, cy = 339.5, 242.7
 
-# Kinect v1 intrinsics (approximate)
-fx, fy = 525.0, 525.0
-cx, cy = 320.0, 240.0
-
-# Variable to store selected pixel
+# Variable to store selected pixel coordinates
 selected_pixel = None
 
-# Function to compute real-world coordinates from Kinect depth
-def get_real_world_coordinates(x, y, raw_depth):
-    Z = raw_depth * 0.1  # Convert to cm (Kinect v1 scale ≈ 0.1 cm per unit)
+# Function to get RGB and depth data from the Kinect
+def get_depth_and_rgb():
+    depth, _ = freenect.sync_get_depth()
+    rgb, _ = freenect.sync_get_video()
+    return depth, rgb
+
+# Function to convert pixel to real-world coordinates
+def get_real_world_coordinates(x, y, depth):
+    Z = depth * 0.1  # Convert depth from mm to cm (scale approx)
     X = (x - cx) * Z / fx
     Y = (y - cy) * Z / fy
     return X, Y, Z
 
-# Mouse click handler
+# Mouse callback function
 def mouse_callback(event, x, y, flags, param):
     global selected_pixel
     if event == cv2.EVENT_LBUTTONDOWN:
         selected_pixel = (x, y)
 
+# Setup window and callback
+cv2.namedWindow("Depth Image")
+cv2.setMouseCallback("Depth Image", mouse_callback)
+
 try:
-    cv2.namedWindow("Depth Image")
-    cv2.setMouseCallback("Depth Image", mouse_callback)
-
     while True:
-        # Get depth frame from Kinect
-        frame = kinect.depth_stream.get_frame()
-        if not frame:
-            continue
+        # Get depth and RGB frames
+        depth_raw, rgb = get_depth_and_rgb()
 
-        # Convert to numpy array
-        depth_data = np.frombuffer(frame.image.bits, dtype=np.uint16).reshape((480, 640))
-        depth_image = (depth_data >> 3) & 4095  # 11-bit depth from 13-bit packed data
+        # Create colormap for visualization
+        depth_colormap = cv2.applyColorMap(
+            cv2.convertScaleAbs(depth_raw, alpha=0.03),
+            cv2.COLORMAP_JET
+        )
 
-        # Apply color map for display
-        depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
+        # Convert RGB to BGR for OpenCV
+        color_frame = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
 
-        # Draw selected pixel and compute 3D
+        # Display 3D coordinates of selected pixel
         if selected_pixel:
             x, y = selected_pixel
-            raw_depth = depth_image[y, x]
-            X, Y, Z = get_real_world_coordinates(x, y, raw_depth)
-            text = f"X: {X:.1f}cm, Y: {Y:.1f}cm, Z: {Z:.1f}cm"
-            cv2.putText(depth_colormap, text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
-            cv2.circle(depth_colormap, (x, y), 5, (0, 0, 255), -1)
+            depth_value = depth_raw[y, x]
+            if depth_value != 0:
+                X, Y, Z = get_real_world_coordinates(x, y, depth_value)
+                text = f"X: {X:.1f}cm, Y: {Y:.1f}cm, Z: {Z:.1f}cm"
+                cv2.putText(depth_colormap, text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
+                            0.6, (255, 255, 255), 2)
+                cv2.circle(depth_colormap, (x, y), 5, (0, 0, 255), -1)
 
-        # Show the depth image
+        # Show depth image
         cv2.imshow("Depth Image", depth_colormap)
 
         # Exit on 'Esc'
@@ -61,5 +65,4 @@ try:
             break
 
 finally:
-    kinect.close()
     cv2.destroyAllWindows()
