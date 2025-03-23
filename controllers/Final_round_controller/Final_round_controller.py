@@ -21,7 +21,7 @@ while robot.step(timestep) != -1:
         image_hsv = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2HSV)
 
         # Define HSV ranges for red, green, blue, and yellow
-        lower_red = np.array([0, 100, 100])
+        lower_red = np.array([0, 200, 200])
         upper_red = np.array([10, 255, 255])
         
         lower_green = np.array([40, 70, 70])

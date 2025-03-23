@@ -1,4 +1,4 @@
-#VRML_SIM R2025a utf8
+#VRML_SIM R2023b utf8
 
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
@@ -10,7 +10,7 @@ WorldInfo {
 }
 Viewpoint {
   orientation -0.5799963153422786 -0.569386875883412 0.5825829209315257 4.214276426826617
-  position 0.2929857969522455 1.3240565770403019 2.0166695386949827
+  position -0.3549332114479957 0.3309787309497382 8.660782952384949
 }
 TexturedBackground {
   skybox FALSE
@@ -323,8 +323,8 @@ Robot {
         }
       ]
       endPoint Solid {
-        translation -0.10499999999999998 -0.00999106252563571 0.012558917107145691
-        rotation -0.3266369832980686 -0.8869139279066046 0.32663736104006164 1.6905123410156169
+        translation -0.10499999999999998 -0.009991062525635704 0.012558917107145694
+        rotation -0.32663698329806923 -0.8869139279066041 0.32663736104006225 1.6905123410155731
         children [
           DEF wheel Shape {
             appearance PBRAppearance {
@@ -356,8 +356,8 @@ Robot {
         }
       ]
       endPoint Solid {
-        translation 0.10499999999999998 -0.009998949999852609 0.012523299999993319
-        rotation 0.6057050097429758 0.5159839383301941 0.6057078640380394 2.1888885894918784
+        translation 0.10499999999999998 -0.009998949999852602 0.012523299999993326
+        rotation 0.6057050097429728 0.5159839383301958 0.6057078640380408 2.188888589491864
         children [
           USE wheel
         ]
