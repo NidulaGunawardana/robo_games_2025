@@ -9,8 +9,8 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/project
 WorldInfo {
 }
 Viewpoint {
-  orientation -0.5397363927590787 -0.5137822653976939 0.6668676106201523 4.3090444465671585
-  position 0.05285866147337387 1.5276754499813365 6.532597259216317
+  orientation -0.5036236856803666 -0.4775647765919815 0.7199271264373736 4.378490309193342
+  position 0.07817406105211783 2.431941217983492 6.38912801767022
 }
 TexturedBackground {
   skybox FALSE
@@ -254,7 +254,7 @@ Robot {
       name "display2"
     }
     RangeFinder {
-      translation 4.2126e-07 0.09 0.11
+      translation 4.2126e-07 0.09 0.18
       rotation 0 0 -1 -1.5708053071795867
       fieldOfView 0.8
       maxRange 4
@@ -264,7 +264,7 @@ Robot {
       name "display1"
     }
     Camera {
-      translation -3.30588e-07 0.09 0.11
+      translation -3.30588e-07 0.09 0.18
       rotation 0 0 1 1.5708
       fieldOfView 0.8
     }
@@ -333,8 +333,8 @@ Robot {
         }
       ]
       endPoint Solid {
-        translation -0.10499999999999998 -0.00999106252563535 0.012558917107145786
-        rotation -0.3266369832948182 -0.8869139279089975 0.3266373610368144 1.6905123410121339
+        translation -0.10499999999999998 -0.009991062525635343 0.012558917107145792
+        rotation -0.3266369832948185 -0.8869139279089974 0.3266373610368148 1.6905123410120972
         children [
           DEF wheel Shape {
             appearance PBRAppearance {
@@ -366,8 +366,8 @@ Robot {
         }
       ]
       endPoint Solid {
-        translation 0.10499999999999998 -0.009998949999854182 0.012523299999993371
-        rotation 0.6057050097540523 0.5159839383039528 0.6057078640493172 2.188888589532952
+        translation 0.10499999999999998 -0.009998949999854179 0.012523299999993357
+        rotation 0.6057050097540471 0.5159839383039548 0.6057078640493208 2.188888589532933
         children [
           USE wheel
         ]

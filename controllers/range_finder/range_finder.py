@@ -10,7 +10,7 @@ range_finder = robot.getDevice('range-finder')
 range_finder.enable(timestep)
 
 # Get display
-display = robot.getDevice('display')
+display = robot.getDevice('display1')
 
 # Get properties
 width = range_finder.getWidth()
@@ -30,7 +30,7 @@ while robot.step(timestep) != -1:
     rgba = cv2.cvtColor(normalized, cv2.COLOR_GRAY2RGBA)
 
     # For ground removal
-    rgba[35:] = [0, 0, 0, 255] 
+    rgba[55:] = [0, 0, 0, 255] 
 
     # Convert to bytes and show on display
     image_bytes = rgba.tobytes()

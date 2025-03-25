@@ -32,6 +32,9 @@ class RobotNavigator:
         self.cam_width = self.camera.getWidth()
         self.cam_height = self.camera.getHeight()
         
+        # Area threshold
+        self.red_area_threshold = 80
+        
     def wait(self, duration_sec):
         start_time = self.robot.getTime()
         while self.robot.step(self.timestep) != -1:
@@ -49,7 +52,7 @@ class RobotNavigator:
         # Convert to RGBA for display
         rgba = cv2.cvtColor(normalized, cv2.COLOR_GRAY2RGBA)
         # Ground removal for clarity
-        rgba[35:] = [0, 0, 0, 255]
+        # rgba[35:] = [0, 0, 0, 255]
         
         # Display image on display1
         image_bytes = rgba.tobytes()
@@ -67,8 +70,8 @@ class RobotNavigator:
     
     def obstacle_avoidance(self, depth_image):
         # Divide the range finder image into left and right halves at mid-height
-        right_distances = depth_image[self.range_height // 2][self.range_width // 2:]
-        left_distances = depth_image[self.range_height // 2][:self.range_width // 2]
+        right_distances = depth_image[self.range_height // 2 + 23][self.range_width // 2:]
+        left_distances = depth_image[self.range_height // 2 + 23][:self.range_width // 2]
         
         if self.is_corner(left_distances, right_distances):
             print("Corner detected — backing up")
@@ -94,7 +97,8 @@ class RobotNavigator:
         else:
             self.mc.move_forward()
 
-    def process_camera(self):
+    def process_camera(self, _depth_image):
+
         cam_data = self.camera.getImage()
         if not cam_data:
             return
@@ -104,42 +108,76 @@ class RobotNavigator:
         cam_image_bgr = cv2.cvtColor(cam_image, cv2.COLOR_RGBA2BGR)
         cam_image_hsv = cv2.cvtColor(cam_image_bgr, cv2.COLOR_BGR2HSV)
         
-        # RED1 -> Bright Red
-        # RED2 -> Dark Red
-        
-        # Define HSV ranges for color detection
+        # Define HSV ranges for red objects (handling two red ranges)
         hsv_ranges = {
-            "Red1":(np.array([120, 80, 200]), np.array([245, 255, 255])),
-            "Red2":(np.array([115, 130, 70]), np.array([130, 200, 75])),
+            "Red1": (np.array([120, 80, 200]), np.array([245, 255, 255])),
+            "Red2": (np.array([115, 130, 70]), np.array([130, 200, 75])),
         }
-        # "Green": (np.array([40, 70, 70]), np.array([80, 255, 255])),
-        # "Blue":  (np.array([100, 200, 200]), np.array([255, 255, 255])),
-        # "Yellow": (np.array([20, 150, 150]), np.array([100, 255, 255]))
         
-        # Process each color
+        # Ensure that we have a recent depth image from the range sensor
+        depth_image = _depth_image
+        if depth_image is None:
+            print("No depth image available")
+        
         for color_name, (lower, upper) in hsv_ranges.items():
             mask = cv2.inRange(cam_image_hsv, lower, upper)
             contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             for cnt in contours:
                 area = cv2.contourArea(cnt)
-                if area > 30:
+                if area > 30:  # minimum area to filter noise
                     x, y, w, h = cv2.boundingRect(cnt)
+                    object_label = color_name  # default label
+                    
+                    # Use depth data (if available) to estimate the real-world size.
+                    if depth_image is not None:
+                        # Map the bounding box from camera space to depth sensor space
+                        depth_x = int(x * self.range_width / self.cam_width)
+                        depth_y = int(y * self.range_height / self.cam_height)
+                        depth_w = int(w * self.range_width / self.cam_width)
+                        depth_h = int(h * self.range_height / self.cam_height)
+                        
+                        # Ensure indices are within bounds
+                        depth_x = max(0, min(depth_x, self.range_width - 1))
+                        depth_y = max(0, min(depth_y, self.range_height - 1))
+                        depth_w = max(1, min(depth_w, self.range_width - depth_x))
+                        depth_h = max(1, min(depth_h, self.range_height - depth_y))
+                        
+                        roi_depth = depth_image[depth_y:depth_y+depth_h, depth_x:depth_x+depth_w]
+                        avg_depth = np.mean(roi_depth) if roi_depth.size > 0 else 1.0
+                        # Compute a depth-corrected size metric
+                        corrected_area = area*(avg_depth**2 + 1e-6)  # small epsilon to avoid division by zero
+                        
+                        # Threshold to differentiate objects
+                        # (Tune self.red_area_threshold based on your experimental setup)
+                        if corrected_area > self.red_area_threshold:
+                            object_label = "Red Placement"
+                        else:
+                            object_label = "Red Cube"
+                        
+                        # Optionally, display debug info on the image
+                        cv2.putText(cam_image_bgr, f"D: {avg_depth:.2f}", (x - 15, y + h),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 0), 1)
+                        cv2.putText(cam_image_bgr, f"CA: {corrected_area:.2f}", (x - 15, y + h + 15),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 0), 1)
+                    
+                    # Draw bounding box and label on the image
                     cv2.rectangle(cam_image_bgr, (x, y), (x+w, y+h), (0, 255, 255), 2)
-                    cv2.putText(cam_image_bgr, color_name, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX,
-                                0.6, (0, 255, 255), 2)
+                    cv2.putText(cam_image_bgr, object_label, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX,
+                                0.3, (0, 255, 255), 2)
         
-        # Convert annotated image back to RGBA and display on display2
+        # Convert annotated image back to RGBA and display it on display2
         cam_annotated_rgba = cv2.cvtColor(cam_image_bgr, cv2.COLOR_BGR2RGBA)
         cam_image_bytes = cam_annotated_rgba.tobytes()
         cam_ir = self.display2.imageNew(cam_image_bytes, Display.BGRA, self.cam_width, self.cam_height)
         self.display2.imagePaste(cam_ir, 0, 0, False)
         self.display2.imageDelete(cam_ir)
 
+
     def run(self):
         while self.robot.step(self.timestep) != -1:
             depth_image = self.process_range_finder()
             self.obstacle_avoidance(depth_image)
-            self.process_camera()
+            self.process_camera(depth_image)
             # Future implementation for approaching and capturing objects
             # can be integrated here, e.g., by checking detected colors
             # and altering the robot's state accordingly.
