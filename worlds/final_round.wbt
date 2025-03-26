@@ -9,8 +9,8 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/project
 WorldInfo {
 }
 Viewpoint {
-  orientation -0.5896921634875215 -0.575798924659155 0.5663203604699081 4.184917942421803
-  position 0.16841935691817742 -0.7149976427949186 6.863472776173032
+  orientation -0.5636968605009133 -0.5270705138197845 0.635957956883285 4.249163741444464
+  position 0.12009176264495153 1.1260438918226687 3.801635472040326
 }
 TexturedBackground {
   skybox FALSE
@@ -49,6 +49,7 @@ Solid {
   name "Red Box"
   boundingObject USE box
   physics Physics {
+    mass 0.1
   }
 }
 Solid {
@@ -413,7 +414,7 @@ Robot {
                 metalness 0
               }
               geometry Box {
-                size 0.08 0.1 0.01
+                size 0.08 0.2 0.01
               }
             }
           ]
@@ -439,7 +440,7 @@ Robot {
                 metalness 0
               }
               geometry Box {
-                size 0.08 0.1 0.01
+                size 0.08 0.2 0.01
               }
             }
           ]
