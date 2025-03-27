@@ -9,8 +9,8 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/project
 WorldInfo {
 }
 Viewpoint {
-  orientation 0.5451776175365888 0.5007591416112853 -0.6723255516711064 1.999304541909183
-  position -0.1677866333082827 1.4087712150511784 8.308108755095802
+  orientation 0.5893234778889282 0.577955027559046 -0.564504937558672 2.0972699743400263
+  position 0.5932060986839468 -0.2641631260723387 7.62169594609627
 }
 TexturedBackground {
   skybox FALSE
@@ -28,8 +28,8 @@ RectangleArena {
   wallHeight 0.5
 }
 Solid {
-  translation 0.35 0.64 0.0499604
-  rotation -0.8117692108866779 -0.5772581055194078 0.0883392770434797 1.181656904957498e-16
+  translation 0.18 0.64 0.04996076
+  rotation 0.3883684778800164 -0.42720532566752983 -0.816495887993601 1.0977349237600268e-16
   children [
     Pose {
       translation 0 0 0.05
@@ -53,8 +53,8 @@ Solid {
   }
 }
 Solid {
-  translation -0.55 0.18 0.0499604
-  rotation 8.169217089475226e-14 0.5331207202786977 -0.846039182077002 3.998396847464091e-18
+  translation -0.55 0.18 0.049960766074355525
+  rotation -0.17744053168747118 0.7452502330873466 -0.642741742691202 6.006598906711146e-17
   children [
     Pose {
       translation 0 0 0.05
@@ -201,8 +201,8 @@ Pose {
   ]
 }
 Solid {
-  translation -0.28 -0.84 0.0499604
-  rotation 0.22008498351628494 -0.6235741199627879 -0.7501452638944481 5.811286639979032e-17
+  translation -0.28 -0.69 0.0499608
+  rotation 0.4073001445028729 -0.34463858381014156 -0.8457723327452129 1.360724618866291e-16
   children [
     Pose {
       translation 0 0 0.05
@@ -226,8 +226,8 @@ Solid {
   }
 }
 Solid {
-  translation 0.41 -0.68 0.0499604
-  rotation 0.8647245571891621 -0.49001058240719875 0.11018652060467934 7.395285086649822e-17
+  translation 0.4099999986928348 -0.7106273627165474 0.04996076
+  rotation 5.412960270207005e-12 -3.914108091881357e-12 1 2.166850874156144e-05
   children [
     Pose {
       translation 0 0 0.05
@@ -251,26 +251,34 @@ Solid {
   }
 }
 Robot {
-  translation -0.0343602 1.29122 -0.00417365
-  rotation 7.576482391147484e-05 0.0011675003684646018 0.9999993156010565 -3.1259453071795864
+  translation -0.154481 1.30092 -0.00403252
+  rotation 7.670143428507394e-05 0.0010488704688387108 0.9999994469936618 -3.125965307179586
   children [
     Display {
       name "display2"
+      width 640
+      height 480
     }
     RangeFinder {
       translation 4.2126e-07 0.09 0.18
       rotation 0 0 -1 -1.5708053071795867
       fieldOfView 0.8
+      width 640
+      height 480
       maxRange 4
     }
     Display {
       translation 0 0 0.11
       name "display1"
+      width 640
+      height 480
     }
     Camera {
       translation -3.30588e-07 0.09 0.18
       rotation 0 0 1 1.5708
       fieldOfView 0.8
+      width 640
+      height 480
     }
     InertialUnit {
       translation 0 -0.03 0.03
@@ -325,7 +333,7 @@ Robot {
     }
     HingeJoint {
       jointParameters HingeJointParameters {
-        position -138.15041806852636
+        position -138.1504180684601
         anchor -0.105 -0.01 0.0126
       }
       device [
@@ -337,8 +345,8 @@ Robot {
         }
       ]
       endPoint Solid {
-        translation -0.10499999999999998 -0.009991062525635534 0.012558917107145764
-        rotation -0.3266369832964788 -0.8869139279077742 0.32663736103847546 1.6905123410132923
+        translation -0.10499999999999998 -0.009991062525632801 0.012558917107146364
+        rotation -0.32663698327023766 -0.8869139279271029 0.3266373610122336 1.6905123409915694
         children [
           DEF wheel Shape {
             appearance PBRAppearance {
@@ -358,7 +366,7 @@ Robot {
     }
     HingeJoint {
       jointParameters HingeJointParameters {
-        position -230.74742168306668
+        position -230.74742168305932
         anchor 0.105 -0.01 0.0125
       }
       device [
@@ -370,8 +378,8 @@ Robot {
         }
       ]
       endPoint Solid {
-        translation 0.10499999999999998 -0.009998949999853813 0.012523299999993331
-        rotation 0.6057050097514552 0.5159839383100019 0.605707864046761 2.188888589523322
+        translation 0.10499999999999998 -0.00999894999985399 0.012523299999993347
+        rotation 0.6057050097526462 0.5159839383071835 0.6057078640479712 2.1888885895277364
         children [
           USE wheel
         ]
@@ -408,7 +416,7 @@ Robot {
       rotation 0 1 0 0
       children [
         Solid {
-          translation -0.0899999 0.06 0.055
+          translation -0.0899999 0.09 0.055
           rotation 0 1 0 -1.5707953071795862
           children [
             DEF Arm_left Shape {
@@ -434,7 +442,7 @@ Robot {
       rotation 0 1 0 0
       children [
         Solid {
-          translation -0.0899999 0.06 0.055
+          translation -0.0899999 0.09 0.055
           rotation 0 1 0 -1.5707953071795862
           children [
             DEF Arm_right Shape {
