@@ -22,6 +22,8 @@ class RobotNavigator:
         self.min_range = self.range_finder.getMinRange()
         self.max_range = self.range_finder.getMaxRange()
         
+        print(self.range_height)
+        
         # Displays for range and camera images
         self.display1 = self.robot.getDevice('display1')
         self.display2 = self.robot.getDevice('display2')
@@ -33,7 +35,7 @@ class RobotNavigator:
         self.cam_height = self.camera.getHeight()
         
         # Threshold for object detection (area threshold)
-        self.area_threshold = 100  # Experimentally tuned threshold
+        self.area_threshold = 10000  # Experimentally tuned threshold
         
         # Sequence order for box placements
         self.order = ["Red", "Yellow", "Green", "Blue"]
@@ -98,12 +100,12 @@ class RobotNavigator:
             if min(right_distances) < min(left_distances):
                 print("Turning left")
                 self.mc.turn_left()
-                self.wait(2)
+                self.wait(4)
                 self.mc.stop()
             else:
                 print("Turning right")
                 self.mc.turn_right()
-                self.wait(2)
+                self.wait(4)
                 self.mc.stop()
         else:
             self.mc.move_forward()
@@ -133,11 +135,11 @@ class RobotNavigator:
                 (np.array([40, 70, 70]), np.array([80, 255, 255]))
             ],
             "Yellow": [
-                (np.array([80, 180, 70]), np.array([90, 240, 220]))
+                (np.array([80, 120, 200]), np.array([90, 240, 240]))
             ],
             "Blue": [
-                (np.array([0, 230, 210]), np.array([10, 255, 255])),
-                (np.array([0, 200, 90]), np.array([10, 255, 255])),
+                (np.array([0, 130, 100]), np.array([10, 255, 255])),
+                # (np.array([0, 200, 90]), np.array([10, 255, 255])),
             ],
         }
 
@@ -210,7 +212,7 @@ class RobotNavigator:
         cube_center_y = y + h/2
         image_center_x = self.cam_width / 2
         error = cube_center_x - image_center_x
-        threshold_pixels = 20  # acceptable error threshold
+        threshold_pixels = 100  # acceptable error threshold
         
         if abs(error) > threshold_pixels:
             if error > 0:
@@ -223,7 +225,7 @@ class RobotNavigator:
             self.mc.stop()
         else:
             # Cube is centered: if it's still far away, move forward.
-            if cube_center_y < self.cam_height // 2 + 23:
+            if cube_center_y < self.cam_height // 2 + 190:
                 print(f"{self.current_target} Cube centered; moving forward.")
                 self.mc.move_forward()
             else:
@@ -265,9 +267,10 @@ class RobotNavigator:
         """
         print(f"Searching for {self.current_target} cube...")
         start_time = self.robot.getTime()
-        rotation_duration = 20  # approximate duration for a full rotation (tunable)
+        rotation_duration = 15  # approximate duration for a full rotation (tunable)
         while self.robot.step(self.timestep) != -1:
             self.mc.turn_left()  # or turn_right() as preferred
+            self.wait(0.2)
             depth_image = self.process_range_finder()
             self.process_camera(depth_image)
             
@@ -293,7 +296,7 @@ class RobotNavigator:
         placement_center_y = y + h/2
         image_center_x = self.cam_width / 2
         error = placement_center_x - image_center_x
-        threshold_pixels = 15
+        threshold_pixels = 120
         target_distance = 0.4  # Tunable target distance from the placement area
         
         # Align horizontally

@@ -17,7 +17,7 @@ display2 = robot.getDevice('display2')
 # Tuning parameters for each color separately
 
 # Bright Blue color tuning
-b_blue_lower = np.array([0, 230, 210])
+b_blue_lower = np.array([0, 130, 230])
 b_blue_upper = np.array([10, 255, 255])
 
 # Dark Blue color tuning
@@ -37,7 +37,7 @@ d_red_lower = np.array([115, 130, 70])
 d_red_upper = np.array([130, 200, 75])
 
 # Yellow color tuning 
-yellow_lower = np.array([0, 130, 210])
+yellow_lower = np.array([80, 120, 200])
 yellow_upper = np.array([90, 240, 240])
 
 while robot.step(timestep) != -1:
