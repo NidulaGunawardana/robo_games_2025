@@ -16,9 +16,13 @@ display2 = robot.getDevice('display2')
 
 # Tuning parameters for each color separately
 
-# Blue color tuning
-blue_lower = np.array([0, 200, 200])
-blue_upper = np.array([10, 255, 255])
+# Bright Blue color tuning
+b_blue_lower = np.array([0, 230, 210])
+b_blue_upper = np.array([10, 255, 255])
+
+# Dark Blue color tuning
+d_blue_lower = np.array([0, 200, 90])
+d_blue_upper = np.array([10, 255, 255])
 
 # Green color tuning
 green_lower = np.array([40, 70, 70])
@@ -33,8 +37,8 @@ d_red_lower = np.array([115, 130, 70])
 d_red_upper = np.array([130, 200, 75])
 
 # Yellow color tuning 
-yellow_lower = np.array([20, 150, 150])
-yellow_upper = np.array([40, 255, 255])
+yellow_lower = np.array([0, 130, 210])
+yellow_upper = np.array([90, 240, 240])
 
 while robot.step(timestep) != -1:
     data = camera.getImage()
@@ -49,7 +53,8 @@ while robot.step(timestep) != -1:
         mask_b_red = cv2.inRange(image_hsv, b_red_lower, b_red_upper)
         mask_d_red = cv2.inRange(image_hsv, d_red_lower, d_red_upper)
         mask_green = cv2.inRange(image_hsv, green_lower, green_upper)
-        mask_blue = cv2.inRange(image_hsv, blue_lower, blue_upper)
+        mask_b_blue = cv2.inRange(image_hsv, b_blue_lower, b_blue_upper)
+        mask_d_blue = cv2.inRange(image_hsv, d_blue_lower, d_blue_upper)
         mask_yellow = cv2.inRange(image_hsv, yellow_lower, yellow_upper)
         
         # Collect masks in a dictionary for easier processing
@@ -57,7 +62,8 @@ while robot.step(timestep) != -1:
             "Red1": mask_b_red,
             "Red2": mask_d_red,
             "Green": mask_green,
-            "Blue": mask_blue,
+            "Blue1": mask_b_blue,
+            "Blue2": mask_d_blue,
             "Yellow": mask_yellow
         }
         
