@@ -9,8 +9,8 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/project
 WorldInfo {
 }
 Viewpoint {
-  orientation -0.5896921634875215 -0.575798924659155 0.5663203604699081 4.184917942421803
-  position 0.16841935691817742 -0.7149976427949186 6.863472776173032
+  orientation 0.5451776175365888 0.5007591416112853 -0.6723255516711064 1.999304541909183
+  position -0.1677866333082827 1.4087712150511784 8.308108755095802
 }
 TexturedBackground {
   skybox FALSE
@@ -28,8 +28,8 @@ RectangleArena {
   wallHeight 0.5
 }
 Solid {
-  translation 0.16 0.7 0.049606516801313075
-  rotation -0.9236901776321108 0.36947607105284264 0.10140950973806287 4.6154614586132326e-17
+  translation 0.35 0.64 0.0499604
+  rotation -0.8117692108866779 -0.5772581055194078 0.0883392770434797 1.181656904957498e-16
   children [
     Pose {
       translation 0 0 0.05
@@ -49,11 +49,12 @@ Solid {
   name "Red Box"
   boundingObject USE box
   physics Physics {
+    mass 0.1
   }
 }
 Solid {
-  translation -0.77 0.75 0.049606516801313075
-  rotation -0.46576322971288664 0.8383738134832066 -0.28318538576883906 9.153269606938638e-17
+  translation -0.55 0.18 0.0499604
+  rotation 8.169217089475226e-14 0.5331207202786977 -0.846039182077002 3.998396847464091e-18
   children [
     Pose {
       translation 0 0 0.05
@@ -73,6 +74,7 @@ Solid {
   name "Blue Box"
   boundingObject USE box
   physics Physics {
+    mass 0.1
   }
 }
 Pose {
@@ -199,8 +201,8 @@ Pose {
   ]
 }
 Solid {
-  translation -0.16 -0.47 0.04960651680131309
-  rotation 0.7471243161768506 -0.664110503268303 -0.0276133233420829 1.0271197684312351e-16
+  translation -0.28 -0.84 0.0499604
+  rotation 0.22008498351628494 -0.6235741199627879 -0.7501452638944481 5.811286639979032e-17
   children [
     Pose {
       translation 0 0 0.05
@@ -220,11 +222,12 @@ Solid {
   name "Green Box"
   boundingObject USE box
   physics Physics {
+    mass 0.1
   }
 }
 Solid {
-  translation 0.67 -0.52 0.049606516801313075
-  rotation 0.7849129016210462 -0.4709477409726298 0.40264123254034306 5.4315025345562026e-17
+  translation 0.41 -0.68 0.0499604
+  rotation 0.8647245571891621 -0.49001058240719875 0.11018652060467934 7.395285086649822e-17
   children [
     Pose {
       translation 0 0 0.05
@@ -244,11 +247,12 @@ Solid {
   name "Yellow Box"
   boundingObject USE box
   physics Physics {
+    mass 0.1
   }
 }
 Robot {
-  translation 0.163916 1.37981 -0.00282095
-  rotation -7.358940045629808e-05 -0.0014079000087298178 0.9999990062005889 -3.1255153071795863
+  translation -0.0343602 1.29122 -0.00417365
+  rotation 7.576482391147484e-05 0.0011675003684646018 0.9999993156010565 -3.1259453071795864
   children [
     Display {
       name "display2"
@@ -321,7 +325,7 @@ Robot {
     }
     HingeJoint {
       jointParameters HingeJointParameters {
-        position -138.15041806852219
+        position -138.15041806852636
         anchor -0.105 -0.01 0.0126
       }
       device [
@@ -333,8 +337,8 @@ Robot {
         }
       ]
       endPoint Solid {
-        translation -0.10499999999999998 -0.009991062525635344 0.01255891710714579
-        rotation -0.3266369832948199 -0.886913927908997 0.32663736103681423 1.6905123410120702
+        translation -0.10499999999999998 -0.009991062525635534 0.012558917107145764
+        rotation -0.3266369832964788 -0.8869139279077742 0.32663736103847546 1.6905123410132923
         children [
           DEF wheel Shape {
             appearance PBRAppearance {
@@ -354,7 +358,7 @@ Robot {
     }
     HingeJoint {
       jointParameters HingeJointParameters {
-        position -230.74742168305093
+        position -230.74742168306668
         anchor 0.105 -0.01 0.0125
       }
       device [
@@ -366,8 +370,8 @@ Robot {
         }
       ]
       endPoint Solid {
-        translation 0.10499999999999998 -0.009998949999854168 0.01252329999999336
-        rotation 0.6057050097540424 0.5159839383039578 0.6057078640493228 2.188888589532916
+        translation 0.10499999999999998 -0.009998949999853813 0.012523299999993331
+        rotation 0.6057050097514552 0.5159839383100019 0.605707864046761 2.188888589523322
         children [
           USE wheel
         ]
@@ -413,7 +417,7 @@ Robot {
                 metalness 0
               }
               geometry Box {
-                size 0.08 0.1 0.01
+                size 0.08 0.2 0.01
               }
             }
           ]
@@ -439,7 +443,7 @@ Robot {
                 metalness 0
               }
               geometry Box {
-                size 0.08 0.1 0.01
+                size 0.08 0.2 0.01
               }
             }
           ]

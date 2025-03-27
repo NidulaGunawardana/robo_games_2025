@@ -32,12 +32,21 @@ class RobotNavigator:
         self.cam_width = self.camera.getWidth()
         self.cam_height = self.camera.getHeight()
         
-        # Parameters for red object detection
-        self.red_area_threshold = 80  # Experimentally tuned threshold
+        # Threshold for object detection (area threshold)
+        self.area_threshold = 100  # Experimentally tuned threshold
+        
+        # Sequence order for box placements
+        self.order = ["Red", "Yellow", "Green", "Blue"]
+        self.current_index = 0
+        self.current_target = self.order[self.current_index]
         
         # State variables
-        self.state = "NAVIGATE"      # Two states: "NAVIGATE" and "APPROACH_CUBE"
-        self.cube_info = None        # To store cube bounding box and average depth
+        # States: "NAVIGATE" (normal movement), "SEARCH_CUBE", "APPROACH_CUBE",
+        # "SEARCH_PLACEMENT", "APPROACH_PLACEMENT", "DONE"
+        self.state = "SEARCH_CUBE"      
+        self.cube_info = None        # Stores cube bounding box and average depth (for target color)
+        self.placement_info = None   # Stores placement area info (for target color)
+        self.cube_lost_count = 0     # Counts how many times the cube has been lost
 
     def wait(self, duration_sec):
         start_time = self.robot.getTime()
@@ -46,7 +55,7 @@ class RobotNavigator:
                 break
 
     def process_range_finder(self):
-        # Get range image as 2D float array
+        # Get range image as a 2D float array
         depth_image = np.array(self.range_finder.getRangeImageArray())
         
         # Normalize depth image for display (0 to 255)
@@ -55,8 +64,6 @@ class RobotNavigator:
         
         # Convert to RGBA for display
         rgba = cv2.cvtColor(normalized, cv2.COLOR_GRAY2RGBA)
-        # Optionally, remove ground details for clarity:
-        # rgba[35:] = [0, 0, 0, 255]
         
         # Display image on display1
         image_bytes = rgba.tobytes()
@@ -74,7 +81,6 @@ class RobotNavigator:
     
     def obstacle_avoidance(self, depth_image):
         # Divide the range finder image into left and right halves at a fixed vertical offset.
-        # The offset (here, +23) may be tuned based on your sensor mounting.
         right_distances = depth_image[self.range_height // 2 + 23][self.range_width // 2:]
         left_distances = depth_image[self.range_height // 2 + 23][:self.range_width // 2]
         
@@ -104,78 +110,89 @@ class RobotNavigator:
 
     def process_camera(self, _depth_image):
         """
-        Process the camera image to detect red objects and determine whether they are
-        the red placement area or the red cube. If a red cube is detected, its bounding box
-        and average depth are stored in self.cube_info.
+        Process the camera image to detect objects of various colors.
+        Determines whether they are cubes or placement areas based on a depth-corrected size.
+        Only stores information for objects matching the current target color.
         """
         cam_data = self.camera.getImage()
         if not cam_data:
             return
-        
+
         # Convert raw image data into a NumPy array (RGBA)
         cam_image = np.frombuffer(cam_data, np.uint8).reshape((self.cam_height, self.cam_width, 4))
         cam_image_bgr = cv2.cvtColor(cam_image, cv2.COLOR_RGBA2BGR)
         cam_image_hsv = cv2.cvtColor(cam_image_bgr, cv2.COLOR_BGR2HSV)
-        
-        # Define HSV ranges for red objects (two ranges for brightness variations)
+
+        # Define HSV ranges for red, green, yellow, and blue.
         hsv_ranges = {
-            "Red1": (np.array([120, 80, 200]), np.array([245, 255, 255])),
-            "Red2": (np.array([115, 130, 70]), np.array([130, 200, 75])),
+            "Red": [
+                (np.array([120, 80, 200]), np.array([245, 255, 255])),
+                (np.array([115, 130, 70]), np.array([130, 200, 75]))
+            ],
+            "Green": [
+                (np.array([40, 70, 70]), np.array([80, 255, 255]))
+            ],
+            "Yellow": [
+                (np.array([80, 180, 70]), np.array([90, 240, 220]))
+            ],
+            "Blue": [
+                (np.array([0, 230, 210]), np.array([10, 255, 255])),
+                (np.array([0, 200, 90]), np.array([10, 255, 255])),
+            ],
         }
-        
-        # Reset cube info each frame
+
+        # Reset object information each frame
         self.cube_info = None
-        
-        for color_name, (lower, upper) in hsv_ranges.items():
-            mask = cv2.inRange(cam_image_hsv, lower, upper)
-            contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-            for cnt in contours:
-                area = cv2.contourArea(cnt)
-                if area > 30:  # Filter out noise
-                    x, y, w, h = cv2.boundingRect(cnt)
-                    object_label = color_name  # default label
-                    
-                    # Use depth data (if available) to estimate the real-world size.
-                    if _depth_image is not None:
-                        # Map the bounding box from camera space to depth sensor space
-                        depth_x = int(x * self.range_width / self.cam_width)
-                        depth_y = int(y * self.range_height / self.cam_height)
-                        depth_w = int(w * self.range_width / self.cam_width)
-                        depth_h = int(h * self.range_height / self.cam_height)
+        self.placement_info = None
+
+        for color_name, ranges in hsv_ranges.items():
+            for lower, upper in ranges:
+                mask = cv2.inRange(cam_image_hsv, lower, upper)
+                contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+                for cnt in contours:
+                    area = cv2.contourArea(cnt)
+                    if area > 30:  # Filter out noise
+                        x, y, w, h = cv2.boundingRect(cnt)
+                        object_label = color_name
                         
-                        # Ensure indices are within bounds
-                        depth_x = max(0, min(depth_x, self.range_width - 1))
-                        depth_y = max(0, min(depth_y, self.range_height - 1))
-                        depth_w = max(1, min(depth_w, self.range_width - depth_x))
-                        depth_h = max(1, min(depth_h, self.range_height - depth_y))
+                        if _depth_image is not None:
+                            # Map bounding box from camera space to depth sensor space
+                            depth_x = int(x * self.range_width / self.cam_width)
+                            depth_y = int(y * self.range_height / self.cam_height)
+                            depth_w = int(w * self.range_width / self.cam_width)
+                            depth_h = int(h * self.range_height / self.cam_height)
+
+                            depth_x = max(0, min(depth_x, self.range_width - 1))
+                            depth_y = max(0, min(depth_y, self.range_height - 1))
+                            depth_w = max(1, min(depth_w, self.range_width - depth_x))
+                            depth_h = max(1, min(depth_h, self.range_height - depth_y))
+
+                            roi_depth = _depth_image[depth_y:depth_y+depth_h, depth_x:depth_x+depth_w]
+                            avg_depth = np.mean(roi_depth) if roi_depth.size > 0 else 1.0
+
+                            # Calculate a depth-corrected size metric
+                            corrected_area = area * (avg_depth**2 + 1e-6)
+
+                            # Only store info for objects matching the current target color
+                            if color_name == self.current_target:
+                                if corrected_area > self.area_threshold:
+                                    object_label += " Placement"
+                                    self.placement_info = (x, y, w, h, avg_depth)
+                                else:
+                                    object_label += " Cube"
+                                    self.cube_info = (x, y, w, h, avg_depth)
+
+                            # Optional: overlay debug information
+                            cv2.putText(cam_image_bgr, f"D: {avg_depth:.2f}", (20, y + h),
+                                        cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 0), 1)
+                            cv2.putText(cam_image_bgr, f"CA: {corrected_area:.2f}", (20, y + h + 15),
+                                        cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 0), 1)
                         
-                        roi_depth = _depth_image[depth_y:depth_y+depth_h, depth_x:depth_x+depth_w]
-                        avg_depth = np.mean(roi_depth) if roi_depth.size > 0 else 1.0
-                        
-                        # Calculate a depth-corrected size metric:
-                        # Here we multiply by avg_depth^2 so that the metric remains roughly constant for a given physical size.
-                        corrected_area = area * (avg_depth**2 + 1e-6)
-                        
-                        # Use threshold to differentiate objects
-                        if corrected_area > self.red_area_threshold:
-                            object_label = "Red Placement"
-                        else:
-                            object_label = "Red Cube"
-                            # Store cube information (bounding box and depth)
-                            # We store the one detected first. You might want to choose the best candidate in a real system.
-                            self.cube_info = (x, y, w, h, avg_depth)
-                        
-                        # Optionally, display debug info on the image.
-                        cv2.putText(cam_image_bgr, f"D: {avg_depth:.2f}", (20, y + h),
-                                    cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 0), 1)
-                        cv2.putText(cam_image_bgr, f"CA: {corrected_area:.2f}", (20, y + h + 15),
-                                    cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 0), 1)
-                    
-                    # Draw bounding box and label on the image.
-                    cv2.rectangle(cam_image_bgr, (x, y), (x+w, y+h), (0, 255, 255), 2)
-                    cv2.putText(cam_image_bgr, object_label, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX,
-                                0.3, (0, 255, 255), 2)
-        
+                        # Draw bounding box and label on the image.
+                        cv2.rectangle(cam_image_bgr, (x, y), (x+w, y+h), (0, 255, 255), 2)
+                        cv2.putText(cam_image_bgr, object_label, (x, y-10),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 255, 255), 2)
+
         # Convert annotated image back to RGBA and display it on display2.
         cam_annotated_rgba = cv2.cvtColor(cam_image_bgr, cv2.COLOR_BGR2RGBA)
         cam_image_bytes = cam_annotated_rgba.tobytes()
@@ -185,60 +202,179 @@ class RobotNavigator:
 
     def approach_cube(self, cube_info):
         """
-        Given cube_info as (x, y, w, h, avg_depth), adjust the robot’s heading so that the cube is centered.
-        Then drive forward until the cube reaches the target distance.
+        Adjust the robot’s heading to center the cube then drive forward.
+        Once the cube is reached (i.e. centered and near), transition to search for the placement area.
         """
         x, y, w, h, avg_depth = cube_info
         cube_center_x = x + w/2
         cube_center_y = y + h/2
         image_center_x = self.cam_width / 2
         error = cube_center_x - image_center_x
-        threshold_pixels = 15  # acceptable error threshold in pixels
+        threshold_pixels = 20  # acceptable error threshold
         
-        # If cube is off-center, turn the robot
         if abs(error) > threshold_pixels:
             if error > 0:
-                print("Cube detected to the right; turning right to center it.")
+                print(f"{self.current_target} Cube detected to the right; turning right to center it.")
                 self.mc.turn_right()
             else:
-                print("Cube detected to the left; turning left to center it.")
+                print(f"{self.current_target} Cube detected to the left; turning left to center it.")
+                self.mc.turn_left()
+            self.wait(0.1)
+            self.mc.stop()
+        else:
+            # Cube is centered: if it's still far away, move forward.
+            if cube_center_y < self.cam_height // 2 + 23:
+                print(f"{self.current_target} Cube centered; moving forward.")
+                self.mc.move_forward()
+            else:
+                print(f"{self.current_target} Cube reached; stopping and switching to placement search.")
+                self.mc.stop()
+                self.state = "SEARCH_PLACEMENT"
+                self.cube_info = None
+                # Reset the lost count since the cube was reached
+                self.cube_lost_count = 0
+
+    def search_placement(self):
+        """
+        Rotate the robot (turning continuously) for a full rotation (or until the placement area is detected)
+        while processing camera images. If the placement area is found, transition to APPROACH_PLACEMENT.
+        """
+        print(f"Searching for {self.current_target} placement area...")
+        start_time = self.robot.getTime()
+        rotation_duration = 20  # approximate duration for a full rotation (tunable)
+        while self.robot.step(self.timestep) != -1:
+            self.mc.turn_left()
+            depth_image = self.process_range_finder()
+            self.process_camera(depth_image)
+            
+            if self.placement_info is not None:
+                print(f"{self.current_target} Placement area detected.")
+                self.mc.stop()
+                self.state = "APPROACH_PLACEMENT"
+                return
+            if self.robot.getTime() - start_time > rotation_duration:
+                print("Full rotation completed. Placement area not detected; reverting to NAVIGATE.")
+                self.mc.stop()
+                self.state = "NAVIGATE"
+                return
+
+    def search_cube(self):
+        """
+        Rotate the robot (turning continuously) for a full rotation (or until the target cube is detected)
+        while processing camera images. If the cube is found, transition to APPROACH_CUBE.
+        """
+        print(f"Searching for {self.current_target} cube...")
+        start_time = self.robot.getTime()
+        rotation_duration = 20  # approximate duration for a full rotation (tunable)
+        while self.robot.step(self.timestep) != -1:
+            self.mc.turn_left()  # or turn_right() as preferred
+            depth_image = self.process_range_finder()
+            self.process_camera(depth_image)
+            
+            if self.cube_info is not None:
+                print(f"{self.current_target} Cube detected.")
+                self.mc.stop()
+                self.state = "APPROACH_CUBE"
+                return
+            
+            if self.robot.getTime() - start_time > rotation_duration:
+                print("Full rotation completed. Cube not detected; reverting to NAVIGATE.")
+                self.mc.stop()
+                self.state = "NAVIGATE"
+                return
+
+    def approach_placement(self):
+        """
+        Once the placement area is detected, align the robot, approach it until a target distance is reached,
+        then stop and reverse a bit. After placing the box, update the target color and state.
+        """
+        x, y, w, h, avg_depth = self.placement_info
+        placement_center_x = x + w/2
+        placement_center_y = y + h/2
+        image_center_x = self.cam_width / 2
+        error = placement_center_x - image_center_x
+        threshold_pixels = 15
+        target_distance = 0.4  # Tunable target distance from the placement area
+        
+        # Align horizontally
+        if abs(error) > threshold_pixels:
+            if error > 0:
+                print(f"{self.current_target} Placement area detected to the right; turning right to center it.")
+                self.mc.turn_right()
+            else:
+                print(f"{self.current_target} Placement area detected to the left; turning left to center it.")
                 self.mc.turn_left()
             self.wait(0.5)
             self.mc.stop()
         else:
-            # Cube is centered: if it's still far away, move forward.
-            if cube_center_y < self.cam_height//2 + 25:  # add a small tolerance
-                print("Cube centered; moving forward.")
+            # Once aligned, check distance (using avg_depth as a proxy)
+            if avg_depth > target_distance:
+                print(f"Approaching {self.current_target} placement area.")
                 self.mc.move_forward()
             else:
-                print("Cube reached; stopping.")
+                print(f"Reached {self.current_target} placement area, stopping.")
                 self.mc.stop()
-                # Optionally, here you could trigger further actions like grasping the cube.
-                # Once finished, revert to navigation.
-                self.state = "NAVIGATE"
-                self.cube_info = None
+                print("Placing box and reversing.")
+                self.mc.move_backward()
+                self.wait(3)
+                self.mc.stop()
+                # Update target color or finish mission
+                if self.current_target == "Blue":
+                    print("Blue box placed. Mission completed.")
+                    self.state = "DONE"
+                else:
+                    # Move to the next color in the sequence and search for its cube
+                    self.current_index += 1
+                    self.current_target = self.order[self.current_index]
+                    print(f"Box placed. Next target is {self.current_target}.")
+                    # Reset lost count for next cube
+                    self.cube_lost_count = 0
+                    self.state = "SEARCH_CUBE"
 
     def run(self):
         while self.robot.step(self.timestep) != -1:
             depth_image = self.process_range_finder()
             
             if self.state == "NAVIGATE":
-                # In navigation, perform obstacle avoidance and process camera.
                 self.obstacle_avoidance(depth_image)
                 self.process_camera(depth_image)
-                # If a cube is detected, transition to the approach state.
                 if self.cube_info is not None:
-                    print("Red Cube detected; switching to APPROACH_CUBE state.")
+                    print(f"{self.current_target} Cube detected; switching to APPROACH_CUBE state.")
                     self.state = "APPROACH_CUBE"
                     
+            elif self.state == "SEARCH_CUBE":
+                self.search_cube()
+                    
             elif self.state == "APPROACH_CUBE":
-                # While approaching, update the camera to get the latest cube info.
                 self.process_camera(depth_image)
                 if self.cube_info is not None:
                     self.approach_cube(self.cube_info)
+                    # Reset lost count if the cube is being tracked
+                    self.cube_lost_count = 0
                 else:
-                    print("Cube lost; reverting to NAVIGATE state.")
-                    self.state = "NAVIGATE"
+                    self.cube_lost_count += 1
+                    print(f"Cube lost ({self.cube_lost_count} time(s));")
+                    if self.cube_lost_count >= 3:
+                        print("Cube lost 3 times; reverting to NAVIGATE state.")
+                        self.state = "NAVIGATE"
+                        self.cube_lost_count = 0
+                    else:
+                        self.state = "SEARCH_CUBE"
+                    
+            elif self.state == "SEARCH_PLACEMENT":
+                self.search_placement()
+                
+            elif self.state == "APPROACH_PLACEMENT":
+                self.process_camera(depth_image)
+                if self.placement_info is not None:
+                    self.approach_placement()
+                else:
+                    print("Placement area lost; reverting to SEARCH_PLACEMENT state.")
+                    self.state = "SEARCH_PLACEMENT"
+                    
+            elif self.state == "DONE":
+                print("Mission completed.")
+                break
 
 if __name__ == "__main__":
     navigator = RobotNavigator()
