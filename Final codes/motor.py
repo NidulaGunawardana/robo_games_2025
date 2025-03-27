@@ -1,37 +1,32 @@
 import time
-import KobukiDriver as kd
+# import KobukiDriver as kd
 
 class MotorController:
     
-    def __init__(self,keyboard_control=False):
+    def __init__(self, keyboard_control=False):
         self.keyboard_control = keyboard_control
-        self.my_kobuki = kd.Kobuki()
-        self.my_kobuki.play_on_sound()
+        # self.my_kobuki = kd.Kobuki()
+        print("Initialized MotorController and played startup sound.")
     
     def get_encoder(self):
         """Get encoder data from the robot."""
-        encoder_data = self.my_kobuki.encoder_data()
-        print(encoder_data)
-        return encoder_data[0], encoder_data[1]
+        print("Called get_encoder function.")
+        return 0, 0
         
     def move_forward(self):
-        self.my_kobuki.move(200, 200, 0)
+        print("Called move_forward function.")
 
-    
     def move_backward(self):
-        self.my_kobuki.move(-200, -200, 0)
+        print("Called move_backward function.")
 
-        
     def turn_left(self):
-        self.my_kobuki.move(100, -100, 0)
+        print("Called turn_left function.")
 
-        
     def turn_right(self):
-        self.my_kobuki.move(-100, 100, 0)
-
+        print("Called turn_right function.")
 
     def stop(self):
-        self.my_kobuki.move(0, 0, 0)
+        print("Called stop function.")
         
     def keyboard_move(self):
         # Play start up sound
