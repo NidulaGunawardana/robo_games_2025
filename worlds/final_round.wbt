@@ -5,12 +5,13 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/project
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/RectangleArena.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/devices/sharp/protos/SharpGP2D120.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/appearances/protos/Parquetry.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/apartment_structure/protos/Wall.proto"
 
 WorldInfo {
 }
 Viewpoint {
-  orientation 0.5893234778889282 0.577955027559046 -0.564504937558672 2.0972699743400263
-  position 0.5932060986839468 -0.2641631260723387 7.62169594609627
+  orientation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0944
+  position -0.0380474430253142 -0.03638024125948658 7.331550108992005
 }
 TexturedBackground {
   skybox FALSE
@@ -27,8 +28,14 @@ RectangleArena {
   }
   wallHeight 0.5
 }
+Wall {
+  translation 0.59 -1.26 0
+  rotation 0 0 1 -1.5707953071795862
+  name "wall(1)"
+  size 0.125 0.37 0.105
+}
 Solid {
-  translation 0.18 0.64 0.04996076
+  translation 0.18 0.64 -3.92e-05
   rotation 0.3883684778800164 -0.42720532566752983 -0.816495887993601 1.0977349237600268e-16
   children [
     Pose {
@@ -53,7 +60,7 @@ Solid {
   }
 }
 Solid {
-  translation -0.55 0.18 0.049960766074355525
+  translation -0.55 0.18 -3.92e-05
   rotation -0.17744053168747118 0.7452502330873466 -0.642741742691202 6.006598906711146e-17
   children [
     Pose {
@@ -201,7 +208,7 @@ Pose {
   ]
 }
 Solid {
-  translation -0.28 -0.69 0.0499608
+  translation -0.28 -0.69 -3.92e-05
   rotation 0.4073001445028729 -0.34463858381014156 -0.8457723327452129 1.360724618866291e-16
   children [
     Pose {
@@ -226,7 +233,7 @@ Solid {
   }
 }
 Solid {
-  translation 0.4099999986928348 -0.7106273627165474 0.04996076
+  translation 0.41 -0.710627 -3.94e-05
   rotation 5.412960270207005e-12 -3.914108091881357e-12 1 2.166850874156144e-05
   children [
     Pose {
@@ -469,4 +476,8 @@ Robot {
     density 500
   }
   controller "motor_control"
+}
+Wall {
+  translation -1.1 -0.33 0
+  size 0.125 0.37 0.105
 }

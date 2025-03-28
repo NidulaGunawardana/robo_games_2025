@@ -38,7 +38,7 @@ class RobotNavigator:
         self.area_threshold = 10000  # Experimentally tuned threshold
         
         # Sequence order for box placements
-        self.order = ["Red", "Yellow", "Green", "Blue"]
+        self.order = ["Red", "Green", "Yellow", "Blue"]
         self.current_index = 0
         self.current_target = self.order[self.current_index]
         
@@ -83,8 +83,8 @@ class RobotNavigator:
     
     def obstacle_avoidance(self, depth_image):
         # Divide the range finder image into left and right halves at a fixed vertical offset.
-        right_distances = depth_image[self.range_height // 2 + 23][self.range_width // 2:]
-        left_distances = depth_image[self.range_height // 2 + 23][:self.range_width // 2]
+        right_distances = depth_image[self.range_height // 2 + 150][self.range_width // 2:]
+        left_distances = depth_image[self.range_height // 2 + 150][:self.range_width // 2]
         
         if self.is_corner(left_distances, right_distances):
             print("Corner detected — backing up")
@@ -274,8 +274,10 @@ class RobotNavigator:
             depth_image = self.process_range_finder()
             self.process_camera(depth_image)
             
-            if self.cube_info is not None:
+            if self.cube_info is not None and self.cube_info[4] < 1.0:
+                # Cube detected and within acceptable range
                 print(f"{self.current_target} Cube detected.")
+                print(f"Cube depth: {self.cube_info[4]}")
                 self.mc.stop()
                 self.state = "APPROACH_CUBE"
                 return
@@ -353,11 +355,11 @@ class RobotNavigator:
                 if self.cube_info is not None:
                     self.approach_cube(self.cube_info)
                     # Reset lost count if the cube is being tracked
-                    self.cube_lost_count = 0
+                    # self.cube_lost_count = 0
                 else:
                     self.cube_lost_count += 1
                     print(f"Cube lost ({self.cube_lost_count} time(s));")
-                    if self.cube_lost_count >= 3:
+                    if self.cube_lost_count >= 10:
                         print("Cube lost 3 times; reverting to NAVIGATE state.")
                         self.state = "NAVIGATE"
                         self.cube_lost_count = 0
