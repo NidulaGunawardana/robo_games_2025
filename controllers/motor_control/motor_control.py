@@ -83,8 +83,8 @@ class RobotNavigator:
     
     def obstacle_avoidance(self, depth_image):
         # Divide the range finder image into left and right halves at a fixed vertical offset.
-        right_distances = depth_image[self.range_height // 2 + 23][self.range_width // 2:]
-        left_distances = depth_image[self.range_height // 2 + 23][:self.range_width // 2]
+        right_distances = depth_image[self.range_height // 2 + 150][self.range_width // 2:]
+        left_distances = depth_image[self.range_height // 2 + 150][:self.range_width // 2]
         
         if self.is_corner(left_distances, right_distances):
             print("Corner detected — backing up")
@@ -359,7 +359,7 @@ class RobotNavigator:
                 else:
                     self.cube_lost_count += 1
                     print(f"Cube lost ({self.cube_lost_count} time(s));")
-                    if self.cube_lost_count >= 3:
+                    if self.cube_lost_count >= 10:
                         print("Cube lost 3 times; reverting to NAVIGATE state.")
                         self.state = "NAVIGATE"
                         self.cube_lost_count = 0
