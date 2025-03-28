@@ -50,8 +50,6 @@ class RobotNavigator:
         self.placement_info = None   # Stores placement area info (for target color)
         self.cube_lost_count = 0     # Counts how many times the cube has been lost
 
-        self.ignore_search = False 
-
     def wait(self, duration_sec):
         start_time = self.robot.getTime()
         while self.robot.step(self.timestep) != -1:
