@@ -205,15 +205,14 @@ class Kobuki:
             barr += cs.to_bytes(1, byteorder="big")
             Kobuki.seri.write(barr)
         elif rotate == 1:
-            botspeed = (left_velocity + right_velocity) / 2
+            if left_velocity > right_velocity:
+                botspeed = (230 * ((abs(left_velocity) + abs(right_velocity)) / 2)) / 2
+            else:
+                botspeed = (230 * ((abs(left_velocity) + abs(right_velocity)) / 2)) / -2
 
             print("botspeed: ", botspeed)
-            if left_velocity == right_velocity:
-                botradius = 0
-            else:
-                botradius = (230 * (left_velocity + right_velocity)) / (
-                    2 * (right_velocity - left_velocity)
-                )
+
+            botradius = 1
 
             cs = 0
             barr = bytearray([170, 85, 6, 1, 4])
