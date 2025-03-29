@@ -1,6 +1,14 @@
 import cv2
 import numpy as np
 
+import freenect
+
+# Function to get RGB and depth data from the Kinect
+def get_depth_and_rgb():
+    depth, timestamp = freenect.sync_get_depth()
+    rgb, timestamp = freenect.sync_get_video()
+    return depth, rgb
+
 def nothing(x):
     pass
 
@@ -16,11 +24,11 @@ cv2.createTrackbar("S_max", "Trackbars", 255, 255, nothing)
 cv2.createTrackbar("V_max", "Trackbars", 255, 255, nothing)
 
 # Capture video from webcam
-cap = cv2.VideoCapture(0)
+# cap = cv2.VideoCapture(0)
 
 while True:
     # Read the frame
-    ret, frame = cap.read()
+    ret, frame = get_depth_and_rgb()
     if not ret:
         break
     
