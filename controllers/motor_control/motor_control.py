@@ -38,7 +38,7 @@ class RobotNavigator:
         self.area_threshold = 10000  # Experimentally tuned threshold
         
         # Sequence order for box placements
-        self.order = ["Red", "Green", "Yellow", "Blue"]
+        self.order = ["Blue", "Green", "Yellow", "Red"]
         self.current_index = 0
         self.current_target = self.order[self.current_index]
         
@@ -92,9 +92,33 @@ class RobotNavigator:
             self.wait(1)
             self.mc.stop()
             print("Turning right to escape corner")
-            self.mc.turn_right()
-            self.wait(4)
-            self.mc.stop()
+
+
+            start_time = self.robot.getTime()
+            turn_duration = 4  # approximate duration for a corner turn (tunable)
+            while self.robot.step(self.timestep) != -1:
+                self.mc.turn_right()  # or turn_right() as preferred
+                self.wait(0.2)
+                depth_image = self.process_range_finder()
+                self.process_camera(depth_image)
+                
+                if self.cube_info is not None and self.cube_info[4] < 1.0:
+                    # Cube detected and within acceptable range
+                    print(f"{self.current_target} Cube detected.")
+                    print(f"Cube depth: {self.cube_info[4]}")
+                    self.mc.stop()
+                    self.state = "APPROACH_CUBE"
+                    return
+                
+                if self.robot.getTime() - start_time > turn_duration:
+                    print("Corner Avoided")
+                    self.mc.stop()
+                    self.state = "NAVIGATE"
+                    return
+
+           
+            # self.wait(4)
+            # self.mc.stop()
         elif (min(right_distances) < 0.25) or (min(left_distances) < 0.25):
             print("Obstacle ahead")
             if min(right_distances) < min(left_distances):
@@ -285,6 +309,9 @@ class RobotNavigator:
             if self.robot.getTime() - start_time > rotation_duration:
                 print("Full rotation completed. Cube not detected; reverting to NAVIGATE.")
                 self.mc.stop()
+                self.mc.move_backward()
+                self.wait(0.5)
+                self.mc.stop()
                 self.state = "NAVIGATE"
                 return
 
@@ -324,8 +351,8 @@ class RobotNavigator:
                 self.wait(3)
                 self.mc.stop()
                 # Update target color or finish mission
-                if self.current_target == "Blue":
-                    print("Blue box placed. Mission completed.")
+                if self.current_target == "Red":
+                    print("Red box placed. Mission completed.")
                     self.state = "DONE"
                 else:
                     # Move to the next color in the sequence and search for its cube
@@ -337,10 +364,19 @@ class RobotNavigator:
                     self.state = "SEARCH_CUBE"
 
     def run(self):
+
+        self.mc.move_forward()
+        self.wait(1.5)
+        self.mc.stop()
+
         while self.robot.step(self.timestep) != -1:
             depth_image = self.process_range_finder()
             
             if self.state == "NAVIGATE":
+                # self.mc.move_backward()
+                # self.wait(1)
+                # self.mc.stop()
+
                 self.obstacle_avoidance(depth_image)
                 self.process_camera(depth_image)
                 if self.cube_info is not None:
@@ -360,7 +396,10 @@ class RobotNavigator:
                     self.cube_lost_count += 1
                     print(f"Cube lost ({self.cube_lost_count} time(s));")
                     if self.cube_lost_count >= 10:
-                        print("Cube lost 3 times; reverting to NAVIGATE state.")
+                        print("Cube lost 10 times; reverting to NAVIGATE state.")
+                        self.mc.turn_left()
+                        self.wait(2)
+                        self.mc.stop()
                         self.state = "NAVIGATE"
                         self.cube_lost_count = 0
                     else:
