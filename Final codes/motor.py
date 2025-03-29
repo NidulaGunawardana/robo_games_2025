@@ -23,11 +23,11 @@ class MotorController:
 
         
     def turn_left(self):
-        self.my_kobuki.move(100, -100, 1)
+        self.my_kobuki.move(0, -100, 0)
 
         
     def turn_right(self):
-        self.my_kobuki.move(-100, 100, 1)
+        self.my_kobuki.move(-100, 0, 0)
 
 
     def stop(self):

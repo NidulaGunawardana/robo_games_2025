@@ -5,6 +5,8 @@ import cv2
 import time
 # import freenect
 
+TESTING = False  # Set to True for testing
+
 class CameraControl:
     # Function to get RGB and depth data from the Kinect
     def __init__(self):
@@ -345,54 +347,64 @@ class RobotNavigator:
                     self.cube_lost_count = 0
                     self.state = "SEARCH_CUBE"
 
-    def run(self):
+    def run(self,testing=False):
         while True:
-            depth_image = self.process_range_finder()
-            
-            if self.state == "NAVIGATE":
-                self.obstacle_avoidance(depth_image)
+            if testing:
+                # For testing purposes, we can simulate the robot's behavior.
+                self.mc.keyboard_move()
+                depth_image = self.camera_control.get_depth_and_rgb()[0]
                 self.process_camera(depth_image)
-                if self.cube_info is not None:
-                    print(f"{self.current_target} Cube detected; switching to APPROACH_CUBE state.")
-                    self.state = "APPROACH_CUBE"
-                    
-            elif self.state == "SEARCH_CUBE":
-                self.search_cube()
-                    
-            elif self.state == "APPROACH_CUBE":
-                self.process_camera(depth_image)
-                if self.cube_info is not None:
-                    self.approach_cube(self.cube_info)
-                    # Reset lost count if the cube is being tracked
-                    # self.cube_lost_count = 0
-                else:
-                    self.cube_lost_count += 1
-                    print(f"Cube lost ({self.cube_lost_count} time(s));")
-                    if self.cube_lost_count >= 10:
-                        print("Cube lost 3 times; reverting to NAVIGATE state.")
-                        self.state = "NAVIGATE"
-                        self.cube_lost_count = 0
-                    else:
-                        self.state = "SEARCH_CUBE"
-                    
-            elif self.state == "SEARCH_PLACEMENT":
-                self.search_placement()
+                self.process_range_finder()
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
+            # Normal operation
+            else:
+                depth_image = self.process_range_finder()
                 
-            elif self.state == "APPROACH_PLACEMENT":
-                self.process_camera(depth_image)
-                if self.placement_info is not None:
-                    self.approach_placement()
-                else:
-                    print("Placement area lost; reverting to SEARCH_PLACEMENT state.")
-                    self.state = "SEARCH_PLACEMENT"
+                if self.state == "NAVIGATE":
+                    self.obstacle_avoidance(depth_image)
+                    self.process_camera(depth_image)
+                    if self.cube_info is not None:
+                        print(f"{self.current_target} Cube detected; switching to APPROACH_CUBE state.")
+                        self.state = "APPROACH_CUBE"
+                        
+                elif self.state == "SEARCH_CUBE":
+                    self.search_cube()
+                        
+                elif self.state == "APPROACH_CUBE":
+                    self.process_camera(depth_image)
+                    if self.cube_info is not None:
+                        self.approach_cube(self.cube_info)
+                        # Reset lost count if the cube is being tracked
+                        # self.cube_lost_count = 0
+                    else:
+                        self.cube_lost_count += 1
+                        print(f"Cube lost ({self.cube_lost_count} time(s));")
+                        if self.cube_lost_count >= 10:
+                            print("Cube lost 3 times; reverting to NAVIGATE state.")
+                            self.state = "NAVIGATE"
+                            self.cube_lost_count = 0
+                        else:
+                            self.state = "SEARCH_CUBE"
+                        
+                elif self.state == "SEARCH_PLACEMENT":
+                    self.search_placement()
                     
-            elif self.state == "DONE":
-                print("Mission completed.")
-                break
-            
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+                elif self.state == "APPROACH_PLACEMENT":
+                    self.process_camera(depth_image)
+                    if self.placement_info is not None:
+                        self.approach_placement()
+                    else:
+                        print("Placement area lost; reverting to SEARCH_PLACEMENT state.")
+                        self.state = "SEARCH_PLACEMENT"
+                        
+                elif self.state == "DONE":
+                    print("Mission completed.")
+                    break
+                
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
 
 if __name__ == "__main__":
     navigator = RobotNavigator()
-    navigator.run()
+    navigator.run(testing=TESTING)
