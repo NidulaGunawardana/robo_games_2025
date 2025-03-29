@@ -8,6 +8,6 @@ orthographicViewHeight: 1
 textFiles: 1 "controllers/Final_round_controller/Final_round_controller.py" "controllers/motor_control/motor_control.py"
 consoles: Console:All:All
 renderingDevicePerspectives: robot:camera;0;0.084375;0;0
-renderingDevicePerspectives: robot:display1;1;0.084375;0;0.461254
+renderingDevicePerspectives: robot:display1;1;0.34375;0.0155642;0.244704
 renderingDevicePerspectives: robot:display2;1;0.203125;0;0.0499611
-renderingDevicePerspectives: robot:range-finder;1;0.084375;0;0.657709
+renderingDevicePerspectives: robot:range-finder;1;0.360938;0.00583658;0.539751
