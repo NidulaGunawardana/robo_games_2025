@@ -6,7 +6,7 @@ import cv2
 import time
 import freenect
 
-TESTING = False  # Set to True for testing
+TESTING = True  # Set to True for testing
 
 
 class CameraControl:
@@ -28,7 +28,7 @@ class CameraControl:
 class RobotNavigator:
     def __init__(self):
         # Initialize motor controller
-        self.mc = MotorController(keyboard_control=False)
+        self.mc = MotorController(keyboard_control=True)
         # self.mc.init_motor_controller()
 
         # Range finder setup
@@ -74,7 +74,7 @@ class RobotNavigator:
         ]  # Placeholder for actual depth data
 
         # Convert to RGBA for display
-        depth = depth.astype("uint8") >> 2  # Right shift to make 10-bit data 8-bit
+        depth = depth_image.astype("uint8") >> 2  # Right shift to make 10-bit data 8-bit
         depth = cv2.cvtColor(depth, cv2.COLOR_GRAY2BGR)
         
         # Display image using OpenCV
@@ -160,7 +160,7 @@ class RobotNavigator:
 
         # Convert raw image data into a NumPy array (RGBA)
         cam_image = cam_data
-        cam_image_bgr = cv2.cvtColor(cam_image, cv2.COLOR_RGBA2BGR)
+        cam_image_bgr = cv2.cvtColor(cam_image, cv2.COLOR_RGB2BGR)
         cam_image_hsv = cv2.cvtColor(cam_image_bgr, cv2.COLOR_BGR2HSV)
 
         # Define HSV ranges for red, green, yellow, and blue.
@@ -425,11 +425,11 @@ class RobotNavigator:
                 depth_image = self.camera_control.get_depth_and_rgb()[0]
                 self.process_camera(depth_image)
                 self.process_range_finder()
-                print(
-                    "Depth image max {} value and min {} value".format(
-                        np.max(depth_image), np.min(depth_image)
-                    )
-                )
+                # print(
+                #     "Depth image max {} value and min {} value".format(
+                #         np.max(depth_image), np.min(depth_image)
+                #     )
+                # )
 
                 if cv2.waitKey(1) & 0xFF == ord("q"):
                     break
