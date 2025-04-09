@@ -79,6 +79,8 @@ class RobotNavigator:
         
         # Display image using OpenCV
         cv2.imshow("Range Finder View", depth)
+        
+        depth_image = depth_image.astype(np.float32) / 1000.0
 
         return depth_image
 
