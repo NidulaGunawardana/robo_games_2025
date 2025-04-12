@@ -2,8 +2,6 @@
 
 This directory contains the simulation code and world file for **Round 2 (Elimination Round)** of RoboGames 2024 University Category. The challenge is based on a fire rescue scenario, where the robot must rescue survivors from a hazardous maze environment.
 
----
-
 ## 🎯 Mission Overview
 
 **Scenario:**  
@@ -22,8 +20,6 @@ The Faculty of Robo Games is on fire! Your robot must rescue **three survivors**
 - Return to the starting position after completing all rescues.
 - Start with **100 health points**. If it reaches zero, the robot is disqualified.
 
----
-
 ## 📐 Arena & Robot Specs
 
 ### Arena
@@ -36,8 +32,6 @@ The Faculty of Robo Games is on fire! Your robot must rescue **three survivors**
 - Max dimensions: **0.25m × 0.25m × 0.25m**
 - No wall climbing or vision beyond walls allowed.
 
----
-
 ## 🧮 Evaluation Criteria
 
 - ✅ **Base Score**: 100 (only if at least one survivor is rescued).
@@ -47,9 +41,7 @@ The Faculty of Robo Games is on fire! Your robot must rescue **three survivors**
   2. Code quality (if time and score are equal)
 - ❌ Robot disqualified if health reaches 0 or task is incomplete.
 
----
-
 ## 📹 Simulation
 
-[![Watch Demo](demo_thumbnail.jpg) 
+![Watch Demo](round_2.png) 
 
