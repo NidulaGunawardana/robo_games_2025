@@ -19,4 +19,4 @@ Participants were required to:
 
 ---
 
-![Task_Image](relative/path/to/image.jpg)
+![Task_Image](<Round 1/round_1.png>)
