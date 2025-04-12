@@ -1,0 +1,13 @@
+bool greenDetected = processVision(camera, display);
+if (greenDetected)
+{
+    cout << "Green Area Detected!" << endl;
+}
+else
+{
+    cout << "No Green Detected." << endl;
+}
+
+// Detect floor color using the second camera
+string floorColor = getFloorRGB(floor_camera);
+cout << "Floor Color Detected: " << floorColor << endl;
