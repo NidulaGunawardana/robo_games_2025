@@ -17,7 +17,7 @@ A set of colored cubes has been scattered across the arena. The robot must auton
 
 - The robot must complete the full task **autonomously**, demonstrating proper control, perception, and navigation.
 
-## Simulation
+## 📹 Simulation
 
 ![Watch Demo](round_3.png)
 
