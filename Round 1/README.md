@@ -17,6 +17,6 @@ Participants were required to:
   - Work from any start position
   - Stop automatically after reaching the final color
 
----
+## Simulation
 
-![Task_Image](<Round 1/round_1.png>)
+![Task_Image](<round_1.png>)
