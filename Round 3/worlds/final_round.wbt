@@ -1,0 +1,483 @@
+#VRML_SIM R2023b utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/devices/sharp/protos/SharpGP2D120.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/appearances/protos/Parquetry.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/apartment_structure/protos/Wall.proto"
+
+WorldInfo {
+}
+Viewpoint {
+  orientation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0944
+  position -0.0380474430253142 -0.03638024125948658 7.331550108992005
+}
+TexturedBackground {
+  skybox FALSE
+}
+TexturedBackgroundLight {
+  castShadows FALSE
+}
+RectangleArena {
+  translation 0.01 0 0
+  floorSize 3.048 3.048
+  floorTileSize 0.61 0.61
+  floorAppearance Parquetry {
+    type "dark strip"
+  }
+  wallHeight 0.5
+}
+Wall {
+  translation 0.59 -1.26 0
+  rotation 0 0 1 -1.5707953071795862
+  name "wall(1)"
+  size 0.125 0.37 0.105
+}
+Solid {
+  translation 0.18 0.64 -3.92e-05
+  rotation 0.3883684778800164 -0.42720532566752983 -0.816495887993601 1.0977349237600268e-16
+  children [
+    Pose {
+      translation 0 0 0.05
+      children [
+        DEF box Shape {
+          appearance PBRAppearance {
+            baseColor 1 0 0
+            metalness 0
+          }
+          geometry Box {
+            size 0.1 0.1 0.1
+          }
+        }
+      ]
+    }
+  ]
+  name "Red Box"
+  boundingObject USE box
+  physics Physics {
+    mass 0.1
+  }
+}
+Solid {
+  translation -0.55 0.18 -3.92e-05
+  rotation -0.17744053168747118 0.7452502330873466 -0.642741742691202 6.006598906711146e-17
+  children [
+    Pose {
+      translation 0 0 0.05
+      children [
+        DEF box Shape {
+          appearance PBRAppearance {
+            baseColor 0 0 1
+            metalness 0
+          }
+          geometry Box {
+            size 0.1 0.1 0.1
+          }
+        }
+      ]
+    }
+  ]
+  name "Blue Box"
+  boundingObject USE box
+  physics Physics {
+    mass 0.1
+  }
+}
+Pose {
+  translation 1.29 0.25 0.0001
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 1 0 0
+        roughness 1
+        metalness 0
+      }
+      geometry Plane {
+        size 0.5 0.5
+      }
+    }
+  ]
+}
+Pose {
+  translation 1.53 0.25 0.2301
+  rotation 0 1 0 -1.5707953071795862
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 1 0 0
+        roughness 1
+        metalness 0
+      }
+      geometry Plane {
+        size 0.5 0.5
+      }
+    }
+  ]
+}
+Pose {
+  translation -1.27 0.25 0.0001
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0 0 1
+        roughness 1
+        metalness 0
+      }
+      geometry Plane {
+        size 0.5 0.5
+      }
+    }
+  ]
+}
+Pose {
+  translation -1.51 0.25 0.250101
+  rotation 0 1 0 1.5708
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0 0 1
+        metalness 0
+      }
+      geometry Plane {
+        size 0.5 0.5
+      }
+    }
+  ]
+}
+Pose {
+  translation -1.27 -1.09 0.0001
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0 1 0
+        roughness 1
+        metalness 0
+      }
+      geometry Plane {
+        size 0.5 0.5
+      }
+    }
+  ]
+}
+Pose {
+  translation -1.51 -1.09 0.240101
+  rotation 0 1 0 1.5708
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0 1 0
+        roughness 1
+        metalness 0
+      }
+      geometry Plane {
+        size 0.5 0.5
+      }
+    }
+  ]
+}
+Pose {
+  translation 1.29 -1.11 0.0001
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 1 1 0
+        roughness 1
+        metalness 0
+      }
+      geometry Plane {
+        size 0.5 0.5
+      }
+    }
+  ]
+}
+Pose {
+  translation 1.53 -1.11 0.2101
+  rotation 0 1 0 -1.5707953071795862
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 1 1 0
+        roughness 1
+        metalness 0
+      }
+      geometry Plane {
+        size 0.5 0.5
+      }
+    }
+  ]
+}
+Solid {
+  translation -0.28 -0.69 -3.92e-05
+  rotation 0.4073001445028729 -0.34463858381014156 -0.8457723327452129 1.360724618866291e-16
+  children [
+    Pose {
+      translation 0 0 0.05
+      children [
+        DEF box Shape {
+          appearance PBRAppearance {
+            baseColor 0 1 0
+            metalness 0
+          }
+          geometry Box {
+            size 0.1 0.1 0.1
+          }
+        }
+      ]
+    }
+  ]
+  name "Green Box"
+  boundingObject USE box
+  physics Physics {
+    mass 0.1
+  }
+}
+Solid {
+  translation 0.41 -0.710627 -3.94e-05
+  rotation 5.412960270207005e-12 -3.914108091881357e-12 1 2.166850874156144e-05
+  children [
+    Pose {
+      translation 0 0 0.05
+      children [
+        DEF box Shape {
+          appearance PBRAppearance {
+            baseColor 1 1 0
+            metalness 0
+          }
+          geometry Box {
+            size 0.1 0.1 0.1
+          }
+        }
+      ]
+    }
+  ]
+  name "Yellow Box"
+  boundingObject USE box
+  physics Physics {
+    mass 0.1
+  }
+}
+Robot {
+  translation -0.154481 1.30092 -0.00403252
+  rotation 7.670143428507394e-05 0.0010488704688387108 0.9999994469936618 -3.125965307179586
+  children [
+    Display {
+      name "display2"
+      width 640
+      height 480
+    }
+    RangeFinder {
+      translation 4.2126e-07 0.09 0.18
+      rotation 0 0 -1 -1.5708053071795867
+      fieldOfView 0.8
+      width 640
+      height 480
+      maxRange 4
+    }
+    Display {
+      translation 0 0 0.11
+      name "display1"
+      width 640
+      height 480
+    }
+    Camera {
+      translation -3.30588e-07 0.09 0.18
+      rotation 0 0 1 1.5708
+      fieldOfView 0.8
+      width 640
+      height 480
+    }
+    InertialUnit {
+      translation 0 -0.03 0.03
+      name "imu"
+    }
+    Gyro {
+      translation 0 0 0.03
+    }
+    GPS {
+      translation 0 0 0.03
+    }
+    SharpGP2D120 {
+      translation -0.0989967 0.0789939 0.0199972
+      rotation 0.28108510281518717 0.6785962482166418 -0.6786002482181049 -2.5935853071795862
+      name "sharp_left"
+    }
+    SharpGP2D120 {
+      translation 0.0991481 0.0788413 0.020112
+      rotation -0.8629731098003907 -0.35707604543257354 0.35745504548079565 1.71434
+      name "sharp_right"
+    }
+    SharpGP2D120 {
+      translation -4.62331e-07 0.12 0.04
+      rotation 0.5773489358556708 0.5773509358554485 0.5773509358554485 2.0944
+      name "sharp_front"
+    }
+    SharpGP2D120 {
+      translation -0.04 0.112 0.02
+      rotation 0.5773522691882489 0.5773482691863839 -0.5773502691873165 -2.094395307179586
+      name "sharp_front_left"
+    }
+    SharpGP2D120 {
+      translation 0.04 0.112 0.02
+      rotation 0.577351957236213 0.5773488930921109 -0.5773499572363613 -2.094395307179586
+      name "sharp_front_right"
+    }
+    DEF body Pose {
+      translation 0 0 0.049
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0 0.5 1
+            roughness 1
+            metalness 0
+          }
+          geometry Cylinder {
+            height 0.08
+            radius 0.117
+          }
+        }
+      ]
+    }
+    HingeJoint {
+      jointParameters HingeJointParameters {
+        position -138.1504180684601
+        anchor -0.105 -0.01 0.0126
+      }
+      device [
+        PositionSensor {
+          name "left wheel sensor"
+        }
+        RotationalMotor {
+          name "left wheel motor"
+        }
+      ]
+      endPoint Solid {
+        translation -0.10499999999999998 -0.009991062525632801 0.012558917107146364
+        rotation -0.32663698327023766 -0.8869139279271029 0.3266373610122336 1.6905123409915694
+        children [
+          DEF wheel Shape {
+            appearance PBRAppearance {
+              roughness 1
+              metalness 0
+            }
+            geometry Cylinder {
+              height 0.01
+              radius 0.0125
+            }
+          }
+        ]
+        boundingObject USE wheel
+        physics DEF wheel_physics Physics {
+        }
+      }
+    }
+    HingeJoint {
+      jointParameters HingeJointParameters {
+        position -230.74742168305932
+        anchor 0.105 -0.01 0.0125
+      }
+      device [
+        PositionSensor {
+          name "right wheel sensor"
+        }
+        RotationalMotor {
+          name "right wheel motor"
+        }
+      ]
+      endPoint Solid {
+        translation 0.10499999999999998 -0.00999894999985399 0.012523299999993347
+        rotation 0.6057050097526462 0.5159839383071835 0.6057078640479712 2.1888885895277364
+        children [
+          USE wheel
+        ]
+        name "solid(1)"
+        boundingObject USE wheel
+        physics USE wheel_physics
+      }
+    }
+    Pose {
+      rotation 0 1 0 0
+      children [
+        Solid {
+          translation 0 0.08 0.005
+          rotation 0 1 0 -1.5707953071795862
+          children [
+            DEF caster_wheel Shape {
+              appearance PBRAppearance {
+              }
+              geometry Sphere {
+                radius 0.005
+              }
+            }
+          ]
+          name "solid(2)"
+          boundingObject USE caster_wheel
+          physics Physics {
+            density 100
+          }
+        }
+      ]
+    }
+    Pose {
+      translation 0 0.07 -0.005
+      rotation 0 1 0 0
+      children [
+        Solid {
+          translation -0.0899999 0.09 0.055
+          rotation 0 1 0 -1.5707953071795862
+          children [
+            DEF Arm_left Shape {
+              appearance PBRAppearance {
+                roughness 1
+                metalness 0
+              }
+              geometry Box {
+                size 0.08 0.2 0.01
+              }
+            }
+          ]
+          name "solid(3)"
+          boundingObject USE Arm_left
+          physics Physics {
+            density 100
+          }
+        }
+      ]
+    }
+    Pose {
+      translation 0.18 0.07 -0.005
+      rotation 0 1 0 0
+      children [
+        Solid {
+          translation -0.0899999 0.09 0.055
+          rotation 0 1 0 -1.5707953071795862
+          children [
+            DEF Arm_right Shape {
+              appearance PBRAppearance {
+                roughness 1
+                metalness 0
+              }
+              geometry Box {
+                size 0.08 0.2 0.01
+              }
+            }
+          ]
+          name "solid(4)"
+          boundingObject USE Arm_right
+          physics Physics {
+            density 100
+          }
+        }
+      ]
+    }
+  ]
+  boundingObject USE body
+  physics Physics {
+    density 500
+  }
+  controller "motor_control"
+}
+Wall {
+  translation -1.1 -0.33 0
+  size 0.125 0.37 0.105
+}

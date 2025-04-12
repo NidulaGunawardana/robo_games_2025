@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: freenect2
+Version: 0.2.3
+Summary: Python bindings for the libfreenect2 Kinect for Windows driver
+Home-page: https://github.com/rjw57/freenect2-python
+Author: Rich Wareham
+Author-email: rich.freenect2@richwareham.com
+License: UNKNOWN
+Description: UNKNOWN
+Platform: UNKNOWN

@@ -1,0 +1,12 @@
+MANIFEST.in
+README.rst
+requirements.txt
+setup.py
+binding/freenect2-c.cpp
+binding/freenect2_build.py
+freenect2/__init__.py
+freenect2.egg-info/PKG-INFO
+freenect2.egg-info/SOURCES.txt
+freenect2.egg-info/dependency_links.txt
+freenect2.egg-info/requires.txt
+freenect2.egg-info/top_level.txt
